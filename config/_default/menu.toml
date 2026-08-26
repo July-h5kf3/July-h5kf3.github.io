@@ -1,0 +1,10 @@
+# Main menu is defined on content pages.
+# Social links appear under the sidebar avatar.
+
+[[social]]
+    identifier = "github"
+    name       = "GitHub"
+    url        = "https://github.com"
+
+    [social.params]
+        icon = "brand-github"

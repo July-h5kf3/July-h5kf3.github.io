@@ -1,0 +1,17 @@
+# Change baseurl before deploy
+baseurl = "https://july-h5kf3.github.io/"
+locale  = "zh-cn"
+timezone = "Asia/Shanghai"
+title   = "Lorn"
+
+# Theme i18n support
+# Available values: https://github.com/CaiJimmy/hugo-theme-stack/tree/master/i18n
+defaultContentLanguage = "zh"
+
+# Set hasCJKLanguage to true if DefaultContentLanguage is in [zh ja ko]
+hasCJKLanguage = true
+
+disqusShortname = ""
+
+[pagination]
+    pagerSize = 5
