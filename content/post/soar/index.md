@@ -10,6 +10,8 @@ tags:
     - SOAR
     - NVFP4
     - Scale优化
+series:
+    - 论文解读
 math: true
 comments: false
 ---

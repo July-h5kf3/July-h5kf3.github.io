@@ -1,4 +1,23 @@
-# Main menu is defined on content pages.
+# Main menu: 首页/归档/关于/搜索 are defined on content pages;
+# the two coarse "板块" links below are defined here.
+[[main]]
+    identifier = "papers"
+    name       = "论文解读"
+    weight     = 5
+    url        = "/series/论文解读/"
+
+    [main.params]
+        icon = "categories"
+
+[[main]]
+    identifier = "blog"
+    name       = "技术分享"
+    weight     = 6
+    url        = "/series/技术分享/"
+
+    [main.params]
+        icon = "messages"
+
 # Social links appear under the sidebar avatar.
 
 [[social]]

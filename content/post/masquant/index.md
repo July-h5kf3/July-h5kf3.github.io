@@ -10,6 +10,8 @@ tags:
     - MASQuant
     - VLM
     - 平滑量化
+series:
+    - 论文解读
 math: true
 comments: false
 ---

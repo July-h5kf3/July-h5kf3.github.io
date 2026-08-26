@@ -9,6 +9,8 @@ tags:
     - 论文解读
     - TurboQuant
     - 向量量化
+series:
+    - 论文解读
 math: true
 comments: false
 ---

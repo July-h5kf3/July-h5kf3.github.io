@@ -10,6 +10,8 @@ tags:
     - AdaQuant
     - PTQ
     - 逐层重构
+series:
+    - 论文解读
 math: true
 comments: false
 ---

@@ -10,6 +10,8 @@ tags:
     - ReSpinQuant
     - 旋转量化
     - 子空间
+series:
+    - 论文解读
 math: true
 comments: false
 ---

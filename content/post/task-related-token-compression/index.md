@@ -10,6 +10,8 @@ tags:
     - Token压缩
     - 可解释性
     - 多模态
+series:
+    - 论文解读
 math: true
 comments: false
 ---

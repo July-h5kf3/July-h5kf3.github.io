@@ -10,6 +10,8 @@ tags:
     - VLMQ
     - VLM
     - Hessian
+series:
+    - 论文解读
 math: true
 comments: false
 ---

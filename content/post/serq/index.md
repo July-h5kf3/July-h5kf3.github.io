@@ -10,6 +10,8 @@ tags:
     - SERQ
     - W4A4
     - 低秩重建
+series:
+    - 论文解读
 math: true
 comments: false
 ---

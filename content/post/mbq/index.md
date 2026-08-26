@@ -10,6 +10,8 @@ tags:
     - MBQ
     - VLM
     - 模态均衡
+series:
+    - 论文解读
 math: true
 comments: false
 ---

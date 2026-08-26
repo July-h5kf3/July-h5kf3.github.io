@@ -9,6 +9,8 @@ tags:
     - Triton
     - FlashAttention
     - Kernel
+series:
+    - 技术分享
 math: true
 comments: false
 ---

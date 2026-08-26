@@ -10,6 +10,8 @@ tags:
     - SliderQuant
     - PTQ
     - 滑动量化
+series:
+    - 论文解读
 math: true
 comments: false
 ---

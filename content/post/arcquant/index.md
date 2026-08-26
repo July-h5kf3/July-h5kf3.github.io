@@ -10,6 +10,8 @@ tags:
     - ARCQuant
     - NVFP4
     - 残差通道
+series:
+    - 论文解读
 math: true
 comments: false
 ---

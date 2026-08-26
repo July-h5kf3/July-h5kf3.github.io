@@ -10,6 +10,8 @@ tags:
     - Token剪枝
     - VLM
     - 联合优化
+series:
+    - 论文解读
 math: true
 comments: false
 ---

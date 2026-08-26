@@ -10,6 +10,8 @@ tags:
     - QAPruner
     - 视觉Token剪枝
     - VLM
+series:
+    - 论文解读
 math: true
 comments: false
 ---
