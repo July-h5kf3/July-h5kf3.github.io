@@ -321,7 +321,7 @@ $$
 
   ### Hessian矩阵在神经网络下的特殊结构
 
- 	本小节内容主要基于[Towards Quantifying the Hessian Structure of Neural Networks](https://arxiv.org/pdf/2505.02809),B站上有作者的讲解视频[FAI\] 港中深 张雨舜 | 浅谈神经网络Hessian矩阵的特殊结构](https://www.bilibili.com/video/BV1To3TzmEX3/?spm_id_from=333.1387.homepage.video_card.click&vd_source=76e54ba50c020fb612c90d28c211c638)
+ 	本小节内容主要基于[Towards Quantifying the Hessian Structure of Neural Networks](https://arxiv.org/pdf/2505.02809),B站上有作者的讲解视频[[FAI] 港中深 张雨舜 | 浅谈神经网络Hessian矩阵的特殊结构](https://www.bilibili.com/video/BV1To3TzmEX3/?spm_id_from=333.1387.homepage.video_card.click&vd_source=76e54ba50c020fb612c90d28c211c638)
 
 ​	这篇文章主要说明了在神经网络中，Hessian矩阵往往具有近块对角结构，这表明曲率信息(二阶信息)主要在层内耦合，层与层的二阶交互很弱。这间接的说明了Layer-wise的量化/剪枝的合理性。
 

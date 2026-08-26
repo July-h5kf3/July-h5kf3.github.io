@@ -222,7 +222,7 @@ $$
 由此，我们便推导出了Sinusoidal位置编码的形式:
 $$
 \left\{
-\begin{array}
+\begin{array}{l}
 p_{k,2i} = \sin(k/10000^{2i/d})\\
 p_{k,2i+1} = \cos(k / 10000^{2i/d})
 \end{array}
@@ -276,7 +276,7 @@ $$
 $$
 设:
 $$
-\begin{array}
+\begin{array}{rcl}
 f(q,m) &=& R_f(q,m)e^{i\theta_f(q,m)}\\
 \hat f(k,n) &=& R_f(k,n)e^{-i\theta_f(k,n)}\\
 g(q,k,m-n) &=& R_g(q,k,m-n)e^{i\theta_g(q,k,m-n)}
@@ -285,7 +285,7 @@ $$
 那么带入方程求解得到:
 $$
 \left\{ 
-\begin{array}
+\begin{array}{l}
 R_f(q,m)R_f(k,n) = R_g(q,k,m-n)\\
 \theta_f(q,m) - \theta_f(k,n) = \theta_g(q,k,m-n)
 \end{array}
