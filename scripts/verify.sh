@@ -22,11 +22,18 @@ fail() {
 [ -f public/about/index.html ] || fail "missing /about"
 [ -f public/archives/index.html ] || fail "missing /archives"
 [ -f public/search/index.html ] || fail "missing /search"
-[ -f public/p/hello/index.html ] || fail "missing /p/hello"
+[ -f public/p/hessian-series/index.html ] || fail "missing /p/hessian-series"
+[ -f public/p/transformer-positional-encoding/index.html ] || fail "missing /p/transformer-positional-encoding"
+[ -f public/p/triton/index.html ] || fail "missing /p/triton"
+[ -f public/p/low-precision-floats/index.html ] || fail "missing /p/low-precision-floats"
 
 grep -q ">Lorn<" public/index.html || fail "homepage title is not Lorn"
-grep -q "Hello" public/index.html || fail "homepage missing Hello post"
 grep -q "个人笔记" public/index.html || fail "sidebar subtitle missing"
+grep -q "浅谈低精度浮点数" public/index.html || fail "homepage missing imported posts"
+grep -q "Hessian" public/p/hessian-series/index.html || fail "hessian article body missing"
+grep -q "RoPE" public/p/transformer-positional-encoding/index.html || fail "rope article body missing"
+grep -q "Triton" public/p/triton/index.html || fail "triton article body missing"
+grep -q "IEEE 754" public/p/low-precision-floats/index.html || fail "fp article body missing"
 
 if grep -q "Markdown Syntax Guide" public/index.html; then
   fail "starter sample post still on homepage"
@@ -38,4 +45,4 @@ if grep -q "hugo-theme-stack-starter" public/index.html; then
   fail "starter site title still present"
 fi
 
-echo "OK: empty-shell checks passed"
+echo "OK: site checks passed"
