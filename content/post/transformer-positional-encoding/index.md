@@ -155,13 +155,13 @@ $$
 
 我们先从最简单的情况入手，假设$\mathbf{H} = I$为单位矩阵，那么此时$E^\top E$是两个位置编码的内积，我们希望在这个简单的例子中该项表达的是相对位置信息，即存在某个函数g使得:
 $$
-<p_m,p_n> = g(m-n)
+\langle p_m,p_n\rangle = g(m-n)
 $$
 这里的$p_m,p_n$为d维向量，这里我们从最简单的$d = 2$入手。我们称上式是一个位置编码为一个合理位置编码的条件式。
 
 对于2维向量，我们借助复数来推导，视向量[x,y]为复数$x+yi$,那么我们有:
 $$
-<p_m,p_n>=a_xb_x+a_yb_y = \text{Re}(p_m\hat p_n)
+\langle p_m,p_n\rangle=a_xb_x+a_yb_y = \text{Re}(p_m\hat p_n)
 $$
 其中$\hat w$为$w$的共轭复数。
 
@@ -202,16 +202,16 @@ p_m = \left(\begin{matrix}e^{im\theta_0}\\e^{im\theta_1}\\\vdots\\e^{im\theta_{d
 $$
 这样我们就求出了满足条件式的一组解，显然解不唯一。
 
-此外，一个好的位置编码应该满足远程衰减的性质，即随着$|m-n|$的增大,$<p_m,p_n>$有趋于0的趋势。
+此外，一个好的位置编码应该满足远程衰减的性质，即随着$|m-n|$的增大,$\langle p_m,p_n\rangle$有趋于0的趋势。
 
 那么有:
 $$
-<p_m,p_n> = \text{Re}[e^{i(m-n)\theta_0} + e^{i(m-n)\theta_1}+\dots+e^{i(m-n)\theta_{d/2-1}}]\\
+\langle p_m,p_n\rangle = \text{Re}[e^{i(m-n)\theta_0} + e^{i(m-n)\theta_1}+\dots+e^{i(m-n)\theta_{d/2-1}}]\\
 =\sum_{j=0}^{d/2-1}\cos (k\theta_j) \quad k = m-n
 $$
 由于在LM中d通常为768，是一个较大值，因此我们可以将离散的索引j映射到连续变量$t\in[0,1]$上。设$\theta_j$是某个光滑单调函数$f(t)$生成的，即$\theta_j = f(2j/d)$。利用Euler-Maclaurin的一阶近似，我们可以将求和转化为积分:
 $$
-<p_m,p_n> \approx \frac{d}{2}\int_0^1 \cos(k\cdot f(t))dt
+\langle p_m,p_n\rangle \approx \frac{d}{2}\int_0^1 \cos(k\cdot f(t))dt
 $$
 那么现在的问题就转化为了，寻找一个函数$f(t)$,使得上述震荡积分在k很大时具有较好的衰减性质(足够快)。
 
@@ -222,7 +222,7 @@ $$
 由此，我们便推导出了Sinusoidal位置编码的形式:
 $$
 \left\{
-\begin{array}
+\begin{array}{l}
 p_{k,2i} = \sin(k/10000^{2i/d})\\
 p_{k,2i+1} = \cos(k / 10000^{2i/d})
 \end{array}
@@ -264,7 +264,7 @@ $$
 $$
 而我们希望得到如下恒等关系:
 $$
-<f(q,m),f(k,n)> = g(q,k,m-n)
+\langle f(q,m),f(k,n)\rangle = g(q,k,m-n)
 $$
 为了求解方便，我们令:
 $$
@@ -276,7 +276,7 @@ $$
 $$
 设:
 $$
-\begin{array}
+\begin{array}{rcl}
 f(q,m) &=& R_f(q,m)e^{i\theta_f(q,m)}\\
 \hat f(k,n) &=& R_f(k,n)e^{-i\theta_f(k,n)}\\
 g(q,k,m-n) &=& R_g(q,k,m-n)e^{i\theta_g(q,k,m-n)}
@@ -285,7 +285,7 @@ $$
 那么带入方程求解得到:
 $$
 \left\{ 
-\begin{array}
+\begin{array}{l}
 R_f(q,m)R_f(k,n) = R_g(q,k,m-n)\\
 \theta_f(q,m) - \theta_f(k,n) = \theta_g(q,k,m-n)
 \end{array}
