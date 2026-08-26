@@ -1,0 +1,16 @@
+{
+    "name": "Lorn (Hugo)",
+    "install": "./scripts/setup.sh",
+    "terminals": [
+        {
+            "name": "hugo server",
+            "command": "./scripts/dev.sh"
+        }
+    ],
+    "ports": [
+        {
+            "name": "Hugo dev server",
+            "port": 1313
+        }
+    ]
+}
