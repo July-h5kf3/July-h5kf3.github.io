@@ -10,6 +10,8 @@ tags:
     - OWQ
     - 离群值
     - 混合精度
+series:
+    - 论文解读
 math: true
 comments: false
 ---

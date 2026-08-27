@@ -10,6 +10,8 @@ tags:
     - ZeroQuant
     - PTQ
     - Transformer
+series:
+    - 论文解读
 math: true
 comments: false
 ---

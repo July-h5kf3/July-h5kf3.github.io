@@ -10,6 +10,8 @@ tags:
     - OSAQ
     - 离群值
     - 低比特
+series:
+    - 论文解读
 math: true
 comments: false
 ---

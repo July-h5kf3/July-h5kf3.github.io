@@ -10,6 +10,8 @@ tags:
     - MXFP4
     - NVFP4
     - IEEE754
+series:
+    - 技术分享
 math: true
 comments: false
 ---

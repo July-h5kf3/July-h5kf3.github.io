@@ -9,6 +9,8 @@ tags:
     - Hessian
     - GPTQ
     - 剪枝
+series:
+    - 技术分享
 math: true
 comments: false
 ---

@@ -1,3 +1,251 @@
-/*
-    You can add your own custom styles here.
-*/
+/* =========================================================================
+   Lorn — custom UI polish (loaded last, overrides the Stack theme)
+   ========================================================================= */
+
+/* ---- 1. Design tokens: refined accent, shadows, radii (light + dark) ---- */
+:root {
+    --accent-color: #4c6ef5;
+    --accent-color-darker: #3b5bdb;
+    --accent-color-text: #ffffff;
+
+    --brand-gradient: linear-gradient(135deg, #4c6ef5 0%, #7048e8 100%);
+
+    --card-border-radius: 14px;
+    --tag-border-radius: 999px;
+
+    --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+    --shadow-md: 0 8px 20px rgba(16, 24, 40, 0.08), 0 2px 6px rgba(16, 24, 40, 0.05);
+    --shadow-lg: 0 18px 44px rgba(16, 24, 40, 0.14);
+    --hairline: rgba(16, 24, 40, 0.08);
+
+    &[data-scheme="dark"] {
+        --accent-color: #91a7ff;
+        --accent-color-darker: #748ffc;
+        --accent-color-text: #0b1021;
+
+        --brand-gradient: linear-gradient(135deg, #5c7cfa 0%, #9775fa 100%);
+
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 8px 22px rgba(0, 0, 0, 0.42);
+        --shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.55);
+        --hairline: rgba(255, 255, 255, 0.10);
+    }
+}
+
+body {
+    background:
+        radial-gradient(1100px 480px at 100% -8%, rgba(112, 72, 232, 0.06), transparent 60%),
+        radial-gradient(1000px 460px at -6% 0%, rgba(76, 110, 245, 0.07), transparent 60%),
+        var(--body-background);
+    background-attachment: fixed;
+}
+
+/* ---- 2. Left sidebar: avatar, site name, menu ---- */
+.left-sidebar {
+    .site-avatar .site-logo {
+        border-radius: 50%;
+        box-shadow: 0 0 0 4px var(--card-background), 0 10px 24px rgba(16, 24, 40, 0.18);
+        transition: transform 0.25s ease;
+        &:hover { transform: translateY(-2px) scale(1.02); }
+    }
+
+    .site-name { letter-spacing: 0.2px; }
+
+    .menu li a {
+        border-radius: 10px;
+        transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+
+        .icon svg,
+        svg { transition: transform 0.15s ease; }
+
+        &:hover {
+            color: var(--accent-color);
+            background: rgba(76, 110, 245, 0.10);
+            svg { transform: scale(1.12); }
+        }
+    }
+
+    .menu li.current a,
+    .menu li a.active {
+        color: var(--accent-color);
+        background: rgba(76, 110, 245, 0.12);
+        font-weight: 600;
+    }
+}
+
+/* ---- 3. Article cards (home / list) ---- */
+.article-list {
+    article {
+        border: 1px solid var(--hairline);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        overflow: hidden;
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(76, 110, 245, 0.35);
+        }
+
+        .article-image img { transition: transform 0.4s ease; }
+        &:hover .article-image img { transform: scale(1.04); }
+    }
+
+    .article-title a { transition: color 0.15s ease; }
+    article:hover .article-title a { color: var(--accent-color); }
+}
+
+/* Category pill: keep the theme's per-category colors, just refine shape + hover */
+.article-category a {
+    font-weight: 600;
+    transition: transform 0.15s ease, filter 0.15s ease;
+    &:hover { transform: translateY(-1px); filter: brightness(0.96); }
+}
+
+/* ---- 4. Right sidebar widgets ---- */
+.right-sidebar .widget {
+    background: var(--card-background);
+    border: 1px solid var(--hairline);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--shadow-sm);
+    padding: 20px;
+    margin-bottom: var(--section-separation, 40px);
+
+    .widget-icon svg { color: var(--accent-color); }
+}
+
+/* Pills used by 板块 / 分类 / 标签云 */
+.tagCloud-tags a {
+    border-radius: 999px;
+    border: 1px solid var(--hairline);
+    background: transparent;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: var(--accent-color);
+        color: var(--accent-color-text);
+        border-color: var(--accent-color);
+        transform: translateY(-1px);
+    }
+}
+
+/* ---- 5. Article single: header + content typography ---- */
+.main-article {
+    .article-header .article-title { letter-spacing: 0.2px; }
+}
+
+.article-content {
+    line-height: 1.78;
+
+    h1, h2, h3, h4, h5 {
+        scroll-margin-top: 90px;
+        letter-spacing: 0.2px;
+    }
+
+    h2 {
+        padding-bottom: 0.3em;
+        border-bottom: 1px solid var(--hairline);
+    }
+
+    /* Links */
+    a:not(.article-category a) {
+        text-decoration: none;
+        background-image: linear-gradient(var(--accent-color), var(--accent-color));
+        background-size: 0% 2px;
+        background-position: 0 100%;
+        background-repeat: no-repeat;
+        transition: background-size 0.25s ease, color 0.2s ease;
+        &:hover {
+            color: var(--accent-color);
+            background-size: 100% 2px;
+        }
+    }
+
+    /* Blockquote → callout */
+    blockquote {
+        border-left: 4px solid var(--accent-color);
+        border-radius: 10px;
+        background: rgba(76, 110, 245, 0.06);
+        padding: 12px 18px;
+    }
+    [data-scheme="dark"] & blockquote { background: rgba(145, 167, 255, 0.08); }
+
+    /* Images */
+    img {
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+    }
+
+    figure, p > img { text-align: center; }
+
+    /* Horizontal rule */
+    hr {
+        border: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--hairline) 20%, var(--hairline) 80%, transparent);
+    }
+
+    /* Inline code chip */
+    :not(pre) > code {
+        background: rgba(76, 110, 245, 0.10);
+        color: var(--accent-color-darker);
+        border-radius: 6px;
+        padding: 0.12em 0.4em;
+        font-size: 0.9em;
+    }
+    [data-scheme="dark"] & :not(pre) > code { color: var(--accent-color); }
+
+    /* Code blocks */
+    .highlight, pre {
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+    }
+    .highlight { border: 1px solid var(--hairline); }
+
+    /* Tables */
+    table {
+        border-collapse: collapse;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--hairline);
+        th {
+            background: rgba(76, 110, 245, 0.10);
+            font-weight: 700;
+        }
+        th, td { border: 1px solid var(--hairline); }
+        tbody tr:nth-child(even) { background: rgba(16, 24, 40, 0.02); }
+    }
+    [data-scheme="dark"] & table tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.03); }
+
+    /* Wide KaTeX display math should scroll, not overflow the card */
+    .katex-display {
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0.5em 0.1em;
+    }
+
+    /* Author's inline "个人评价 / 评价 / 吐槽" boxes → tidy callout */
+    div[style*="f9f9f9"] {
+        border-left: 4px solid var(--accent-color) !important;
+        border-radius: 10px !important;
+        padding: 14px 16px !important;
+        margin: 1.3em 0 !important;
+        box-shadow: var(--shadow-sm);
+        background: rgba(76, 110, 245, 0.06) !important;
+        b:first-child { color: var(--accent-color-darker); }
+    }
+    [data-scheme="dark"] & div[style*="f9f9f9"] {
+        background: rgba(145, 167, 255, 0.08) !important;
+        color: var(--card-text-color-secondary);
+        b:first-child { color: var(--accent-color); }
+    }
+}
+
+/* ---- 6. Pagination + misc ---- */
+.pagination .page-item {
+    border-radius: 10px;
+    transition: all 0.15s ease;
+    &:hover { background: rgba(76, 110, 245, 0.12); }
+    &.active { background: var(--brand-gradient); color: #fff; }
+}

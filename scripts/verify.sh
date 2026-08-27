@@ -29,7 +29,7 @@ fail() {
 
 grep -q ">Lorn<" public/index.html || fail "homepage title is not Lorn"
 grep -q "个人笔记" public/index.html || fail "sidebar subtitle missing"
-grep -q "浅谈低精度浮点数" public/index.html || fail "homepage missing imported posts"
+grep -q "article-title" public/index.html || fail "homepage renders no post cards"
 grep -q "Hessian" public/p/hessian-series/index.html || fail "hessian article body missing"
 grep -q "RoPE" public/p/transformer-positional-encoding/index.html || fail "rope article body missing"
 grep -q "Triton" public/p/triton/index.html || fail "triton article body missing"

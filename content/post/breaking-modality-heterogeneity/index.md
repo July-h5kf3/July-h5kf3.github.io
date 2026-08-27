@@ -10,6 +10,8 @@ tags:
     - VLM
     - 低比特
     - 模态异质性
+series:
+    - 论文解读
 math: true
 comments: false
 ---

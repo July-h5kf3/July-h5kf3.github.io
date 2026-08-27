@@ -10,6 +10,8 @@ tags:
     - VEQ
     - MoE
     - VLM
+series:
+    - 论文解读
 math: true
 comments: false
 ---

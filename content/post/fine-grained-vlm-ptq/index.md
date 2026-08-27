@@ -10,6 +10,8 @@ tags:
     - VLM
     - PTQ
     - 积分梯度
+series:
+    - 论文解读
 math: true
 comments: false
 ---

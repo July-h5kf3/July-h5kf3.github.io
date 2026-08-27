@@ -11,6 +11,8 @@ tags:
     - PTQ
     - 自适应舍入
     - Hessian
+series:
+    - 论文解读
 math: true
 comments: false
 ---

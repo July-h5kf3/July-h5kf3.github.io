@@ -1,0 +1,5 @@
+# Keep the built-in taxonomies and add a coarse "板块" grouping (series):
+# 论文解读 vs 技术分享.
+category = "categories"
+tag      = "tags"
+series   = "series"

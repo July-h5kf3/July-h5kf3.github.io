@@ -11,6 +11,8 @@ tags:
     - PTQ
     - Hessian
     - OBQ
+series:
+    - 论文解读
 math: true
 comments: false
 ---
