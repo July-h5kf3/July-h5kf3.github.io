@@ -4,7 +4,7 @@ description: 量化感知的视觉 Token 剪枝。
 date: 2026-08-26T08:30:00+08:00
 slug: qapruner
 categories:
-    - VLLM
+    - VLM
 tags:
     - 论文解读
     - QAPruner

@@ -4,7 +4,7 @@ description: 从可解释性视角出发做任务相关的多模态 Token 压缩
 date: 2026-08-26T08:36:00+08:00
 slug: task-related-token-compression
 categories:
-    - VLLM
+    - VLM
 tags:
     - 论文解读
     - Token压缩

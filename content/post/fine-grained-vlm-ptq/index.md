@@ -4,7 +4,7 @@ description: 用量化感知的积分梯度做细粒度的视觉语言模型训�
 date: 2026-08-26T08:24:00+08:00
 slug: fine-grained-vlm-ptq
 categories:
-    - VLLM
+    - VLM
 tags:
     - 论文解读
     - VLM

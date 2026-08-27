@@ -4,7 +4,7 @@ description: 将量化与视觉 Token 剪枝联合起来做的探索。
 date: 2026-08-26T08:33:00+08:00
 slug: joint-quant-token-pruning
 categories:
-    - VLLM
+    - VLM
 tags:
     - 论文解读
     - Token剪枝
