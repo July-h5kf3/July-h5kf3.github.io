@@ -4,7 +4,7 @@ description: 从 IEEE 754 出发，梳理低精度浮点数以及 MXFP4、NVFP4 
 date: 2026-06-10T20:25:01+08:00
 slug: low-precision-floats
 categories:
-    - 量化
+    - 推理优化
 tags:
     - FP4
     - MXFP4

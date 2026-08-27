@@ -4,7 +4,7 @@ description: 通过子空间残差旋转近似的逐层大模型量化。
 date: 2026-08-26T08:48:00+08:00
 slug: respinquant
 categories:
-    - 大模型量化
+    - LLM
 tags:
     - 论文解读
     - ReSpinQuant

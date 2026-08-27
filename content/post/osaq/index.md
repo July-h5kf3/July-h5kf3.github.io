@@ -4,7 +4,7 @@ description: 用离群值自吸收实现精确的低比特大模型量化。
 date: 2026-08-26T08:42:00+08:00
 slug: osaq
 categories:
-    - 大模型量化
+    - LLM
 tags:
     - 论文解读
     - OSAQ

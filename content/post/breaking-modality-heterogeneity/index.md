@@ -4,7 +4,7 @@ description: 缓解低比特量化下视觉语言模型的模态异质性问题�
 date: 2026-08-26T08:51:00+08:00
 slug: breaking-modality-heterogeneity
 categories:
-    - 多模态量化
+    - VLLM
 tags:
     - 论文解读
     - VLM

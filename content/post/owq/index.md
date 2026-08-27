@@ -4,7 +4,7 @@ description: 感知激活离群值来保护敏感权重列的混合精度量化�
 date: 2026-08-26T08:09:00+08:00
 slug: owq
 categories:
-    - 大模型量化
+    - LLM
 tags:
     - 论文解读
     - OWQ

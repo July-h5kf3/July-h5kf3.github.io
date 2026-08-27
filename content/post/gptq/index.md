@@ -4,7 +4,7 @@ description: 基于 Hessian 的逐层误差补偿，把大模型权重量化到�
 date: 2026-08-26T08:12:00+08:00
 slug: gptq
 categories:
-    - 大模型量化
+    - LLM
 tags:
     - 论文解读
     - GPTQ

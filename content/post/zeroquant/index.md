@@ -4,7 +4,7 @@ description: 面向大规模 Transformer 的高效低成本训练后量化方案
 date: 2026-08-26T08:06:00+08:00
 slug: zeroquant
 categories:
-    - 大模型量化
+    - LLM
 tags:
     - 论文解读
     - ZeroQuant
