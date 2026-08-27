@@ -35,6 +35,7 @@ SortBy              = "default"
     homepage = [
         { type = "search" },
         { type = "taxonomy", params = { taxonomy = "series", title = "板块", icon = "categories", limit = 10 } },
+        { type = "taxonomy", params = { taxonomy = "column", title = "系列", icon = "messages", limit = 10 } },
         { type = "categories", params = { limit = 10 } },
         { type = "tag-cloud", params = { limit = 10 } },
     ]
