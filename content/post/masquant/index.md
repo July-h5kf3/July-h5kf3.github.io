@@ -4,7 +4,7 @@ description: 面向多模态大模型、模态感知的平滑量化。
 date: 2026-08-26T08:18:00+08:00
 slug: masquant
 categories:
-    - 多模态量化
+    - VLM
 tags:
     - 论文解读
     - MASQuant

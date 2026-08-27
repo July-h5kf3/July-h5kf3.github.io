@@ -4,7 +4,7 @@ description: 在 NVFP4 量化中优化 scale 以获得更精确的重建。
 date: 2026-08-26T09:00:00+08:00
 slug: soar
 categories:
-    - 低比特浮点
+    - LLM
 tags:
     - 论文解读
     - SOAR

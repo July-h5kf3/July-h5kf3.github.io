@@ -4,7 +4,7 @@ description: 整理 Transformer 位置编码的发展脉络：绝对位置编码
 date: 2026-04-14T20:48:13+08:00
 slug: transformer-positional-encoding
 categories:
-    - Transformer
+    - 模型架构
 tags:
     - RoPE
     - 位置编码

@@ -4,7 +4,7 @@ description: 平衡视觉与文本模态敏感度的视觉语言模型量化。
 date: 2026-08-26T08:21:00+08:00
 slug: mbq
 categories:
-    - 多模态量化
+    - VLM
 tags:
     - 论文解读
     - MBQ

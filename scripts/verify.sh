@@ -20,7 +20,6 @@ fail() {
 
 [ -f public/index.html ] || fail "missing public/index.html"
 [ -f public/about/index.html ] || fail "missing /about"
-[ -f public/archives/index.html ] || fail "missing /archives"
 [ -f public/search/index.html ] || fail "missing /search"
 [ -f public/p/hessian-series/index.html ] || fail "missing /p/hessian-series"
 [ -f public/p/transformer-positional-encoding/index.html ] || fail "missing /p/transformer-positional-encoding"

@@ -4,7 +4,7 @@ description: 围绕 Hessian 矩阵的基础定义、近似计算，以及二阶�
 date: 2025-11-24T13:28:52+08:00
 slug: hessian-series
 categories:
-    - 量化
+    - 推理优化
 tags:
     - Hessian
     - GPTQ

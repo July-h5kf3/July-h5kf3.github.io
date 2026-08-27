@@ -4,7 +4,7 @@ description: 通过 Hessian 增广高效量化视觉语言模型。
 date: 2026-08-26T08:27:00+08:00
 slug: vlmq
 categories:
-    - 多模态量化
+    - VLM
 tags:
     - 论文解读
     - VLMQ

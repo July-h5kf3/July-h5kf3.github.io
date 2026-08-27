@@ -4,7 +4,7 @@ description: Triton 的编程模型、矩阵乘法和量化相关算子实现思
 date: 2026-04-14T21:00:00+08:00
 slug: triton
 categories:
-    - GPU
+    - 算子开发
 tags:
     - Triton
     - FlashAttention

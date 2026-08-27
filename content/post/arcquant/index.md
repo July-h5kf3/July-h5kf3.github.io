@@ -4,7 +4,7 @@ description: 用增广残差通道提升 LLM 的 NVFP4 量化。
 date: 2026-08-26T08:57:00+08:00
 slug: arcquant
 categories:
-    - 低比特浮点
+    - LLM
 tags:
     - 论文解读
     - ARCQuant

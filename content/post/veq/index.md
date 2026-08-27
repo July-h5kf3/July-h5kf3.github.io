@@ -4,7 +4,7 @@ description: 面向 MoE 视觉语言模型的模态自适应量化。
 date: 2026-08-26T08:54:00+08:00
 slug: veq
 categories:
-    - 多模态量化
+    - VLM
 tags:
     - 论文解读
     - VEQ

@@ -4,7 +4,7 @@ description: 用小校准集做逐层重构的训练后量化方法。
 date: 2026-08-26T08:00:00+08:00
 slug: adaquant
 categories:
-    - 训练后量化
+    - LLM
 tags:
     - 论文解读
     - AdaQuant

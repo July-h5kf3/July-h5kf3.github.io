@@ -4,7 +4,7 @@ description: 层间/层内滑动量化的大模型训练后量化方法。
 date: 2026-08-26T08:39:00+08:00
 slug: sliderquant
 categories:
-    - 大模型量化
+    - LLM
 tags:
     - 论文解读
     - SliderQuant

@@ -4,7 +4,7 @@ description: 接近最优失真率的在线向量量化方法。
 date: 2026-08-26T08:15:00+08:00
 slug: turboquant
 categories:
-    - 向量量化
+    - LLM
 tags:
     - 论文解读
     - TurboQuant

@@ -4,7 +4,7 @@ description: 从二阶视角推导权重的自适应舍入，取代四舍五入�
 date: 2026-08-26T08:03:00+08:00
 slug: adaround
 categories:
-    - 训练后量化
+    - LLM
 tags:
     - 论文解读
     - AdaRound

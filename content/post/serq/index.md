@@ -4,7 +4,7 @@ description: 用显著性感知的低秩误差重建，把 LLM 的 PTQ 稳定地
 date: 2026-08-26T08:45:00+08:00
 slug: serq
 categories:
-    - 大模型量化
+    - LLM
 tags:
     - 论文解读
     - SERQ
