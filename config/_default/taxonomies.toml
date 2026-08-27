@@ -1,5 +1,7 @@
-# Keep the built-in taxonomies and add a coarse "板块" grouping (series):
-# 论文解读 vs 技术分享.
+# Built-in taxonomies + two custom ones:
+#   series : coarse "板块" grouping (论文解读 / 技术分享)
+#   column : ordered article series ("系列文章"), e.g. 面向 Hopper 架构 CUDA 编程
 category = "categories"
 tag      = "tags"
 series   = "series"
+column   = "column"

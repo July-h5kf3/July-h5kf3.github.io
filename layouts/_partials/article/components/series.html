@@ -1,0 +1,35 @@
+{{/*
+    Article-series navigation box.
+    Renders on any post that belongs to a `column` taxonomy term ("系列文章").
+    Lists every post in the series (ordered by front-matter `weight`, then date),
+    highlighting the current one, so readers can move through the series.
+*/}}
+{{- $cur := . -}}
+{{- with .GetTerms "column" -}}
+    {{- $series := index . 0 -}}
+    {{- $posts := sort (sort $series.Pages "Date" "asc") "Weight" -}}
+    {{- $count := len $posts -}}
+    <aside class="article-series">
+        <details open>
+            <summary>
+                <div class="article-series-title">
+                    {{ partial "helper/icon" "messages" }}
+                    <span>系列：<a href="{{ $series.RelPermalink }}">{{ $series.LinkTitle }}</a>（共 {{ $count }} 篇）</span>
+                </div>
+            </summary>
+            <ol class="article-series-list">
+                {{- range $i, $p := $posts -}}
+                    {{- $isCurrent := eq $p.RelPermalink $cur.RelPermalink -}}
+                    <li class="{{ if $isCurrent }}current{{ end }}">
+                        {{- if $isCurrent -}}
+                            <span>{{ $p.LinkTitle }}</span>
+                            <em>当前</em>
+                        {{- else -}}
+                            <a href="{{ $p.RelPermalink }}">{{ $p.LinkTitle }}</a>
+                        {{- end -}}
+                    </li>
+                {{- end -}}
+            </ol>
+        </details>
+    </aside>
+{{- end -}}
