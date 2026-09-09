@@ -1,0 +1,18 @@
+{{- $pages := partial "helper/pages.html" .Site.Home -}}
+{{- $result := slice -}}
+
+{{- range $pages -}}
+    {{/* 受保护文章不进搜索索引，避免正文明文泄漏 */}}
+    {{- if not .Params.locked -}}
+        {{- $data := dict "title" .Title "date" .Date "permalink" .RelPermalink "content" (.Plain) -}}
+
+        {{- $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) -}}
+        {{- if $image -}}
+            {{- $data = merge $data (dict "image" $image.Permalink) -}}
+        {{- end -}}
+
+        {{- $result = $result | append $data -}}
+    {{- end -}}
+{{- end -}}
+
+{{ jsonify $result }}

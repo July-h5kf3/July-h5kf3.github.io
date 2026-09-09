@@ -3,25 +3,36 @@
 
     {{ partial "article/components/series" . }}
 
-    {{ if .Scratch.Get "TOCEnabled" }}
-    <aside class="article-toc">
-        <details>
-            <summary>
-                <div class="article-toc-title">
-                    {{ partial "helper/icon" "chevron-right" }}
-                    <span>{{ T "article.tableOfContents" }}</span>
-                </div>
-            </summary>
-            <nav class="toc-nav">
-                {{ partial "article/components/toc" . | safeHTML }}
-            </nav>
-        </details>
-    </aside>
+    {{ if .Params.locked }}
+        {{/*
+            受保护文章：正文明文只在构建期临时存在于 <template> 中（浏览器不渲染 <template>
+            内容、也不会加载其中的图片）。构建后 scripts/encrypt.mjs 会把它整体替换成密文，
+            所以最终部署的产物里没有任何正文明文。读者输入正确口令后由浏览器 WebCrypto 解密。
+        */}}
+        {{ partial "article/components/locked" . }}
+        {{- $wrappedTable := printf "<div class=\"table-wrapper\">${1}</div>" -}}
+        <template id="locked-payload" data-source="{{ .File.Path }}">{{ .Content | replaceRE "(<table>(?:.|\n)+?</table>)" $wrappedTable | safeHTML }}</template>
+    {{ else }}
+        {{ if .Scratch.Get "TOCEnabled" }}
+        <aside class="article-toc">
+            <details>
+                <summary>
+                    <div class="article-toc-title">
+                        {{ partial "helper/icon" "chevron-right" }}
+                        <span>{{ T "article.tableOfContents" }}</span>
+                    </div>
+                </summary>
+                <nav class="toc-nav">
+                    {{ partial "article/components/toc" . | safeHTML }}
+                </nav>
+            </details>
+        </aside>
+        {{ end }}
+
+        {{ partial "article/components/content" . }}
+
+        {{ partial "article/components/footer" . }}
     {{ end }}
-
-    {{ partial "article/components/content" . }}
-
-    {{ partial "article/components/footer" . }}
 
     {{ if or .Params.math .Site.Params.article.math }}
         {{ partialCached "article/components/math.html" . }}

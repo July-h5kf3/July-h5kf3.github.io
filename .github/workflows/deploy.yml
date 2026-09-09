@@ -83,6 +83,14 @@ jobs:
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/" \
             --cacheDir "${{ runner.temp }}/hugo_cache"
+      - name: Encrypt protected posts
+        run: |
+          node scripts/encrypt.mjs
+          # Fail closed: no protected-post body plaintext may remain in the artifact.
+          if grep -rl "locked-payload" public >/dev/null 2>&1; then
+            echo "ERROR: locked-payload marker still present after encryption" >&2
+            exit 1
+          fi
       - name: Cache save
         id: cache-save
         uses: actions/cache/save@v5

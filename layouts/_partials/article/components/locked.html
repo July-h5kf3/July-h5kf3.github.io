@@ -1,0 +1,150 @@
+{{/*
+    受保护文章的“口令闸门”。
+    - 页面里只有密文（由 scripts/encrypt.mjs 注入为 <script id="locked-cipher">）。
+    - 读者输入邀请码后，浏览器用 WebCrypto 派生密钥并解密（AES-256-GCM）。
+    - 口令错误时 GCM 完整性校验失败，什么也拿不到。
+*/}}
+{{- $math := or .Params.math .Site.Params.article.math -}}
+<section class="article-content article-locked" id="locked-gate">
+    <div class="locked-card">
+        <div class="locked-card__icon">{{ partial "helper/icon" "lock" }}</div>
+        <h2 class="locked-card__title">该文章受邀请码保护</h2>
+        <p class="locked-card__desc">这是一篇仅限受邀读者阅读的文章。请输入邀请码以解锁全文。</p>
+        <form class="locked-form" id="locked-form" autocomplete="off">
+            <input type="password" id="locked-input" class="locked-input" placeholder="请输入邀请码"
+                autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+            <button type="submit" class="locked-submit" id="locked-submit">解锁全文</button>
+        </form>
+        <p class="locked-error" id="locked-error" hidden></p>
+        <p class="locked-hint">邀请码由作者提供。解密完全在你的浏览器本地完成，口令不会上传到任何服务器。</p>
+    </div>
+</section>
+<section class="article-content" id="locked-target" hidden></section>
+
+<script>
+(function () {
+    "use strict";
+    var MATH_ENABLED = {{ if $math }}true{{ else }}false{{ end }};
+    var STORAGE_KEY = "locked-pass:" + location.pathname;
+
+    var gate = document.getElementById("locked-gate");
+    var target = document.getElementById("locked-target");
+    var form = document.getElementById("locked-form");
+    var input = document.getElementById("locked-input");
+    var submit = document.getElementById("locked-submit");
+    var errorEl = document.getElementById("locked-error");
+
+    function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+    }
+    function clearError() {
+        errorEl.hidden = true;
+    }
+
+    function getCipher() {
+        var el = document.getElementById("locked-cipher");
+        if (!el) return null;
+        try {
+            return JSON.parse(el.textContent);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function b64ToBytes(s) {
+        var bin = atob(s);
+        var out = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+        return out;
+    }
+
+    async function decrypt(password, data) {
+        var enc = new TextEncoder();
+        var baseKey = await crypto.subtle.importKey(
+            "raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]
+        );
+        var key = await crypto.subtle.deriveKey(
+            { name: "PBKDF2", salt: b64ToBytes(data.salt), iterations: data.iter, hash: "SHA-256" },
+            baseKey,
+            { name: "AES-GCM", length: 256 },
+            false,
+            ["decrypt"]
+        );
+        var plain = await crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: b64ToBytes(data.iv) },
+            key,
+            b64ToBytes(data.ct)
+        );
+        return new TextDecoder().decode(plain);
+    }
+
+    function renderMath() {
+        if (MATH_ENABLED && typeof window.renderMathInElement === "function") {
+            window.renderMathInElement(target, {
+                delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "$", right: "$", display: false },
+                    { left: "\\(", right: "\\)", display: false },
+                    { left: "\\[", right: "\\]", display: true }
+                ],
+                macros: {
+                    "\\abs": "\\left|#1\\right|",
+                    "\\norm": "\\left\\|#1\\right\\|"
+                },
+                ignoredClasses: ["gist"]
+            });
+        }
+    }
+
+    function reveal(html) {
+        target.innerHTML = html;
+        gate.hidden = true;
+        target.hidden = false;
+        renderMath();
+    }
+
+    async function attempt(password, opts) {
+        opts = opts || {};
+        var data = getCipher();
+        if (!data) {
+            showError("本文当前不可解锁（缺少密文，可能处于本地预览模式）。");
+            return false;
+        }
+        try {
+            var html = await decrypt(password, data);
+            reveal(html);
+            try { sessionStorage.setItem(STORAGE_KEY, password); } catch (e) {}
+            return true;
+        } catch (e) {
+            if (!opts.silent) showError("邀请码不正确，请重试。");
+            try { sessionStorage.removeItem(STORAGE_KEY); } catch (e2) {}
+            return false;
+        }
+    }
+
+    if (form) {
+        form.addEventListener("submit", function (ev) {
+            ev.preventDefault();
+            clearError();
+            var pwd = input.value.trim();
+            if (!pwd) { showError("请输入邀请码。"); return; }
+            submit.disabled = true;
+            submit.textContent = "解锁中…";
+            attempt(pwd).then(function (ok) {
+                submit.disabled = false;
+                submit.textContent = "解锁全文";
+                if (ok) return;
+                input.value = "";
+                input.focus();
+            });
+        });
+    }
+
+    // 同一会话内自动尝试上次成功的口令，免于重复输入。
+    try {
+        var saved = sessionStorage.getItem(STORAGE_KEY);
+        if (saved) { attempt(saved, { silent: true }); }
+    } catch (e) {}
+})();
+</script>

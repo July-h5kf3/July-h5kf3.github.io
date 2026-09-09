@@ -1,0 +1,15 @@
+{{ $description := .Site.Params.sidebar.subtitle }}
+{{ if .Site.Params.description }}
+    {{ $description = .Site.Params.description }}
+{{ end }}
+
+{{ if .Params.locked }}
+    {{/* 受保护文章：不输出摘要/正文片段作为 meta description 或 OpenGraph 描述 */}}
+    {{ $description = "🔒 受邀请码保护的文章，需要邀请码才能阅读。" }}
+{{ else if .Description }}
+    {{ $description = .Description }}
+{{ else if .IsPage }}
+    {{ $description = .Summary }}
+{{ end }}
+
+{{ return (replaceRE "\n" " " $description | plainify) }}

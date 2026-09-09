@@ -34,6 +34,29 @@ grep -q "RoPE" public/p/transformer-positional-encoding/index.html || fail "rope
 grep -q "Triton" public/p/triton/index.html || fail "triton article body missing"
 grep -q "IEEE 754" public/p/low-precision-floats/index.html || fail "fp article body missing"
 
+# --- Protected (invite-code) posts -----------------------------------------
+# Encrypt the built output, then assert that no body plaintext leaks anywhere.
+if command -v node >/dev/null; then
+  node scripts/encrypt.mjs
+
+  LOCKED="public/p/locked-demo/index.html"
+  [ -f "$LOCKED" ] || fail "missing locked demo post"
+  grep -q 'id="locked-cipher"' "$LOCKED" || fail "locked post has no cipher payload"
+  grep -q "locked-payload" "$LOCKED" && fail "locked-payload marker survived encryption"
+
+  # Body plaintext must be gone from the locked page and from the whole site.
+  for phrase in "为什么正文是安全的" "derive_key" "示例配图"; do
+    grep -rq "$phrase" public && fail "protected body plaintext leaked: $phrase"
+  done
+  # Password must never appear in the output.
+  grep -rq "hopper2026" public && fail "invite code leaked into output"
+  # Title may be revealed; protected post must be absent from search index and RSS.
+  grep -q "受保护文章示例" public/search/index.json && fail "locked post leaked into search index"
+  grep -q "受保护文章示例" public/index.xml && fail "locked post leaked into RSS"
+else
+  echo "WARN: node not found, skipping protected-post checks" >&2
+fi
+
 if grep -q "Markdown Syntax Guide" public/index.html; then
   fail "starter sample post still on homepage"
 fi
