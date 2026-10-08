@@ -413,3 +413,46 @@ a.news-title:hover { color: var(--accent-color); }
     .news-item:first-child::before { top: 19px; }
     .news-item:last-child::before { bottom: auto; height: 19px; }
 }
+
+/* ---- 分类配图 credits (archives page, under the category tiles) ---- */
+.category-credits {
+    margin: 10px 4px 0;
+    font-size: 1.2rem;
+    line-height: 1.7;
+    color: var(--card-text-color-tertiary);
+    opacity: 0.85;
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-color: var(--hairline, rgba(0, 0, 0, 0.15));
+        text-underline-offset: 2px;
+        &:hover { color: var(--accent-color); }
+    }
+
+    .category-credits__label { margin-right: 6px; font-weight: 600; }
+    .category-credits__sep { margin: 0 6px; opacity: 0.6; }
+}
+
+/* ---- 分类 tiles on the archives page: keep artwork visible, title legible ---- */
+.template-archives .subsection-list .article-list--tile article {
+    &.has-image {
+        .article-image img { transition: transform 0.4s ease; }
+        &:hover .article-image img { transform: scale(1.04); }
+
+        /* Theme sets an inline colour-wash gradient; swap it for a bottom scrim. */
+        .article-details {
+            background: linear-gradient(0deg, rgba(10, 12, 20, 0.62) 0%, rgba(10, 12, 20, 0.22) 45%, rgba(10, 12, 20, 0) 75%) !important;
+        }
+        .article-title {
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+        }
+    }
+
+    /* Tiles without artwork: soft brand tint so they sit well next to image tiles. */
+    &:not(.has-image) {
+        background: linear-gradient(135deg, rgba(76, 110, 245, 0.10) 0%, rgba(112, 72, 232, 0.14) 100%), var(--card-background);
+        .article-title { color: var(--card-text-color-main); }
+    }
+}
