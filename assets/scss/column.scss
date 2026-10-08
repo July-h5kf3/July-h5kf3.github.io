@@ -743,3 +743,27 @@
         .article-series-here { display: none; }
     }
 }
+
+/* ---- Numbered headings (posts in a column with syllabus.numberHeadings) ----
+   Same scheme as the TOC widget (counters(item, ".") ". "): h2 "3. ",
+   h3 "3.2. ", h4 "3.2.1. " — TOC starts at h2 (markup.tableOfContents). */
+.article-content--numbered {
+    counter-reset: sec-h2;
+
+    > h2 { counter-increment: sec-h2; counter-reset: sec-h3; }
+    > h3 { counter-increment: sec-h3; counter-reset: sec-h4; }
+    > h4 { counter-increment: sec-h4; }
+
+    > h2::before { content: counter(sec-h2) ". "; }
+    > h3::before { content: counter(sec-h2) "." counter(sec-h3) ". "; }
+    > h4::before { content: counter(sec-h2) "." counter(sec-h3) "." counter(sec-h4) ". "; }
+
+    > h2::before,
+    > h3::before,
+    > h4::before {
+        margin-right: 0.15em;
+        color: var(--accent-color);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+}

@@ -1,0 +1,17 @@
+{{/*
+    Theme article content. Posts in a column whose _index.md sets
+    `syllabus.numberHeadings: true` get `article-content--numbered`, which
+    numbers h2–h4 with CSS counters in the same "1. / 1.1. / 1.1.1." scheme
+    as the table of contents (see assets/scss/column.scss).
+*/}}
+{{- $numbered := false -}}
+{{- with .GetTerms "column" -}}
+    {{- with (index . 0).Params.syllabus -}}
+        {{- $numbered = .numberHeadings | default false -}}
+    {{- end -}}
+{{- end -}}
+<section class="article-content{{ if $numbered }} article-content--numbered{{ end }}">
+    <!-- Refer to https://discourse.gohugo.io/t/responsive-tables-in-markdown/10639/5 -->
+    {{ $wrappedTable := printf "<div class=\"table-wrapper\">${1}</div>" }}
+    {{ .Content | replaceRE "(<table>(?:.|\n)+?</table>)" $wrappedTable | safeHTML }}
+</section>

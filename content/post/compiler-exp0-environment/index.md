@@ -20,7 +20,7 @@ math: true
 comments: false
 ---
 
-## Exp 0.1 Docker配置
+## Docker配置
 
 根据课程指导书的要求，我们通过Docker拉取对应的镜像:
 
@@ -78,7 +78,7 @@ docker run -it --rm -v /path/to/compiler:/root/compiler maxxing/compiler-dev bas
 
 这条命令多了一个`-v`参数，它的作用是把宿主机的某个目录挂载到容器的某个目录（例如上面指令是`/root/compiler`）。这样，在进入容器之后，就可以通过访问挂载的目录访问宿主机的目录了。
 
-## Exp 0.2 Koopa IR介绍
+## Koopa IR介绍
 
 Koopa IR是一种简化后的中间表示，在设计上类似LLVM IR。同时我们在后续lab中会用到对应的框架:
 
@@ -96,7 +96,7 @@ clang hello.o -L$CDE_LIBRARY_PATH/native -lsysy -o hello
 ./hello
 ```
 
-## Exp 0.3 RISC-V介绍
+## RISC-V介绍
 
 我们的编译器最终会生成RISC-V汇编。
 
@@ -127,7 +127,7 @@ ld.lld hello.o -L$CDE_LIBRARY_PATH/riscv32 -lsysy -o hello
 qemu-riscv32-static hello
 ```
 
-## Exp 0.4 编程语言选择
+## 编程语言选择
 
 为了方便起见，我最终还是选择使用C++进行开发。
 
