@@ -1,41 +1,26 @@
 {{/*
-    Article details for column posts (see helper/column-meta).
-    Same structure as the theme's details partial; the column is shown as a
-    专栏 pill (→ column page), plus a 轨道 pill (→ its section there) when the
-    title has a "[专栏][轨道]" prefix, in which case the short title is shown.
-    Categories already named by the column (编译原理 ⊂ 从零开始的编译原理) are
-    not repeated. All pills share the design-system pill (design.scss).
+    Theme details partial, unchanged except: category links use the shared
+    design-system pill (class category-pill, styled in custom.scss) instead of
+    per-category hashed inline colours, so they match the 专栏 / 轨道 pills.
 */}}
 {{- $IsList := .IsList -}}
 {{- $Page := .Page -}}
-{{- $cm := .Column -}}
 <div class="article-details">
-    <header class="article-category article-category--column">
-        {{- if $cm.url }}
-            <a class="column-pill" href="{{ $cm.url }}">{{ partial "helper/icon" "stack-2" }}<span>{{ $cm.name }}</span></a>
-            {{- with $cm.track }}
-            <a class="track-pill track-{{ $cm.trackKey }}" href="{{ $cm.url }}#track-{{ $cm.trackKey }}">{{ . }}</a>
-            {{- end }}
-        {{- else }}
-            <span class="column-pill">{{ partial "helper/icon" "stack-2" }}<span>{{ $cm.name }}</span></span>
-            {{- with $cm.track }}
-            <span class="track-pill track-{{ $cm.trackKey }}">{{ . }}</span>
-            {{- end }}
-        {{- end }}
-        {{- range ($Page.GetTerms "categories") }}
-            {{- if not (strings.Contains $cm.name .LinkTitle) }}
+    {{ if $Page.Params.categories }}
+    <header class="article-category">
+        {{ range ($Page.GetTerms "categories") }}
             <a class="category-pill" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-            {{- end }}
-        {{- end }}
+        {{ end }}
     </header>
+    {{ end }}
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
             <a href="{{ $Page.RelPermalink }}">
-                {{- $cm.title -}}
+                {{- $Page.Title -}}
             </a>
         </h2>
-
+    
         {{ with $Page.Params.description }}
         <h3 class="article-subtitle">
             {{ . }}
@@ -48,7 +33,7 @@
     {{ $showTime := or $showDate $showReadingTime }}
     {{ $showTranslations := $Page.IsTranslated }}
     {{ $showTags := and $Page.Site.Params.Article.List.ShowTags ($Page.GetTerms "tags") $IsList }}
-
+    
     {{ if or $showTime $showTranslations $showTags }}
     <footer class="article-meta">
         {{ if $showTime }}

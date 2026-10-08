@@ -1,0 +1,14 @@
+{{/* Resume download card. Usage: {{< resume-card file="/files/resume-zh_CN.pdf" title="简历（中文）" >}} */}}
+{{- $file := .Get "file" -}}
+{{- $title := .Get "title" | default "简历" -}}
+{{- $size := "" -}}
+{{- $path := printf "static%s" $file -}}
+{{- with os.Stat $path }}{{ $size = printf "%.0f KB" (div (float .Size) 1024) }}{{ end -}}
+<section class="about-card resume-card">
+    <span class="resume-icon" aria-hidden="true">{{ partial "helper/icon" "file-text" }}</span>
+    <span class="resume-text">
+        <span class="resume-title">{{ $title }}</span>
+        <span class="resume-meta">PDF{{ with $size }} · {{ . }}{{ end }}</span>
+    </span>
+    <a class="resume-button" href="{{ $file | relURL }}" download>{{ partial "helper/icon" "download" }}<span>下载</span></a>
+</section>

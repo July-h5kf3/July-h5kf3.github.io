@@ -6,137 +6,55 @@
    - course-style column landing page (layouts/_partials/column/*)
    ========================================================================= */
 
-:root {
-    --track-theory: #4263eb;
-    --track-theory-soft: rgba(66, 99, 235, 0.10);
-    --track-lab: #0c8a6c;
-    --track-lab-soft: rgba(18, 184, 134, 0.12);
-    --track-other: #868e96;
-    --track-other-soft: rgba(134, 142, 150, 0.14);
-
-    &[data-scheme="dark"] {
-        --track-theory: #a5b4fc;
-        --track-theory-soft: rgba(145, 167, 255, 0.16);
-        --track-lab: #63e6be;
-        --track-lab-soft: rgba(99, 230, 190, 0.14);
-        --track-other: #ced4da;
-        --track-other-soft: rgba(255, 255, 255, 0.10);
-    }
-}
-
-@each $t in theory, lab, other {
+/* Track colours come from the shared tones (design.scss): 理论 = theory
+   (violet), 实验 = lab (teal), anything else = neutral. */
+@each $t, $tone in (theory: theory, lab: lab, other: neutral) {
     .track-#{$t} {
-        --track: var(--track-#{$t});
-        --track-soft: var(--track-#{$t}-soft);
+        --track: var(--tone-#{$tone});
+        --track-soft: var(--tone-#{$tone}-soft);
     }
 }
 
-/* Small inline tag: 理论 / 实验 */
+/* Small inline tag: 理论 / 实验 (lists, News, hero facts, series box) */
 .track-tag {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-    padding: 1px 7px;
-    border-radius: 6px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    line-height: 1.6;
+    @include ds-pill(sm);
+    --pill-fg: var(--track);
+    --pill-bg: var(--track-soft);
     letter-spacing: 0.5px;
-    color: var(--track);
-    background: var(--track-soft);
-    white-space: nowrap;
 }
 
-/* ---- Column post header: [专栏] [轨道] pills + short title ---- */
-.article-category--column {
-    align-items: center;
-
-    a.column-pill,
-    span.column-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 14px 6px 11px;
-        border-radius: 999px;
-        font-size: 1.35rem;
-        font-weight: 600;
-        color: var(--accent-color-darker);
-        background: rgba(76, 110, 245, 0.08);
-        border: 1px solid rgba(76, 110, 245, 0.22);
-
-        svg { width: 15px; height: 15px; stroke-width: 2; }
-
-        &:hover {
-            color: var(--accent-color-text);
-            background: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-    }
-
-    a.track-pill,
-    span.track-pill {
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 14px;
-        border-radius: 999px;
-        font-size: 1.35rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        color: var(--track);
-        background: var(--track-soft);
-        border: 1px solid transparent;
-
-        &:hover {
-            color: var(--track);
-            background: var(--track-soft);
-            border-color: var(--track);
-        }
-    }
+/* ---- Column post header: [专栏] [轨道] pills + title (shared md pill) ---- */
+.column-pill {
+    @include ds-pill(md);
+    @include ds-tone(accent);
 }
-
-[data-scheme="dark"] .article-category--column a.column-pill,
-[data-scheme="dark"] .article-category--column span.column-pill {
-    color: var(--accent-color);
-    background: rgba(145, 167, 255, 0.10);
-    border-color: rgba(145, 167, 255, 0.28);
-
-    &:hover { color: var(--accent-color-text); background: var(--accent-color); }
-}
-
-/* Same pills on the column landing page section headers */
-.column-track-header .track-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 1.25rem;
-    font-weight: 700;
+.track-pill {
+    @include ds-pill(md);
+    --pill-fg: var(--track);
+    --pill-bg: var(--track-soft);
     letter-spacing: 1px;
-    color: var(--track);
-    background: var(--track-soft);
 }
+.article-category--column { align-items: center; }
 
-/* Compact list (归档 / 分类 / 标签) + tiles (相关文章): "专栏 · 轨道" eyebrow */
+/* Compact list (归档 / 分类 / 标签) + tiles: 专栏 + 轨道 as small pills above the title */
 .list-column-eyebrow {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--card-text-color-tertiary);
-    margin-bottom: -6px;
+    gap: var(--space-1) 6px;
+    margin-bottom: var(--space-1);
 
-    .track-tag { font-size: 1.1rem; padding: 0 6px; }
+    .column-pill { @include ds-pill(sm); }
 }
-.article-list--compact .list-column-eyebrow { margin-bottom: 4px; }
-.article-list--tile .list-column-eyebrow { color: inherit; opacity: 0.85; margin-bottom: 4px; }
+.article-list--tile .list-column-eyebrow {
+    .column-pill, .track-tag { --pill-fg: currentColor; --pill-bg: rgba(255, 255, 255, 0.22); }
+}
 
 /* ---- Series navigation box (posts) ---- */
 .main-article .article-series {
     margin: 6px var(--card-padding) 1.6em;
     border: 1px solid var(--hairline);
-    border-radius: 12px;
+    border-radius: var(--radius-inner);
     background: var(--card-background);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
@@ -145,7 +63,7 @@
         list-style: none;
         cursor: pointer;
         padding: 10px 14px;
-        background: linear-gradient(90deg, rgba(76, 110, 245, 0.08), rgba(112, 72, 232, 0.04));
+        background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.08), rgba(var(--accent-rgb), 0.03));
         border-bottom: 1px solid var(--hairline);
         &::-webkit-details-marker { display: none; }
     }
@@ -163,7 +81,7 @@
         > svg { width: 18px; height: 18px; color: var(--accent-color); flex-shrink: 0; }
 
         a {
-            color: var(--accent-color-darker);
+            color: var(--tone-accent);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -208,14 +126,14 @@
         align-items: center;
         gap: 10px;
         padding: 6px 8px;
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         font-size: 1.45rem;
         line-height: 1.5;
         color: var(--card-text-color-secondary);
         transition: background 0.15s ease, color 0.15s ease;
     }
     a.article-series-link:hover {
-        background: rgba(76, 110, 245, 0.07);
+        background: rgba(var(--accent-rgb), 0.07);
         color: var(--card-text-color-main);
     }
 
@@ -243,17 +161,13 @@
 
     .article-series-here,
     .article-series-soon {
+        @include ds-pill(sm);
         margin-left: auto;
-        flex-shrink: 0;
-        font-size: 1.1rem;
-        font-weight: 700;
-        padding: 1px 8px;
-        border-radius: 999px;
     }
 
     .current .article-series-link {
-        background: rgba(76, 110, 245, 0.10);
-        color: var(--accent-color-darker);
+        background: var(--tone-accent-soft);
+        color: var(--tone-accent);
         font-weight: 700;
     }
     .current .article-series-num {
@@ -261,25 +175,14 @@
         border-color: var(--accent-color);
         color: var(--accent-color-text);
     }
-    .article-series-here {
-        color: var(--accent-color-darker);
-        background: rgba(76, 110, 245, 0.14);
-    }
+    .article-series-here { @include ds-tone(accent); }
 
     .upcoming .article-series-link { opacity: 0.6; }
     .upcoming .article-series-num { border-style: dashed; }
     .article-series-soon {
-        color: var(--card-text-color-tertiary);
-        border: 1px dashed var(--card-text-color-tertiary);
-        font-weight: 600;
-    }
-
-    [data-scheme="dark"] & {
-        details > summary { background: linear-gradient(90deg, rgba(145, 167, 255, 0.10), rgba(151, 117, 250, 0.05)); }
-        .article-series-title a { color: var(--accent-color); }
-        .current .article-series-link { background: rgba(145, 167, 255, 0.14); color: var(--accent-color); }
-        .article-series-here { color: var(--accent-color); background: rgba(145, 167, 255, 0.16); }
-        a.article-series-link:hover { background: rgba(255, 255, 255, 0.06); }
+        --pill-fg: var(--card-text-color-tertiary);
+        --pill-bg: transparent;
+        box-shadow: inset 0 0 0 1px var(--card-text-color-tertiary);
     }
 }
 
@@ -287,7 +190,7 @@
 .column-pager {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: var(--space-3);
     margin: 0 var(--card-padding) var(--card-padding);
 
     @media (max-width: 640px) { grid-template-columns: 1fr; }
@@ -297,22 +200,16 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 12px 16px;
-    border-radius: 12px;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-inner);
     border: 1px solid var(--hairline);
     background: var(--card-background);
     color: var(--card-text-color-main);
     min-width: 0;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    &:not(.column-pager-link--empty) { @include ds-lift; }
 
     &--next { text-align: right; align-items: flex-end; }
     &--empty { border: 0; background: none; padding: 0; @media (max-width: 640px) { display: none; } }
-
-    &:not(.column-pager-link--empty):hover {
-        border-color: rgba(76, 110, 245, 0.45);
-        box-shadow: var(--shadow-sm);
-        transform: translateY(-1px);
-    }
 }
 .column-pager-dir {
     display: inline-flex;
@@ -338,19 +235,17 @@
 .column-syllabus {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--block-gap);
 }
 
 .column-hero {
+    @include ds-surface;
     position: relative;
     overflow: hidden;
     padding: 28px var(--card-padding) 24px;
-    border-radius: var(--card-border-radius);
-    border: 1px solid var(--hairline);
-    box-shadow: var(--shadow-sm);
     background:
         radial-gradient(600px 220px at 100% 0%, rgba(112, 72, 232, 0.12), transparent 70%),
-        radial-gradient(520px 240px at 0% 0%, rgba(76, 110, 245, 0.12), transparent 70%),
+        radial-gradient(520px 240px at 0% 0%, rgba(var(--accent-rgb), 0.12), transparent 70%),
         var(--card-background);
 
     &::before {
@@ -369,7 +264,7 @@
     font-size: 1.3rem;
     font-weight: 600;
     letter-spacing: 1px;
-    color: var(--accent-color);
+    color: var(--tone-accent);
     svg { width: 16px; height: 16px; }
     a { color: inherit; &:hover { text-decoration: underline; text-underline-offset: 3px; } }
 }
@@ -405,17 +300,13 @@
 
     li { display: inline-flex; align-items: center; gap: 6px; }
     svg { width: 16px; height: 16px; color: var(--card-text-color-tertiary); }
-    a.track-tag:hover { filter: brightness(0.95); }
 }
 
 /* Intro card (author's own words) */
 .column-intro {
     margin: 0;
+    @include ds-surface;
     padding: 22px var(--card-padding);
-    border-radius: var(--card-border-radius);
-    border: 1px solid var(--hairline);
-    box-shadow: var(--shadow-sm);
-    background: var(--card-background);
     color: var(--card-text-color-main);
     font-size: 1.55rem;
 
@@ -444,21 +335,18 @@
         align-items: center;
         gap: 10px;
         padding: 10px 12px;
-        border-radius: 12px;
+        border-radius: var(--radius-inner);
         border: 1px solid var(--hairline);
-        background: rgba(76, 110, 245, 0.04);
+        background: rgba(var(--accent-rgb), 0.04);
         background-image: none;
         color: var(--card-text-color-main);
         line-height: 1.35;
         word-break: normal;
-        transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+        @include ds-lift;
 
         &:hover {
             color: var(--card-text-color-main);
             background-size: auto;
-            border-color: rgba(76, 110, 245, 0.45);
-            box-shadow: var(--shadow-sm);
-            transform: translateY(-1px);
         }
     }
 
@@ -469,9 +357,9 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 9px;
-        color: var(--accent-color);
-        background: rgba(76, 110, 245, 0.12);
+        border-radius: var(--radius-sm);
+        color: var(--tone-accent);
+        background: var(--tone-accent-soft);
         svg { width: 17px; height: 17px; }
     }
     .column-ref-text { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
@@ -491,10 +379,7 @@
     }
     a.column-ref:hover .column-ref-ext { color: var(--accent-color); transform: translateX(2px); }
 }
-[data-scheme="dark"] .column-refs {
-    a.column-ref { background: rgba(255, 255, 255, 0.03); }
-    .column-ref-icon { background: rgba(145, 167, 255, 0.14); }
-}
+[data-scheme="dark"] .column-refs a.column-ref { background: rgba(255, 255, 255, 0.03); }
 
 /* Track sections */
 .column-track {
@@ -507,13 +392,12 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 6px 10px;
-    margin: 0 4px 14px;
+    margin: 0 0 var(--space-3);
 }
+/* Same heading style as the theme's section titles (写作日历 / 分类 / 年份) */
 .column-track-title {
+    @include ds-section-title;
     margin: 0;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--card-text-color-main);
 }
 .column-track-count {
     margin-left: auto;
@@ -536,8 +420,7 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-
+    gap: var(--space-3);
 }
 
 .chapter-card {
@@ -547,18 +430,15 @@
         display: flex;
         align-items: center;
         gap: 16px;
-        padding: 16px 18px;
-        border-radius: var(--card-border-radius);
-        border: 1px solid var(--hairline);
-        box-shadow: var(--shadow-sm);
-        background: var(--card-background);
+        padding: var(--space-4) 18px;
+        @include ds-surface;
         color: var(--card-text-color-main);
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
 
+    a.chapter-card-link {
+        @include ds-lift;
+    }
     a.chapter-card-link:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
         border-color: var(--track);
 
         .chapter-title { color: var(--track); }
@@ -576,7 +456,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: 14px;
+    border-radius: var(--radius-inner);
     color: var(--track);
     background: var(--card-background);
     box-shadow: inset 0 0 0 1.5px var(--track);
@@ -672,13 +552,10 @@
     .chapter-title { color: var(--card-text-color-secondary); }
 }
 .chapter-status {
-    flex-shrink: 0;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--card-text-color-secondary);
-    border: 1px dashed var(--card-text-color-tertiary);
+    @include ds-pill(sm);
+    --pill-fg: var(--card-text-color-tertiary);
+    --pill-bg: transparent;
+    box-shadow: inset 0 0 0 1px var(--card-text-color-tertiary);
 }
 
 @media (max-width: 640px) {
@@ -721,4 +598,10 @@
         font-weight: 700;
         font-variant-numeric: tabular-nums;
     }
+}
+
+/* Single-track columns (no syllabus.tracks): cards in the accent tone */
+.track-accent {
+    --track: var(--tone-accent);
+    --track-soft: var(--tone-accent-soft);
 }

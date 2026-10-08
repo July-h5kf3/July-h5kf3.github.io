@@ -1,0 +1,38 @@
+{{/*
+    How a post presents its column ("系列") membership in headers and lists.
+
+    A post belongs to a column when it has a `column` term, or when its title
+    uses the "[专栏][轨道] 短标题" prefix (helper/column-title). Both kinds get
+    the same treatment: a 专栏 pill, a 轨道 pill only when the title names one,
+    and the short title only when the prefix was there (otherwise the full,
+    unchanged title).
+
+    Input:  a page.
+    Return: dict
+        show     bool    render the column pills
+        name     string  column name (title prefix, else the term's title)
+        url      string  column page ("" if no term)
+        track    string  轨道 from the title prefix ("" if none)
+        trackKey string  theory / lab / other
+        title    string  short title (prefixed posts) or the page title
+        ct       dict    helper/column-title result
+*/}}
+{{- $ct := partial "helper/column-title" . -}}
+{{- $term := false -}}
+{{- with .GetTerms "column" -}}{{- $term = index . 0 -}}{{- end -}}
+{{- $show := and (or $ct.matched $term) (not .Params.locked) -}}
+{{- $name := $ct.column -}}
+{{- $url := "" -}}
+{{- with $term -}}
+    {{- $url = .RelPermalink -}}
+    {{- if not $ct.matched }}{{ $name = .LinkTitle }}{{ end -}}
+{{- end -}}
+{{- return dict
+    "show" $show
+    "name" $name
+    "url" $url
+    "track" (cond (and $show $ct.matched) $ct.track "")
+    "trackKey" $ct.trackKey
+    "title" (cond (and $show $ct.matched) $ct.short .Title)
+    "ct" $ct
+-}}

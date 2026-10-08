@@ -1,0 +1,157 @@
+/* =========================================================================
+   Design system — shared tokens + mixins (imported first by custom.scss)
+
+   Everything custom (column.scss, archive-activity.scss, custom.scss) and
+   the restyled native Stack bits (category pills, widget chips, section
+   titles, cards) take their radius / shadow / spacing / colour from here.
+
+   Tokens (CSS custom properties, light + dark):
+     radius   --radius-card 14 · --radius-inner 10 · --radius-sm 6 · --radius-pill
+     shadow   --shadow-sm (resting card) · --shadow-md (hover / raised) · --shadow-lg
+     spacing  --space-1 … --space-6  (4 · 8 · 12 · 16 · 24 · 32 px)
+     colour   --accent-color (+ -darker, -rgb) · tones: accent / theory / lab /
+              neutral / update — each with --tone-X and --tone-X-soft
+   Components (mixins):
+     ds-surface       card background + hairline + resting shadow
+     ds-lift          hover: raise 2px, --shadow-md, accent border
+     ds-pill($size)   one pill shape for every tag-like label (sm | md)
+     ds-tone($tone)   set a pill's colours from a tone
+     ds-section-title heading above a block (写作日历 / 分类 / 课程文档 …)
+   Date format for UI lists: params.dateFormat (":date_long" → 2026年10月6日).
+   ========================================================================= */
+
+:root {
+    /* ---- accent (indigo) + brand ---- */
+    --accent-color: #4c6ef5;
+    --accent-color-darker: #3b5bdb;
+    --accent-color-text: #ffffff;
+    --accent-rgb: 76, 110, 245;
+    --brand-gradient: linear-gradient(135deg, #4c6ef5 0%, #7048e8 100%);
+
+    /* ---- tones: one palette for pills, track colours, timeline dots ---- */
+    --tone-accent: var(--accent-color-darker);
+    --tone-accent-soft: rgba(var(--accent-rgb), 0.10);
+    --tone-theory: #7048e8;                    /* 理论: violet end of the brand gradient */
+    --tone-theory-soft: rgba(112, 72, 232, 0.10);
+    --tone-lab: #0c8a6c;                       /* 实验: teal */
+    --tone-lab-soft: rgba(18, 184, 134, 0.12);
+    --tone-neutral: #495057;                   /* categories, tags, context chips */
+    --tone-neutral-soft: rgba(16, 24, 40, 0.06);
+    --tone-update: #b35c00;                    /* 更新 */
+    --tone-update-soft: rgba(253, 126, 20, 0.14);
+
+    /* ---- radius ---- */
+    --radius-card: 14px;
+    --radius-inner: 10px;
+    --radius-sm: 6px;
+    --radius-pill: 999px;
+    --card-border-radius: var(--radius-card);  /* theme cards */
+    --tag-border-radius: var(--radius-pill);   /* theme tags */
+
+    /* ---- shadow + hairline ---- */
+    --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+    --shadow-md: 0 8px 20px rgba(16, 24, 40, 0.08), 0 2px 6px rgba(16, 24, 40, 0.05);
+    --shadow-lg: 0 18px 44px rgba(16, 24, 40, 0.14);
+    --hairline: rgba(16, 24, 40, 0.08);
+
+    /* ---- spacing ---- */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --block-gap: 20px;                         /* between stacked cards / widgets */
+
+    &[data-scheme="dark"] {
+        --accent-color: #91a7ff;
+        --accent-color-darker: #748ffc;
+        --accent-color-text: #0b1021;
+        --accent-rgb: 145, 167, 255;
+        --brand-gradient: linear-gradient(135deg, #5c7cfa 0%, #9775fa 100%);
+
+        --tone-accent: var(--accent-color);
+        --tone-accent-soft: rgba(var(--accent-rgb), 0.14);
+        --tone-theory: #b197fc;
+        --tone-theory-soft: rgba(177, 151, 252, 0.15);
+        --tone-lab: #63e6be;
+        --tone-lab-soft: rgba(99, 230, 190, 0.14);
+        --tone-neutral: rgba(255, 255, 255, 0.78);
+        --tone-neutral-soft: rgba(255, 255, 255, 0.08);
+        --tone-update: #ffc078;
+        --tone-update-soft: rgba(255, 169, 77, 0.16);
+
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 8px 22px rgba(0, 0, 0, 0.42);
+        --shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.55);
+        --hairline: rgba(255, 255, 255, 0.10);
+    }
+}
+
+/* ---- mixins ---- */
+
+@mixin ds-surface {
+    background: var(--card-background);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
+}
+
+@mixin ds-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: rgba(var(--accent-rgb), 0.35);
+    }
+}
+
+/* Colours of a pill from a tone (accent | theory | lab | neutral | update). */
+@mixin ds-tone($tone) {
+    --pill-fg: var(--tone-#{$tone});
+    --pill-bg: var(--tone-#{$tone}-soft);
+}
+
+/* sm: inline in lists / timelines / badges. md: post headers, widgets, filters. */
+@mixin ds-pill($size: md) {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 5px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+    color: var(--pill-fg, var(--tone-neutral));
+    background: var(--pill-bg, var(--tone-neutral-soft));
+    background-image: none;
+    box-shadow: none;
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+
+    @if $size == sm {
+        padding: 0 8px;
+        font-size: 1.15rem;
+        svg { width: 12px; height: 12px; stroke-width: 2; }
+    } @else {
+        padding: 4px 12px;
+        font-size: 1.3rem;
+        svg { width: 14px; height: 14px; stroke-width: 2; }
+    }
+
+    &:is(a):hover {
+        color: var(--pill-fg, var(--tone-neutral));
+        background: var(--pill-bg, var(--tone-neutral-soft));
+        box-shadow: inset 0 0 0 1px currentColor;
+    }
+}
+
+@mixin ds-section-title {
+    margin: 0 0 var(--space-3);
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.3px;
+    text-transform: none;
+    color: var(--body-text-color);
+}

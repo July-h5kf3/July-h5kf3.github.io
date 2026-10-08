@@ -24,10 +24,7 @@
 .activity-card,
 .news-card {
     position: relative;
-    background: var(--card-background);
-    border: 1px solid var(--hairline);
-    border-radius: var(--card-border-radius);
-    box-shadow: var(--shadow-sm);
+    @include ds-surface;
 }
 
 .activity-card {
@@ -53,9 +50,9 @@
 
 .activity-years {
     display: inline-flex;
-    gap: 4px;
+    gap: var(--space-1);
     padding: 3px;
-    border-radius: 10px;
+    border-radius: var(--radius-inner);
     background: var(--hm-0);
 
     &[hidden] { display: none; }
@@ -64,7 +61,7 @@
     border: 0;
     background: transparent;
     padding: 4px 12px;
-    border-radius: 8px;
+    border-radius: calc(var(--radius-inner) - 3px);
     font: inherit;
     font-size: 1.3rem;
     font-weight: 600;
@@ -75,11 +72,11 @@
     &:hover { color: var(--card-text-color-main); }
     &.is-active {
         background: var(--card-background);
-        color: var(--accent-color-darker);
+        color: var(--tone-accent);
         box-shadow: var(--shadow-sm);
     }
 }
-[data-scheme="dark"] .activity-year.is-active { color: var(--accent-color); background: rgba(255, 255, 255, 0.10); }
+[data-scheme="dark"] .activity-year.is-active { background: rgba(255, 255, 255, 0.10); }
 
 /* ---- grid ---- */
 .heatmap-scroll {
@@ -176,7 +173,7 @@
     left: 0;
     top: 0;
     padding: 5px 10px;
-    border-radius: 7px;
+    border-radius: var(--radius-sm);
     font-size: 1.2rem;
     font-weight: 600;
     white-space: nowrap;
@@ -204,10 +201,10 @@
 /* ---- day panel ---- */
 .heatmap-day {
     margin-top: 14px;
-    padding: 12px 14px;
-    border-radius: 12px;
+    padding: var(--space-3) 14px;
+    border-radius: var(--radius-inner);
     border: 1px solid var(--hairline);
-    background: rgba(76, 110, 245, 0.04);
+    background: rgba(var(--accent-rgb), 0.04);
     animation: hm-panel-in 0.18s ease;
 }
 [data-scheme="dark"] .heatmap-day { background: rgba(255, 255, 255, 0.03); }
@@ -274,42 +271,27 @@
     &:hover { color: var(--accent-color); }
 }
 
-/* ---- shared small labels ---- */
+/* ---- shared small labels: the design-system sm pill ---- */
 .news-kind {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
+    @include ds-pill(sm);
+    @include ds-tone(accent);
     justify-content: center;
     min-width: 38px;
-    padding: 1px 8px;
-    border-radius: 999px;
-    font-size: 1.15rem;
-    font-weight: 700;
     letter-spacing: 1px;
-    color: var(--accent-color-darker);
-    background: rgba(76, 110, 245, 0.12);
 }
 .news-kind--upd,
-.news-item--upd .news-kind { color: #b35c00; background: rgba(253, 126, 20, 0.14); }
-.news-item--note .news-kind { color: #0c8a6c; background: rgba(18, 184, 134, 0.14); }
-[data-scheme="dark"] {
-    .news-kind { color: var(--accent-color); background: rgba(145, 167, 255, 0.16); }
-    .news-kind--upd, .news-item--upd .news-kind { color: #ffc078; background: rgba(255, 169, 77, 0.16); }
-    .news-item--note .news-kind { color: #63e6be; background: rgba(99, 230, 190, 0.14); }
-}
+.news-item--upd .news-kind { @include ds-tone(update); }
+.news-item--note .news-kind { @include ds-tone(lab); }
 
+/* context chip after the title (column / category) */
 .news-tag {
-    flex-shrink: 0;
+    @include ds-pill(sm);
+    @include ds-tone(neutral);
+    display: inline-block;
     max-width: 40%;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 1px 9px;
-    border-radius: 999px;
-    border: 1px solid var(--hairline);
-    font-size: 1.15rem;
-    color: var(--card-text-color-tertiary);
-    &:hover { color: var(--accent-color); border-color: var(--accent-color); }
+    &:hover { @include ds-tone(accent); }
 }
 
 /* ---- 动态 · News ---- */
@@ -350,12 +332,12 @@
     }
     &:first-child::before { top: 50%; }
     &:last-child::before { bottom: 50%; }
-    &--upd::after { background: #fd7e14; }
-    &--note::after { background: #12b886; }
+    &--upd::after { background: var(--tone-update); }
+    &--note::after { background: var(--tone-lab); }
 }
 .news-date {
     flex-shrink: 0;
-    width: 88px;
+    width: 112px;
     font-size: 1.3rem;
     font-variant-numeric: tabular-nums;
     color: var(--card-text-color-tertiary);
@@ -432,7 +414,7 @@ a.news-title:hover { color: var(--accent-color); }
 
     /* Tiles without artwork: soft brand tint so they sit well next to image tiles. */
     &:not(.has-image) {
-        background: linear-gradient(135deg, rgba(76, 110, 245, 0.10) 0%, rgba(112, 72, 232, 0.14) 100%), var(--card-background);
+        background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.10) 0%, var(--tone-theory-soft) 100%), var(--card-background);
         .article-title { color: var(--card-text-color-main); }
     }
 }

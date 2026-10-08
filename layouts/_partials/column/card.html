@@ -1,9 +1,10 @@
-{{/* One chapter card on a column landing page. Input: dict Page (or false for an upcoming placeholder), Title (helper/column-title result), Index, Badge, Description (placeholders only). */}}
+{{/* One chapter card on a column landing page. Input: dict Page (or false for an upcoming placeholder), Title (helper/column-title result), Index, Badge, Description (placeholders only), Key (optional colour key, default the title's track). */}}
     {{- $ct := .Title -}}
     {{- $badge := .Badge -}}
     {{- $num := $ct.num | default (string .Index) -}}
+    {{- $key := .Key | default $ct.trackKey -}}
     {{- with .Page -}}
-    <li class="chapter-card track-{{ $ct.trackKey }}">
+    <li class="chapter-card track-{{ $key }}">
         <a class="chapter-card-link" href="{{ .RelPermalink }}">
             <span class="chapter-badge"><small>{{ $badge }}</small><b>{{ $num }}</b></span>
             <span class="chapter-body">
@@ -11,7 +12,7 @@
                 <span class="chapter-title">{{ $ct.name }}</span>
                 {{ with .Params.description }}<span class="chapter-desc">{{ . }}</span>{{ end }}
                 <span class="chapter-meta">
-                    <span>{{ partial "helper/icon" "date" }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_medium" }}</time></span>
+                    <span>{{ partial "helper/icon" "date" }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format site.Params.dateFormat.published }}</time></span>
                     <span>{{ partial "helper/icon" "clock" }}{{ .ReadingTime }} 分钟</span>
                 </span>
             </span>
@@ -19,7 +20,7 @@
         </a>
     </li>
     {{- else -}}
-    <li class="chapter-card track-{{ $ct.trackKey }} is-upcoming" aria-disabled="true">
+    <li class="chapter-card track-{{ $key }} is-upcoming" aria-disabled="true">
         <div class="chapter-card-link">
             <span class="chapter-badge"><small>{{ $badge }}</small><b>{{ $num }}</b></span>
             <span class="chapter-body">

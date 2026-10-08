@@ -17,9 +17,14 @@
     helper/column-pages); each post goes to the track named in its title
     prefix "[专栏][轨道] 短标题". Posts without a known track are listed
     under "其他" so nothing disappears.
+
+    A column without `syllabus.tracks` (e.g. the Hopper series) gets the same
+    page as a single track: hero (title, description, post count, last
+    update) and one chapter list with no section heading. Cards show the
+    post's own title and description; nothing is generated.
 */}}
 {{- $term := . -}}
-{{- $cfg := .Params.syllabus -}}
+{{- $cfg := .Params.syllabus | default dict -}}
 {{- $tracks := $cfg.tracks | default slice -}}
 {{- $upcoming := $cfg.upcoming | default slice -}}
 {{- $pages := partial "helper/column-pages" . -}}
@@ -32,6 +37,10 @@
 {{- $latest := "" -}}
 {{- range $i, $p := $pages -}}
     {{- $ct := partial "helper/column-title" $p -}}
+    {{- if not $ct.matched -}}
+        {{- /* plain title: show it whole, number by position */ -}}
+        {{- $ct = merge $ct (dict "label" "" "name" $p.Title "num" "") -}}
+    {{- end -}}
     {{- $item := dict "Page" $p "Title" $ct "Index" (add $i 1) -}}
     {{- if and $ct.matched (in $known $ct.track) -}}
         {{- $groups = merge $groups (dict $ct.track ((index $groups $ct.track | default slice) | append $item)) -}}
@@ -43,10 +52,12 @@
 
 <div class="column-syllabus">
 <header class="column-hero">
+    {{- with .Parent }}
     <nav class="column-hero-crumb">
-        {{ partial "helper/icon" "messages" }}
-        <a href="{{ with .Parent }}{{ .RelPermalink }}{{ end }}">系列专栏</a>
+        {{ partial "helper/icon" "stack-2" }}
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
     </nav>
+    {{- end }}
     <h1 class="column-hero-title">{{ .Title }}</h1>
     {{ with .Params.description }}<p class="column-hero-desc">{{ . }}</p>{{ end }}
 
@@ -55,9 +66,11 @@
         {{- $n := len (index $groups .name | default slice) }}
         {{- $key := index (dict "理论" "theory" "实验" "lab") .name | default "other" }}
         <li><a class="track-tag track-{{ $key }}" href="#track-{{ $key }}">{{ .name }}</a><span>{{ $n }} 篇</span></li>
+        {{- else }}
+        <li>{{ partial "helper/icon" "stack-2" }}<span>{{ len $pages }} 篇</span></li>
         {{- end }}
         {{- with $latest }}
-        <li>{{ partial "helper/icon" "clock" }}<span>更新于 {{ .Lastmod | time.Format ":date_medium" }}</span></li>
+        <li>{{ partial "helper/icon" "clock" }}<span>更新于 <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod | time.Format site.Params.dateFormat.lastUpdated }}</time></span></li>
         {{- end }}
     </ul>
 </header>
@@ -95,14 +108,22 @@
     {{- end }}
 {{- end }}
 
-{{- with $other }}
+{{- if and $other (not $tracks) }}
+<section class="column-track track-accent" id="chapters" aria-label="{{ $term.Title }}">
+    <ol class="chapter-list">
+        {{- range $other }}
+            {{- partial "column/card" (dict "Page" .Page "Title" .Title "Index" .Index "Badge" ($cfg.badge | default "#") "Key" "accent") -}}
+        {{- end }}
+    </ol>
+</section>
+{{- else if $other }}
 <section class="column-track track-other" id="track-other">
     <header class="column-track-header">
         <h2 class="column-track-title">其他</h2>
-        <span class="column-track-count">{{ len . }} 篇</span>
+        <span class="column-track-count">{{ len $other }} 篇</span>
     </header>
     <ol class="chapter-list">
-        {{- range . }}
+        {{- range $other }}
             {{- partial "column/card" (dict "Page" .Page "Title" .Title "Index" .Index "Badge" "#") -}}
         {{- end }}
     </ol>

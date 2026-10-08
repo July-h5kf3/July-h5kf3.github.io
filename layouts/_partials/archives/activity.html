@@ -52,16 +52,13 @@
         {{- range $it := . }}
         {{- $kind := cond .manual "note" .k }}
         <li class="news-item news-item--{{ $kind }}">
-            <time class="news-date" datetime="{{ .d }}">{{ .d }}</time>
+            <time class="news-date" datetime="{{ .d }}">{{ time.AsTime .d | time.Format site.Params.dateFormat.published }}</time>
             <span class="news-kind">{{ if .manual }}{{ .tag }}{{ else if eq .k "upd" }}更新{{ else }}发布{{ end }}</span>
             <span class="news-body">
                 {{- if .manual -}}
                     {{- if .link }}<a class="news-title" href="{{ .link }}">{{ .text | markdownify }}</a>{{ else }}<span class="news-title">{{ .text | markdownify }}</span>{{ end -}}
                 {{- else -}}
-                    <a class="news-title" href="{{ .url }}" title="{{ .full }}">
-                        {{- with .track }}<span class="track-tag track-{{ $it.trackKey | default "other" }}">{{ . }}</span>{{ end -}}
-                        <span>{{ .title }}</span>
-                    </a>
+                    <a class="news-title" href="{{ .url }}" title="{{ .full }}"><span>{{ .title }}</span></a>
                     {{- with .tag }}<a class="news-tag" href="{{ $it.tagUrl }}">{{ . }}</a>{{ end -}}
                 {{- end -}}
             </span>

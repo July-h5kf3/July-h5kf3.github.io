@@ -35,6 +35,8 @@
     });
 
     function pad(n) { return (n < 10 ? "0" : "") + n; }
+    /* Display format shared with the site's lists (params.dateFormat ":date_long"): 2026年10月6日 */
+    function human(k) { var p = k.split("-"); return +p[0] + "年" + +p[1] + "月" + +p[2] + "日"; }
     function key(dt) { return dt.getFullYear() + "-" + pad(dt.getMonth() + 1) + "-" + pad(dt.getDate()); }
     function addDays(dt, n) { var x = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()); x.setDate(x.getDate() + n); return x; }
     function mondayIndex(dt) { return (dt.getDay() + 6) % 7; } // Mon = 0 … Sun = 6
@@ -200,7 +202,7 @@
     /* ---- tooltip ---- */
     function showTip(cell) {
         var k = cell.dataset.date;
-        tip.textContent = k + " · " + describe(counts(byDay[k]));
+        tip.textContent = human(k) + " · " + describe(counts(byDay[k]));
         tip.hidden = false;
         var cr = cell.getBoundingClientRect();
         var rr = root.getBoundingClientRect();
@@ -234,7 +236,7 @@
         var dt = new Date(+parts[0], +parts[1] - 1, +parts[2]);
 
         var head = el("div", "heatmap-day-head");
-        head.appendChild(el("strong", null, k));
+        head.appendChild(el("strong", null, human(k)));
         head.appendChild(el("span", "heatmap-day-week", WEEKDAYS[mondayIndex(dt)]));
         head.appendChild(el("span", "heatmap-day-count", list.length ? describe(counts(list)) : "没有动态"));
         var close = el("button", "heatmap-day-close", "×");
