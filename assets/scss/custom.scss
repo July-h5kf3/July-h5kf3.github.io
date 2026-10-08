@@ -223,7 +223,8 @@ body {
 /* ---- Columns (系列文章): series box, column landing page, column post titles ---- */
 @import "column";
 
-/* ---- Paper-introduction posts: 论文信息 card (发表 / 机构) ---- */
+/* ---- Paper-introduction posts: 会议徽章 + 方向标签, 论文信息 card (发表 / 机构) ---- */
+@import "paper-badges";
 @import "paper-info";
 
 /* ---- Archive page: activity heatmap + 动态 · News ---- */

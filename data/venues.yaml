@@ -1,0 +1,19 @@
+# 论文徽章配置（layouts/_partials/helper/paper-title.html 读取）
+#
+# fields：会议/期刊简称 → 领域，决定标题前「会议 年份」徽章的颜色。
+#   新增会议：把简称加到对应领域的列表里即可，不区分大小写；
+#   「EMNLP Findings」「Findings of ACL」会自动按 EMNLP / ACL 归类。
+#   不在列表里的会议用中性灰色。
+#   每个领域的颜色在 assets/scss/paper-badges.scss 的 $venue-fields 里；
+#   只有新增「领域」时才需要改那里。
+fields:
+    cv:  [CVPR, ICCV, ECCV]
+    ml:  [ICML, ICLR, NeurIPS, AAAI, IJCAI]
+    nlp: [ACL, EMNLP, NAACL, COLING]
+    sys: [OSDI, SOSP, ASPLOS, ISCA, MICRO, HPCA, EuroSys, ATC, USENIX ATC, NSDI, MLSys, PPoPP, SC, PLDI, CGO, DAC, FAST]
+
+# tracks：论文方向（front matter `tracks: algo` / `tracks: sys`，同名 taxonomy，
+#   列表页 /tracks/algo/、/tracks/sys/）。label 显示在徽章旁，name 用于提示文字。
+tracks:
+    algo: { label: Algo, name: 算法 }
+    sys:  { label: Sys,  name: 系统 }

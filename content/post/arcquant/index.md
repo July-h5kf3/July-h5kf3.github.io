@@ -14,6 +14,7 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
 paper:
     venue: ACL
     year: 2026

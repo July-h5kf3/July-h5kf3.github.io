@@ -14,6 +14,7 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
 paper:
     arxiv: "2604.02816"
     affiliation: 北京大学王选计算机研究所

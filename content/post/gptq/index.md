@@ -15,6 +15,7 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
 paper:
     venue: ICLR
     year: 2023

@@ -14,6 +14,7 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
 paper:
     arxiv: "2605.12245"
     affiliation: 上海交通大学

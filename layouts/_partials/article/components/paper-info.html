@@ -14,7 +14,10 @@
 
     显示规则：corrAffiliation 不写 → 只显示「第一作者机构」；
     与 affiliation 相同 → 合并为一行「机构」；不同 → 两行都显示。
+    会议 pill 按领域着色（data/venues.yaml → helper/paper-title 的 field）；
+    文章设置了 `tracks`（algo / sys）时另起一行「方向」，链接到 /tracks/… 列表。
 */}}
+{{- $pt := partial "helper/paper-title" . -}}
 {{- with .Params.paper -}}
 {{- $p := . -}}
 {{- $arxivURL := "" -}}
@@ -33,15 +36,18 @@
             <dt>发表</dt>
             <dd>
                 {{- if $url -}}
-                <a class="paper-pill paper-pill--venue" href="{{ $url }}" target="_blank" rel="noopener">{{ $venue }}{{ partial "helper/icon" "link" }}</a>
+                <a class="paper-pill paper-pill--venue venue--{{ $pt.field }}" href="{{ $url }}" target="_blank" rel="noopener">{{ $venue }}{{ partial "helper/icon" "link" }}</a>
                 {{- else -}}
-                <span class="paper-pill paper-pill--venue">{{ $venue }}</span>
+                <span class="paper-pill paper-pill--venue venue--{{ $pt.field }}">{{ $venue }}</span>
                 {{- end -}}
                 {{- if and $p.venue $arxivURL -}}
                 <a class="paper-pill paper-pill--arxiv" href="{{ $arxivURL }}" target="_blank" rel="noopener">arXiv</a>
                 {{- end -}}
             </dd>
         </div>
+        {{- with $pt.dir }}
+        <div class="paper-info-row"><dt>方向</dt><dd><a class="paper-dir paper-dir--{{ . }}" href="{{ $pt.dirURL }}" title="查看全部{{ $pt.dirName }}方向的论文解读">{{ $pt.dirLabel }}</a><span class="paper-dir-name">{{ $pt.dirName }}</span></dd></div>
+        {{- end }}
         {{- if and $corr (ne $corr $aff) }}
         <div class="paper-info-row"><dt>第一作者机构</dt><dd>{{ $aff }}</dd></div>
         <div class="paper-info-row"><dt>通讯作者机构</dt><dd>{{ $corr }}</dd></div>

@@ -48,6 +48,10 @@
     span.paper-pill {
         @include ds-pill(md);
         @include ds-tone(accent);
+        &[class*="venue--"] {
+            --pill-fg: var(--venue-fg);
+            --pill-bg: rgba(var(--venue-rgb), 0.12);
+        }
         text-decoration: none;
         background-image: none;
         background-size: auto;
@@ -57,6 +61,15 @@
 
     &.paper-info--preprint .paper-pill--venue,
     .paper-pill--arxiv { @include ds-tone(neutral); }
+
+    /* 方向 row: the outline 方向 label (paper-badges.scss) at card size */
+    a.paper-dir {
+        font-size: 1.15rem;
+        padding: 2px 8px;
+        background-image: none;
+        &:hover { background-image: none; background-size: auto; }
+    }
+    .paper-dir-name { color: var(--card-text-color-secondary); font-size: 1.3rem; }
 
     @media (max-width: 480px) {
         padding: var(--space-3);

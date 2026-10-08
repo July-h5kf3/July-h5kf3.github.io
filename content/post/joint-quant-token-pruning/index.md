@@ -14,6 +14,7 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
 paper:
     arxiv: "2604.17320"
     affiliation: 南开大学 VCIP

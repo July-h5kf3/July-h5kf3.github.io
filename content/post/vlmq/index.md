@@ -14,6 +14,7 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
 paper:
     arxiv: "2508.03351v1"
     affiliation: 中国电信人工智能研究院 (TeleAI)、香港科技大学

@@ -1,7 +1,8 @@
-{{/* Theme tile; column posts show 专栏 / 轨道 pills above the title (helper/column-meta). */}}
+{{/* Theme tile; column posts show 专栏 / 轨道 pills above the title (helper/column-meta); paper posts show 会议徽章 + 方向标签 (helper/paper-title, paper/badges). */}}
 {{ $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) }}
 {{- $cm := dict "show" false "title" .Title -}}
-{{- if eq .Kind "page" -}}{{- $cm = partial "helper/column-meta" . -}}{{- end -}}
+{{- $pt := dict "show" false -}}
+{{- if eq .Kind "page" -}}{{- $cm = partial "helper/column-meta" . -}}{{- $pt = partial "helper/paper-title" . -}}{{- end -}}
 <article class="{{ if $image }}has-image{{ end }}">
     <a href="{{ .RelPermalink }}">
         {{ if $image }}
@@ -36,7 +37,11 @@
             <span class="list-column-eyebrow"><span class="column-pill">{{ partial "helper/icon" "stack-2" }}<span>{{ $cm.name }}</span></span>{{ with $cm.track }}<span class="track-tag track-{{ $cm.trackKey }}">{{ . }}</span>{{ end }}</span>
             {{- end }}
             <h2 class="article-title">
-                {{- $cm.title -}}
+                {{- if and $pt.show (not $cm.show) -}}
+                    {{- partial "paper/badges" (dict "P" $pt "Link" false) -}}{{- $pt.short -}}
+                {{- else -}}
+                    {{- $cm.title -}}
+                {{- end -}}
             </h2>
         </div>
     </a>

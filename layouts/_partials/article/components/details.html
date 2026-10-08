@@ -1,7 +1,9 @@
 {{/*
     Theme details partial, unchanged except: category links use the shared
     design-system pill (class category-pill, styled in custom.scss) instead of
-    per-category hashed inline colours, so they match the 专栏 / 轨道 pills.
+    per-category hashed inline colours, so they match the 专栏 / 轨道 pills;
+    paper posts ("[YYYY VENUE] 标题", helper/paper-title) show the 会议徽章 +
+    方向标签 (paper/badges) in front of the title instead of the raw prefix.
 */}}
 {{- $IsList := .IsList -}}
 {{- $Page := .Page -}}
@@ -15,9 +17,11 @@
     {{ end }}
 
     <div class="article-title-wrapper">
+        {{- $pt := partial "helper/paper-title" $Page }}
         <h2 class="article-title">
+            {{- partial "paper/badges" (dict "P" $pt "Link" true) -}}
             <a href="{{ $Page.RelPermalink }}">
-                {{- $Page.Title -}}
+                {{- $pt.short -}}
             </a>
         </h2>
     

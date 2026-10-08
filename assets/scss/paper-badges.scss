@@ -1,0 +1,113 @@
+/* =========================================================================
+   论文徽章：会议徽章（按领域着色）+ 方向标签（Algo / Sys）
+   Markup: layouts/_partials/paper/badges.html (+ the same in
+   assets/js/activity-heatmap.js). Data: data/venues.yaml.
+
+   - .venue--{field}  sets --venue-fg / --venue-rgb (light + dark); used by
+     the title badge and by the 论文信息 card's venue pill.
+   - Add a new FIELD here (one map entry) and list its venues in
+     data/venues.yaml; a new VENUE only needs data/venues.yaml.
+   Hues avoid the existing accent (indigo), 理论 (violet), 实验 (teal) and
+   更新 (orange) tones.
+   ========================================================================= */
+
+$venue-fields: (
+    //  field   light fg   light rgb          dark fg    dark rgb
+    cv:    (#c2255c, (194, 37, 92),   #faa2c1, (250, 162, 193)),   // rose   — CVPR / ICCV / ECCV
+    ml:    (#8f6400, (143, 100, 0),   #ffd43b, (255, 212, 59)),    // gold   — ICML / ICLR / NeurIPS / AAAI / IJCAI
+    nlp:   (#2b8a3e, (43, 138, 62),   #8ce99a, (140, 233, 154)),   // green  — ACL / EMNLP / NAACL / COLING
+    sys:   (#1864ab, (24, 100, 171),  #74c0fc, (116, 192, 252)),   // blue   — OSDI / SOSP / ASPLOS / ISCA / MLSys …
+    other: (#495057, (73, 80, 87),    #ced4da, (206, 212, 218)),   // neutral fallback
+);
+
+/* 方向 (paper direction, independent of the venue field): muted, outline-only */
+$paper-dirs: (
+    algo: (#5c677d, (92, 103, 125),  #b5bfd3, (181, 191, 211)),    // slate
+    sys:  (#8a5a3c, (138, 90, 60),   #e3b38f, (227, 179, 143)),    // bronze
+);
+
+@each $name, $c in $venue-fields {
+    .venue--#{$name} {
+        --venue-fg: #{nth($c, 1)};
+        --venue-rgb: #{nth(nth($c, 2), 1)}, #{nth(nth($c, 2), 2)}, #{nth(nth($c, 2), 3)};
+    }
+    [data-scheme="dark"] .venue--#{$name} {
+        --venue-fg: #{nth($c, 3)};
+        --venue-rgb: #{nth(nth($c, 4), 1)}, #{nth(nth($c, 4), 2)}, #{nth(nth($c, 4), 3)};
+    }
+}
+@each $name, $c in $paper-dirs {
+    .paper-dir--#{$name} {
+        --dir-fg: #{nth($c, 1)};
+        --dir-rgb: #{nth(nth($c, 2), 1)}, #{nth(nth($c, 2), 2)}, #{nth(nth($c, 2), 3)};
+    }
+    [data-scheme="dark"] .paper-dir--#{$name} {
+        --dir-fg: #{nth($c, 3)};
+        --dir-rgb: #{nth(nth($c, 4), 1)}, #{nth(nth($c, 4), 2)}, #{nth(nth($c, 4), 3)};
+    }
+}
+
+/* ---- badges in front of a title (header, list cards, tiles, News, day panel) ---- */
+.paper-badges {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    margin-right: 0.45em;
+    /* scale with the surrounding title, but never tiny */
+    font-size: unquote("max(1.1rem, 0.56em)");
+    line-height: 1;
+    vertical-align: 0.16em;
+    white-space: nowrap;
+}
+
+.venue-badge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.32em;
+    padding: 0.28em 0.5em;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(var(--venue-rgb, 73, 80, 87), 0.32);
+    background: rgba(var(--venue-rgb, 73, 80, 87), 0.09);
+    color: var(--venue-fg, var(--tone-neutral));
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+
+    b { font-weight: 800; letter-spacing: 0.03em; }
+    .venue-badge-year { opacity: 0.78; }
+}
+
+.paper-dir {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.26em 0.45em;
+    border-radius: var(--radius-sm);
+    border: 1px dashed rgba(var(--dir-rgb, 92, 103, 125), 0.55);
+    background: transparent;
+    color: var(--dir-fg, var(--tone-neutral));
+    font-size: 0.86em;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    &:is(a) {
+        text-decoration: none;
+        background-image: none;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+        &:hover {
+            color: var(--dir-fg);
+            border-style: solid;
+            background: rgba(var(--dir-rgb), 0.10);
+        }
+    }
+}
+
+/* The article header's title link keeps its own hover; badges sit outside it. */
+.article-title .paper-badges + a { display: inline; }
+
+/* Single-article header: title is large, give the badge a touch more presence */
+.article-page .article-header .article-title .paper-badges { font-size: unquote("max(1.2rem, 0.6em)"); }
+
+/* Archive News row is a flex line: keep badges from shrinking the title oddly */
+.news-title .paper-badges,
+.heatmap-day-title .paper-badges { font-size: 1.1rem; vertical-align: 0.1em; margin-right: 0.4em; }

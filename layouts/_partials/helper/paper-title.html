@@ -1,0 +1,74 @@
+{{/*
+    Split a paper-introduction post's title into 会议徽章 + 方向标签 + 标题.
+
+    Paper posts are titled "[YYYY VENUE] 原标题", e.g.
+        [2026 CVPR] MASQuant: Modality-Aware Smoothing Quantization ...
+    The full title stays the page title (<title>, RSS, search, OpenGraph);
+    templates use the parts to show badges + the remaining title instead
+    (see layouts/_partials/paper/badges.html). Mirrors helper/column-title.
+
+    Venue / year come from front matter `paper.venue` / `paper.year` when
+    present, else from the title prefix. The prefix needs exactly one bracket
+    group, so column titles ("[专栏][轨道] …") never match here.
+    Field (badge colour) comes from data/venues.yaml `fields`; direction from
+    the `tracks` taxonomy (algo | sys) + data/venues.yaml `tracks`.
+
+    Input:  a page.
+    Return: dict
+        matched  bool    title had the "[YYYY VENUE] rest" prefix
+        venue    string  e.g. "CVPR"       ("" for preprints)
+        year     string  e.g. "2026"
+        field    string  cv | ml | nlp | sys | other
+        short    string  title without the prefix (= title if none)
+        dir      string  algo | sys | ""   (tracks taxonomy)
+        dirLabel string  e.g. "Algo"
+        dirName  string  e.g. "算法"
+        dirURL   string  /tracks/algo/
+        show     bool    anything to render (venue or dir)
+*/}}
+{{- $title := .Title -}}
+{{- $venue := "" -}}
+{{- $year := "" -}}
+{{- with .Params.paper -}}
+    {{- $venue = .venue | default "" -}}
+    {{- with .year }}{{ $year = string . }}{{ end -}}
+{{- end -}}
+{{- $r := dict "matched" false "short" $title -}}
+{{- with findRESubmatch `^\s*\[(\d{4})\s+([^\]\[]+)\]\s*([^\[\s].*)$` $title 1 -}}
+    {{- $g := index . 0 -}}
+    {{- $r = dict "matched" true "short" (index $g 3) -}}
+    {{- if not $venue }}{{ $venue = strings.TrimSpace (index $g 2) }}{{ $year = index $g 1 }}{{ end -}}
+{{- end -}}
+
+{{- $field := "other" -}}
+{{- if $venue -}}
+    {{- $key := lower $venue | replaceRE `\bfindings\b(\s+of\b)?` "" | replaceRE `\s+` " " | strings.TrimSpace -}}
+    {{- $first := index (split $key " ") 0 -}}
+    {{- range $f, $list := (hugo.Data.venues.fields | default dict) -}}
+        {{- range $list -}}
+            {{- $v := lower . -}}
+            {{- if or (eq $v $key) (eq $v $first) }}{{ $field = $f }}{{ end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $dir := "" -}}{{- $dirLabel := "" -}}{{- $dirName := "" -}}{{- $dirURL := "" -}}
+{{- with .GetTerms "tracks" -}}
+    {{- $t := index . 0 -}}
+    {{- $dir = lower $t.Name | urlize -}}
+    {{- $dirURL = $t.RelPermalink -}}
+    {{- $cfg := index (hugo.Data.venues.tracks | default dict) $dir -}}
+    {{- $dirLabel = (and $cfg $cfg.label) | default $t.LinkTitle -}}
+    {{- $dirName = (and $cfg $cfg.name) | default $dirLabel -}}
+{{- end -}}
+
+{{- return merge $r (dict
+    "venue" $venue
+    "year" $year
+    "field" $field
+    "dir" $dir
+    "dirLabel" $dirLabel
+    "dirName" $dirName
+    "dirURL" $dirURL
+    "show" (or (ne $venue "") (ne $dir ""))
+) -}}

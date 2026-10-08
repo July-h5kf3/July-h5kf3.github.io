@@ -12,12 +12,16 @@
         full   full title     url  permalink (relative)
         track / trackKey      column track (理论 / 实验) or ""
         tag / tagUrl          column name, else first category
+        venue / year / field / dir / dirLabel
+                              paper posts (helper/paper-title): 会议徽章 + 方向标签;
+                              title is then the title without the "[YYYY VENUE]" prefix
 */}}
 {{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections -}}
 {{- $events := slice -}}
 {{- range $pages -}}
     {{- if not .Params.locked -}}
         {{- $ct := partial "helper/column-title" . -}}
+        {{- $pt := partial "helper/paper-title" . -}}
         {{- $tag := "" -}}{{- $tagUrl := "" -}}
         {{- with .GetTerms "column" -}}
             {{- $t := index . 0 -}}{{- $tag = $t.LinkTitle -}}{{- $tagUrl = $t.RelPermalink -}}
@@ -27,7 +31,13 @@
             {{- end -}}
         {{- end -}}
         {{- $base := dict
-            "title" (cond $ct.matched $ct.short .Title)
+            "title" (cond $ct.matched $ct.short (cond $pt.show $pt.short .Title))
+            "venue" $pt.venue
+            "year" $pt.year
+            "field" $pt.field
+            "dir" $pt.dir
+            "dirLabel" $pt.dirLabel
+            "dirName" $pt.dirName
             "full" .Title
             "url" .RelPermalink
             "track" (cond $ct.matched $ct.track "")
