@@ -1,11 +1,17 @@
-{{/* About page intro card: site avatar + the inner markdown (first-person intro). */}}
-{{- $avatar := site.Params.sidebar.avatar -}}
+{{/* About page intro card: portrait photo (page resource given by photo="…", falls back to
+     the site avatar) + the inner markdown (first-person intro). */}}
+{{- $page := .Page -}}
+{{- $photo := "" -}}
+{{- with .Get "photo" }}{{ with $page.Resources.Get . }}{{ $photo = . }}{{ else }}{{ warnf "about-intro: missing photo %s" . }}{{ end }}{{ end -}}
 <section class="about-card about-intro">
-    {{- with $avatar }}
+    {{- with $photo }}
+    {{- $img := .Fill "240x320 webp q85 Top" }}
+    <img class="about-photo" src="{{ $img.RelPermalink }}" width="120" height="160" alt="刘迪乘的照片" loading="lazy">
+    {{- else }}{{ with site.Params.sidebar.avatar }}
     {{- $src := . -}}
     {{- with resources.Get . }}{{ $src = (.Fill "176x176 webp").RelPermalink }}{{ else }}{{ $src = . | relURL }}{{ end }}
     <img class="about-avatar" src="{{ $src }}" width="88" height="88" alt="Avatar" loading="lazy">
-    {{- end }}
+    {{- end }}{{ end }}
     <div class="about-intro-text">
         {{ .Inner | .Page.RenderString (dict "display" "block") }}
     </div>

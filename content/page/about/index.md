@@ -11,7 +11,7 @@ menu:
 comments: false
 ---
 
-{{< about-intro >}}
+{{< about-intro photo="photo.jpg" >}}
 我是南开大学 2023 级本科生，所在实验室是 [THU-PACMAN](https://pacman.cs.tsinghua.edu.cn/)，导师是翟季冬老师。
 {{< /about-intro >}}
 

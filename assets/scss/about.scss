@@ -25,6 +25,15 @@
     border-radius: 50%;
     box-shadow: 0 0 0 3px var(--card-background), var(--shadow-sm);
 }
+.about-intro:has(.about-photo) { align-items: center; }
+.main-article .article-content .about-photo {
+    flex-shrink: 0;
+    width: 96px;
+    height: 128px;
+    object-fit: cover;
+    border-radius: var(--radius-inner);
+    box-shadow: 0 0 0 3px var(--card-background), var(--shadow-sm);
+}
 .about-intro-text {
     min-width: 0;
     p { margin: 0; }
