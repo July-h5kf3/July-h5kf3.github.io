@@ -1,5 +1,5 @@
 ---
-title: "SERQ: Saliency-Aware Low-Rank Error Reconstruction For LLM Quantization"
+title: "[2026 ICLR] SERQ: Saliency-Aware Low-Rank Error Reconstruction For LLM Quantization"
 description: 用显著性感知的低秩误差重建，把 LLM 的 PTQ 稳定地做到 W4A4。
 date: 2026-08-26T08:45:00+08:00
 slug: serq
@@ -14,6 +14,12 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: ICLR
+    year: 2026
+    url: https://proceedings.iclr.cc/paper_files/paper/2026/hash/3ca380c5fe9f174a71a230478741169f-Abstract-Conference.html
+    arxiv: "2603.08185"
+    affiliation: 庆熙大学
 ---
 这篇文章将LLM PTQ做到了W4A4，是通过低秩误差重建的方式做到的。
 

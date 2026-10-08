@@ -14,6 +14,10 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    arxiv: "2604.02816"
+    affiliation: 北京大学王选计算机研究所
+    corrAffiliation: 北京大学王选计算机研究所
 ---
 <div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
     <b>个人评价</b>:方法特别简单，就是在剪枝的时候考虑量化的影响

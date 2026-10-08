@@ -1,5 +1,5 @@
 ---
-title: "TurboQuant: Online Vector Quantization with Near-optimal Distortion Rate"
+title: "[2026 ICLR] TurboQuant: Online Vector Quantization with Near-optimal Distortion Rate"
 description: 接近最优失真率的在线向量量化方法。
 date: 2026-08-26T08:15:00+08:00
 slug: turboquant
@@ -13,6 +13,12 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: ICLR
+    year: 2026
+    url: https://proceedings.iclr.cc/paper_files/paper/2026/hash/5c802ef38ab6e366c2ea06eee554c088-Abstract-Conference.html
+    arxiv: "2504.19874"
+    affiliation: Google Research
 ---
 <div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
     <b>个人评价</b>:这篇文章主要是针对大模型的KV-Cache的压缩，虽然是同一作者不同方法的浓缩（PolarQuant+QJL），但是补充了在结合方法下的量化误差上下界。目前实验停留在纯语言模型阶段，也许可以拓广到多模态阶段。

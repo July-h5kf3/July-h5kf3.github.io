@@ -1,5 +1,5 @@
 ---
-title: "SliderQuant: Accurate Post-Training Quantization for LLMs"
+title: "[2026 ICLR] SliderQuant: Accurate Post-Training Quantization for LLMs"
 description: 层间/层内滑动量化的大模型训练后量化方法。
 date: 2026-08-26T08:39:00+08:00
 slug: sliderquant
@@ -14,6 +14,13 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: ICLR
+    year: 2026
+    url: https://proceedings.iclr.cc/paper_files/paper/2026/hash/b08ac1692309611b6f1adce96e96816f-Abstract-Conference.html
+    arxiv: "2603.25284"
+    affiliation: 英特尔中国研究院、北京邮电大学
+    corrAffiliation: 英特尔中国研究院
 ---
 现有的PTQ通常采用顺序量化框架，将预训练模型分割为相同大小的部分并依次量化，且对所有层一视同仁。在低比特情况下，这种平等处理方式存在如下缺陷：
 

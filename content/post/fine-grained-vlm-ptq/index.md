@@ -1,5 +1,5 @@
 ---
-title: "Fine-Grained Post-Training Quantization for Large Vision Language Models with Quantization-Aware Integrated Gradients"
+title: "[2026 CVPR] Fine-Grained Post-Training Quantization for Large Vision Language Models with Quantization-Aware Integrated Gradients"
 description: 用量化感知的积分梯度做细粒度的视觉语言模型训练后量化。
 date: 2026-08-26T08:24:00+08:00
 slug: fine-grained-vlm-ptq
@@ -14,6 +14,13 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: CVPR
+    year: 2026
+    url: https://openaccess.thecvf.com/content/CVPR2026/html/Xiang_Fine-Grained_Post-Training_Quantization_for_Large_Vision_Language_Models_with_Quantization-Aware_CVPR_2026_paper.html
+    arxiv: "2603.17809"
+    affiliation: 中科院自动化所、中国科学院大学、北京信息科学与技术国家研究中心
+    corrAffiliation: 中科院自动化所、中国科学院大学
 ---
 <div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
     <b>个人评价</b>:比较有意思的研究思路，从MBQ的Modality-Specific出发，通过实验发现，相较于Modality-Specific，更加细粒度的Token-Wise进行区分效果会更好。基于此研究了多种Token敏感度估计方法，最终采用基于公理化归因的积分梯度方法进行规约，取得不错的效果。但是问题在于文章对理论的分析严重不足！

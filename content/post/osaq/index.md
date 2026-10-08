@@ -1,5 +1,5 @@
 ---
-title: "OSAQ: Outlier Self-Absorption for Accurate Low-bit LLM Quantization"
+title: "[2026 ICML] OSAQ: Outlier Self-Absorption for Accurate Low-bit LLM Quantization"
 description: 用离群值自吸收实现精确的低比特大模型量化。
 date: 2026-08-26T08:42:00+08:00
 slug: osaq
@@ -14,6 +14,13 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: ICML
+    year: 2026
+    url: https://icml.cc/virtual/2026/poster/65822
+    arxiv: "2605.04738"
+    affiliation: 中科院自动化所
+    corrAffiliation: 中科院自动化所
 ---
 目前针对大语言模型中存在的系统性异常值问题，现有方法主要依赖层内乘法变换来抑制异常值，包括:
 

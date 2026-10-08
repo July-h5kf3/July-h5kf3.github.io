@@ -1,5 +1,5 @@
 ---
-title: "VEQ: Modality-Adaptive Quantization for MoE Vision-Language Models"
+title: "[2026 ICML] VEQ: Modality-Adaptive Quantization for MoE Vision-Language Models"
 description: 面向 MoE 视觉语言模型的模态自适应量化。
 date: 2026-08-26T08:54:00+08:00
 slug: veq
@@ -14,6 +14,13 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: ICML
+    year: 2026
+    url: https://icml.cc/virtual/2026/poster/61161
+    arxiv: "2602.01037"
+    affiliation: 上海交通大学
+    corrAffiliation: 上海交通大学
 ---
 本篇文章主要针对MoE架构的VLMs的PTQ。
 

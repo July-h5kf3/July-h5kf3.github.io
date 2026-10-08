@@ -3,6 +3,8 @@
     `syllabus.numberHeadings: true` get `article-content--numbered`, which
     numbers h2–h4 with CSS counters in the same "1. / 1.1. / 1.1.1." scheme
     as the table of contents (see assets/scss/column.scss).
+    Paper-introduction posts with a `paper` front-matter block get the
+    论文信息 card (article/components/paper-info) above the body.
 */}}
 {{- $numbered := false -}}
 {{- with .GetTerms "column" -}}
@@ -11,6 +13,7 @@
     {{- end -}}
 {{- end -}}
 <section class="article-content{{ if $numbered }} article-content--numbered{{ end }}">
+    {{ partial "article/components/paper-info" . }}
     <!-- Refer to https://discourse.gohugo.io/t/responsive-tables-in-markdown/10639/5 -->
     {{ $wrappedTable := printf "<div class=\"table-wrapper\">${1}</div>" }}
     {{ .Content | replaceRE "(<table>(?:.|\n)+?</table>)" $wrappedTable | safeHTML }}

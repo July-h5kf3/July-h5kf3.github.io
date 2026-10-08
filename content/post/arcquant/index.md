@@ -1,5 +1,5 @@
 ---
-title: "ARCQuant: Boosting NVFP4 Quantization with Augmented Residual Channels for LLMs"
+title: "[2026 ACL] ARCQuant: Boosting NVFP4 Quantization with Augmented Residual Channels for LLMs"
 description: 用增广残差通道提升 LLM 的 NVFP4 量化。
 date: 2026-08-26T08:57:00+08:00
 slug: arcquant
@@ -14,6 +14,13 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: ACL
+    year: 2026
+    url: https://aclanthology.org/2026.acl-long.388/
+    arxiv: "2601.07475"
+    affiliation: 天津大学
+    corrAffiliation: 天津大学
 ---
 目前把使用NVFP4对大语言模型进行PTQ有一下难点:
 

@@ -1,5 +1,5 @@
 ---
-title: "ReSpinQuant: Efficient Layer-Wise LLM Quantization via Subspace Residual Rotation Approximation"
+title: "[2026 ICML] ReSpinQuant: Efficient Layer-Wise LLM Quantization via Subspace Residual Rotation Approximation"
 description: 通过子空间残差旋转近似的逐层大模型量化。
 date: 2026-08-26T08:48:00+08:00
 slug: respinquant
@@ -14,6 +14,13 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: ICML
+    year: 2026
+    url: https://icml.cc/virtual/2026/poster/61314
+    arxiv: "2604.11080"
+    affiliation: 首尔大学
+    corrAffiliation: 首尔大学
 ---
 在LLM的权重-激活值量化中，目前的主流是基于旋转的方法，总体而言可以分为两类，一种是以SpinQuant，QuaRot为代表的全局旋转方法，另一种是以FlatQuant，OSTQuant为代表的layer-wise 变换方法。
 

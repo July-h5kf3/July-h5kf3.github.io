@@ -1,5 +1,5 @@
 ---
-title: "AdaRound: Up or Down? Adaptive Rounding for Post-Training Quantization"
+title: "[2020 ICML] AdaRound: Up or Down? Adaptive Rounding for Post-Training Quantization"
 description: 从二阶视角推导权重的自适应舍入，取代四舍五入。
 date: 2026-08-26T08:03:00+08:00
 slug: adaround
@@ -15,6 +15,13 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: ICML
+    year: 2020
+    url: https://proceedings.mlr.press/v119/nagel20a.html
+    arxiv: "2004.10568"
+    affiliation: Qualcomm AI Research
+    corrAffiliation: Qualcomm AI Research
 ---
 **总结**:本篇文章作者首先从数学角度证明了在模型量化过程中，直接将浮点数进行四舍五入round到最近定点数的方法并不是精度最优的。并且通过了一个简单的实验验证了猜想，随后基于此作者进行一系列的数学推导和数学近似推导除了最终的优化目标:最小化由于量化在预激活值中引入的均方误差，从而提出了自适应的Round方法:AdaRound.这种方法在进行量化时，自适应地决定将浮点值转到最近右定点还是左定点值。AdaRound可以在不需要QAT or finetune的情况下仅使用少量无标签的校准数据在精度上达到SOTA，甚至4bit量化也可以保留较好的精度。
 

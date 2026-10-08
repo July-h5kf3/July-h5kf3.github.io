@@ -1,5 +1,5 @@
 ---
-title: "GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers"
+title: "[2023 ICLR] GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers"
 description: 基于 Hessian 的逐层误差补偿，把大模型权重量化到低比特。
 date: 2026-08-26T08:12:00+08:00
 slug: gptq
@@ -15,6 +15,13 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: ICLR
+    year: 2023
+    url: https://iclr.cc/virtual/2023/poster/10855
+    arxiv: "2210.17323"
+    affiliation: IST Austria
+    corrAffiliation: IST Austria
 ---
 这个文章是OWQ的前身，借着对这篇文章的分析，我们梳理一下这一系列的文章的intuition。
 大概的分析顺序为:

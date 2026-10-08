@@ -1,5 +1,5 @@
 ---
-title: "ZeroQuant: Efficient and Affordable Post-Training Quantization for Large-Scale Transformers"
+title: "[2022 NeurIPS] ZeroQuant: Efficient and Affordable Post-Training Quantization for Large-Scale Transformers"
 description: 面向大规模 Transformer 的高效低成本训练后量化方案。
 date: 2026-08-26T08:06:00+08:00
 slug: zeroquant
@@ -14,6 +14,12 @@ series:
     - 论文解读
 math: true
 comments: false
+paper:
+    venue: NeurIPS
+    year: 2022
+    url: https://proceedings.neurips.cc/paper_files/paper/2022/hash/adf7fa39d65e2983d724ff7da57f00ac-Abstract-Conference.html
+    arxiv: "2206.01861"
+    affiliation: 微软
 ---
 <div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
 <b>评价:</b> 这篇文章比较Solid，考虑了硬件适配的问题，这是模型量化中一个老大难的问题尤其是混合精度。但是实验的模型都是参数规模较小的模型，在大模型上的效果有待考究。
