@@ -18,7 +18,7 @@
     prefix "[专栏][轨道] 短标题". Posts without a known track are listed
     under "其他" so nothing disappears.
 
-    A column without `syllabus.tracks` (e.g. the Hopper series) gets the same
+    A column without `syllabus.tracks` (e.g. 现代GPU编程指南, Blog) gets the same
     page as a single track: hero (title, description, post count, last
     update) and one chapter list with no section heading. Cards show the
     post's own title and description; nothing is generated.
@@ -75,7 +75,10 @@
     </ul>
 </header>
 
-{{- with .Content }}
+{{- /* Intro card only when the page has real body content (e.g. the
+       {{< column-refs >}} reference chips); otherwise the header
+       description is the whole introduction — no empty extra module. */ -}}
+{{- with .Content | strings.TrimSpace }}
 <section class="article-content column-intro">
     {{ . }}
 </section>

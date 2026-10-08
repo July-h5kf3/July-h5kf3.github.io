@@ -11,7 +11,8 @@
         title  short title for column posts ("[专栏][轨道] 短标题"), else full title
         full   full title     url  permalink (relative)
         track / trackKey      column track (理论 / 实验) or ""
-        tag / tagUrl          column name, else first category
+        tag / tagUrl          column name, else first category (also for
+                              `syllabus.collection` columns such as Blog)
         venue / year / field / dir / dirLabel
                               paper posts (helper/paper-title): 会议徽章 + 方向标签;
                               title is then the title without the "[YYYY VENUE]" prefix
@@ -24,8 +25,12 @@
         {{- $pt := partial "helper/paper-title" . -}}
         {{- $tag := "" -}}{{- $tagUrl := "" -}}
         {{- with .GetTerms "column" -}}
-            {{- $t := index . 0 -}}{{- $tag = $t.LinkTitle -}}{{- $tagUrl = $t.RelPermalink -}}
-        {{- else -}}
+            {{- $t := index . 0 -}}
+            {{- $collection := false -}}
+            {{- with $t.Params.syllabus }}{{ $collection = .collection }}{{ end -}}
+            {{- if not $collection }}{{ $tag = $t.LinkTitle }}{{ $tagUrl = $t.RelPermalink }}{{ end -}}
+        {{- end -}}
+        {{- if not $tag -}}
             {{- with .GetTerms "categories" -}}
                 {{- $t := index . 0 -}}{{- $tag = $t.LinkTitle -}}{{- $tagUrl = $t.RelPermalink -}}
             {{- end -}}

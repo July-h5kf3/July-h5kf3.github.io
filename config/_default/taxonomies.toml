@@ -1,6 +1,9 @@
 # Built-in taxonomies + three custom ones:
-#   series : coarse "板块" grouping (论文解读 / 技术分享)
-#   column : ordered article series ("系列文章"), e.g. 面向 Hopper 架构 CUDA 编程
+#   series : coarse "板块" grouping — now only 论文解读, whose term page is
+#            an overview (layouts/series/term.html)
+#   column : article columns with a course-style landing page
+#            (layouts/column/term.html): 编译原理, 现代GPU编程指南 (term
+#            `modern-gpu`) and Blog (term `blog`, a loose collection)
 #   tracks : paper direction of 论文解读 posts — algo | sys (front matter
 #            `tracks: algo`); lists at /tracks/algo/ and /tracks/sys/,
 #            label rendered next to the venue badge (helper/paper-title).

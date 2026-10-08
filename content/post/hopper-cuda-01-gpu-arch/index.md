@@ -3,12 +3,10 @@ title: "GPU 体系结构 —— H100 的硬件架构"
 description: 剖析 H100（Hopper）的硬件架构：GPC / SM / SMSP、HBM3 与 L2、各类计算单元、Shared Memory 与 Register、warp 调度与延迟隐藏。
 date: 2026-08-27T10:00:00+08:00
 slug: hopper-cuda-01-gpu-arch
-series:
-    - 技术分享
 categories:
     - 算子开发
 column:
-    - 面向Hopper架构CUDA编程
+    - modern-gpu
 tags:
     - CUDA
     - Hopper

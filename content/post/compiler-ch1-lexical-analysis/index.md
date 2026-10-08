@@ -2,8 +2,6 @@
 title: "[从零开始的编译原理][理论] Chapter 1：词法分析"
 date: 2026-09-28T20:15:14+08:00
 slug: compiler-ch1-lexical-analysis
-series:
-    - 技术分享
 categories:
     - 编译原理
 column:
