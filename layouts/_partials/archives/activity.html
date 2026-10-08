@@ -52,7 +52,7 @@
         {{- range $it := . }}
         {{- $kind := cond .manual "note" .k }}
         <li class="news-item news-item--{{ $kind }}">
-            <time class="news-date" datetime="{{ .d }}">{{ .d }}</time>
+            <time class="news-date" datetime="{{ .d }}">{{ time.AsTime .d | time.Format site.Params.dateFormat.published }}</time>
             <span class="news-kind">{{ if .manual }}{{ .tag }}{{ else if eq .k "upd" }}更新{{ else }}发布{{ end }}</span>
             <span class="news-body">
                 {{- if .manual -}}

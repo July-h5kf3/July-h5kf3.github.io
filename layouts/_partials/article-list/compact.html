@@ -1,14 +1,14 @@
-{{/* Theme compact list item; column posts show "专栏 · 轨道" above the short title. */}}
-{{- $ct := dict "matched" false -}}
-{{- if and (eq .Kind "page") (not .Params.locked) -}}{{- $ct = partial "helper/column-title" . -}}{{- end -}}
+{{/* Theme compact list item; column posts show 专栏 / 轨道 pills above the title (helper/column-meta). */}}
+{{- $cm := dict "show" false "title" .Title -}}
+{{- if eq .Kind "page" -}}{{- $cm = partial "helper/column-meta" . -}}{{- end -}}
 <article>
     <a href="{{ .RelPermalink }}">
         <div class="article-details">
-            {{- if $ct.matched }}
-            <span class="list-column-eyebrow"><span>{{ $ct.column }}</span><span class="track-tag track-{{ $ct.trackKey }}">{{ $ct.track }}</span></span>
+            {{- if $cm.show }}
+            <span class="list-column-eyebrow"><span class="column-pill">{{ partial "helper/icon" "stack-2" }}<span>{{ $cm.name }}</span></span>{{ with $cm.track }}<span class="track-tag track-{{ $cm.trackKey }}">{{ . }}</span>{{ end }}</span>
             {{- end }}
             <h2 class="article-title">
-                {{- if $ct.matched }}{{ $ct.short }}{{ else }}{{ .Title }}{{ end -}}
+                {{- $cm.title -}}
             </h2>
             
             {{- $description := .Params.description -}}

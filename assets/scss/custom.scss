@@ -2,35 +2,8 @@
    Lorn — custom UI polish (loaded last, overrides the Stack theme)
    ========================================================================= */
 
-/* ---- 1. Design tokens: refined accent, shadows, radii (light + dark) ---- */
-:root {
-    --accent-color: #4c6ef5;
-    --accent-color-darker: #3b5bdb;
-    --accent-color-text: #ffffff;
-
-    --brand-gradient: linear-gradient(135deg, #4c6ef5 0%, #7048e8 100%);
-
-    --card-border-radius: 14px;
-    --tag-border-radius: 999px;
-
-    --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
-    --shadow-md: 0 8px 20px rgba(16, 24, 40, 0.08), 0 2px 6px rgba(16, 24, 40, 0.05);
-    --shadow-lg: 0 18px 44px rgba(16, 24, 40, 0.14);
-    --hairline: rgba(16, 24, 40, 0.08);
-
-    &[data-scheme="dark"] {
-        --accent-color: #91a7ff;
-        --accent-color-darker: #748ffc;
-        --accent-color-text: #0b1021;
-
-        --brand-gradient: linear-gradient(135deg, #5c7cfa 0%, #9775fa 100%);
-
-        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-        --shadow-md: 0 8px 22px rgba(0, 0, 0, 0.42);
-        --shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.55);
-        --hairline: rgba(255, 255, 255, 0.10);
-    }
-}
+/* ---- 1. Design system: tokens + mixins (radius, shadow, spacing, tones, pill, section title) ---- */
+@import "design";
 
 body {
     background:
@@ -52,7 +25,7 @@ body {
     .site-name { letter-spacing: 0.2px; }
 
     .menu li a {
-        border-radius: 10px;
+        border-radius: var(--radius-inner);
         transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 
         .icon svg,
@@ -60,7 +33,7 @@ body {
 
         &:hover {
             color: var(--accent-color);
-            background: rgba(76, 110, 245, 0.10);
+            background: var(--tone-accent-soft);
             svg { transform: scale(1.12); }
         }
     }
@@ -68,66 +41,77 @@ body {
     .menu li.current a,
     .menu li a.active {
         color: var(--accent-color);
-        background: rgba(76, 110, 245, 0.12);
+        background: var(--tone-accent-soft);
         font-weight: 600;
     }
 }
 
-/* ---- 3. Article cards (home / list) ---- */
-.article-list {
-    article {
-        border: 1px solid var(--hairline);
-        box-shadow: var(--shadow-sm);
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-        overflow: hidden;
-
-        &:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-            border-color: rgba(76, 110, 245, 0.35);
-        }
-
-        .article-image img { transition: transform 0.4s ease; }
-        &:hover .article-image img { transform: scale(1.04); }
-    }
-
-    .article-title a { transition: color 0.15s ease; }
-    article:hover .article-title a { color: var(--accent-color); }
+/* ---- 3. Cards: every card-like surface shares radius / hairline / shadow ---- */
+.article-list article,
+.article-list--compact,
+.article-list--tile article,
+.section-card,
+.main-article,
+.right-sidebar .widget,
+.search-form input,
+.not-found-card {
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
 }
 
-/* Category pill: keep the theme's per-category colors, just refine shape + hover */
-.article-category a {
-    font-weight: 600;
-    transition: transform 0.15s ease, filter 0.15s ease;
-    &:hover { transform: translateY(-1px); filter: brightness(0.96); }
+.article-list article {
+    overflow: hidden;
+    @include ds-lift;
+
+    .article-image img { transition: transform 0.4s ease; }
+    &:hover .article-image img { transform: scale(1.04); }
+}
+.article-list .article-title a { transition: color 0.15s ease; }
+.article-list article:hover .article-title a { color: var(--accent-color); }
+
+/* Compact list rows (归档 / 分类 / 标签 / 系列): same hover cue as cards */
+.article-list--compact article > a { transition: background-color 0.15s ease; }
+.article-list--compact article:hover > a { background: rgba(var(--accent-rgb), 0.035); }
+.article-list--compact article:hover .article-title { color: var(--accent-color); }
+.article-list--compact article .article-title { transition: color 0.15s ease; }
+
+/* ---- Pills: categories (post header + bottom tags) use the shared pill.
+        The theme's per-category hashed colours are replaced by one neutral
+        tone, so 专栏 (accent) / 轨道 (theory · lab) / 分类 read as one family. ---- */
+.article-category,
+.article-tags {
+    gap: var(--space-2);
+    align-items: center;
+
+    /* tone comes from the pill's own class: category-pill / tags = neutral
+       (the default), column-pill = accent, track-pill = theory | lab */
+    a { @include ds-pill(md); }
 }
 
 /* ---- 4. Right sidebar widgets ---- */
 .right-sidebar .widget {
     background: var(--card-background);
-    border: 1px solid var(--hairline);
-    border-radius: var(--card-border-radius);
-    box-shadow: var(--shadow-sm);
     padding: 20px;
-    margin-bottom: var(--section-separation, 40px);
+    margin-bottom: 0;              /* theme already spaces widgets (--widget-separation) */
 
     .widget-icon svg { color: var(--accent-color); }
 }
 
-/* Pills used by 板块 / 分类 / 标签云 */
-.tagCloud-tags a {
-    border-radius: 999px;
-    border: 1px solid var(--hairline);
-    background: transparent;
-    transition: all 0.15s ease;
+/* Widget chips (板块 / 系列 / 分类 / 标签云) = the same md pill */
+.tagCloud .tagCloud-tags {
+    gap: var(--space-2);
 
-    &:hover {
-        background: var(--accent-color);
-        color: var(--accent-color-text);
-        border-color: var(--accent-color);
-        transform: translateY(-1px);
+    a {
+        @include ds-pill(md);
+        @include ds-tone(neutral);
+        &:hover { @include ds-tone(accent); }
     }
 }
+
+/* ---- Section titles (theme .section-title, widget titles, our block headings) ---- */
+.section-title { @include ds-section-title; }
+.widget-title.section-title { margin: var(--space-1) 0 var(--space-3); }
 
 /* ---- 5. Article single: header + content typography ---- */
 .main-article {
@@ -164,15 +148,14 @@ body {
     /* Blockquote → callout */
     blockquote {
         border-left: 4px solid var(--accent-color);
-        border-radius: 10px;
-        background: rgba(76, 110, 245, 0.06);
+        border-radius: var(--radius-inner);
+        background: rgba(var(--accent-rgb), 0.06);
         padding: 12px 18px;
     }
-    [data-scheme="dark"] & blockquote { background: rgba(145, 167, 255, 0.08); }
 
     /* Images */
     img {
-        border-radius: 12px;
+        border-radius: var(--radius-inner);
         box-shadow: var(--shadow-md);
     }
 
@@ -187,17 +170,16 @@ body {
 
     /* Inline code chip */
     :not(pre) > code {
-        background: rgba(76, 110, 245, 0.10);
-        color: var(--accent-color-darker);
-        border-radius: 6px;
+        background: var(--tone-accent-soft);
+        color: var(--tone-accent);
+        border-radius: var(--radius-sm);
         padding: 0.12em 0.4em;
         font-size: 0.9em;
     }
-    [data-scheme="dark"] & :not(pre) > code { color: var(--accent-color); }
 
     /* Code blocks */
     .highlight, pre {
-        border-radius: 12px;
+        border-radius: var(--radius-inner);
         box-shadow: var(--shadow-sm);
     }
     .highlight { border: 1px solid var(--hairline); }
@@ -205,12 +187,12 @@ body {
     /* Tables */
     table {
         border-collapse: collapse;
-        border-radius: 10px;
+        border-radius: var(--radius-inner);
         overflow: hidden;
         box-shadow: var(--shadow-sm);
         border: 1px solid var(--hairline);
         th {
-            background: rgba(76, 110, 245, 0.10);
+            background: var(--tone-accent-soft);
             font-weight: 700;
         }
         th, td { border: 1px solid var(--hairline); }
@@ -228,18 +210,14 @@ body {
     /* Author's inline "个人评价 / 评价 / 吐槽" boxes → tidy callout */
     div[style*="f9f9f9"] {
         border-left: 4px solid var(--accent-color) !important;
-        border-radius: 10px !important;
+        border-radius: var(--radius-inner) !important;
         padding: 14px 16px !important;
         margin: 1.3em 0 !important;
         box-shadow: var(--shadow-sm);
-        background: rgba(76, 110, 245, 0.06) !important;
-        b:first-child { color: var(--accent-color-darker); }
+        background: rgba(var(--accent-rgb), 0.06) !important;
+        b:first-child { color: var(--tone-accent); }
     }
-    [data-scheme="dark"] & div[style*="f9f9f9"] {
-        background: rgba(145, 167, 255, 0.08) !important;
-        color: var(--card-text-color-secondary);
-        b:first-child { color: var(--accent-color); }
-    }
+    [data-scheme="dark"] & div[style*="f9f9f9"] { color: var(--card-text-color-secondary); }
 }
 
 /* ---- Columns (系列文章): series box, column landing page, column post titles ---- */
@@ -250,8 +228,8 @@ body {
 
 /* ---- 6. Pagination + misc ---- */
 .pagination .page-item {
-    border-radius: 10px;
+    border-radius: var(--radius-inner);
     transition: all 0.15s ease;
-    &:hover { background: rgba(76, 110, 245, 0.12); }
+    &:hover { background: var(--tone-accent-soft); }
     &.active { background: var(--brand-gradient); color: #fff; }
 }

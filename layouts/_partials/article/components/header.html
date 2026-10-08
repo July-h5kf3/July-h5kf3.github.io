@@ -1,7 +1,7 @@
 {{/*
-    Theme header, unchanged except: posts titled "[专栏][轨道] 短标题" render
-    through article/components/column-details (pills + short title).
-    Locked posts keep the regular details partial.
+    Theme header, unchanged except: column posts (a `column` term or a
+    "[专栏][轨道] 短标题" title) render through article/components/column-details
+    (专栏 / 轨道 pills). Locked posts keep the regular details partial.
 */}}
 {{- $IsList := .IsList -}}
 {{- $Page := .Page -}}
@@ -26,9 +26,9 @@
     </div>
     {{ end }}
 
-    {{- $ct := partial "helper/column-title" $Page -}}
-    {{- if and $ct.matched (not $Page.Params.locked) -}}
-        {{ partial "article/components/column-details" (dict "Page" $Page "IsList" $IsList "Title" $ct) }}
+    {{- $cm := partial "helper/column-meta" $Page -}}
+    {{- if $cm.show -}}
+        {{ partial "article/components/column-details" (dict "Page" $Page "IsList" $IsList "Column" $cm) }}
     {{- else -}}
         {{ partial "article/components/details" (dict "Page" $Page "IsList" $IsList) }}
     {{- end -}}
