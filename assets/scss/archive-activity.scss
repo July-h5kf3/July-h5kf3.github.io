@@ -1,0 +1,438 @@
+/* =========================================================================
+   Archive page: activity heatmap + 「动态 · News」 timeline
+   (layouts/_partials/archives/activity.html, assets/js/activity-heatmap.js)
+   ========================================================================= */
+
+:root {
+    --hm-0: rgba(16, 24, 40, 0.06);
+    --hm-1: #dbe4ff;
+    --hm-2: #91a7ff;
+    --hm-3: #5c7cfa;
+    --hm-4: #3b5bdb;
+    --hm-ring: rgba(16, 24, 40, 0.06);
+
+    &[data-scheme="dark"] {
+        --hm-0: rgba(255, 255, 255, 0.07);
+        --hm-1: #39437a;
+        --hm-2: #4f63c2;
+        --hm-3: #748ffc;
+        --hm-4: #bac8ff;
+        --hm-ring: rgba(255, 255, 255, 0.05);
+    }
+}
+
+.activity-card,
+.news-card {
+    position: relative;
+    background: var(--card-background);
+    border: 1px solid var(--hairline);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.activity-card {
+    padding: 20px var(--card-padding) 18px;
+}
+
+.activity-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    margin-bottom: 14px;
+}
+
+.activity-summary {
+    margin: 0;
+    font-size: 1.45rem;
+    color: var(--card-text-color-secondary);
+
+    strong { color: var(--card-text-color-main); font-weight: 700; }
+}
+
+.activity-years {
+    display: inline-flex;
+    gap: 4px;
+    padding: 3px;
+    border-radius: 10px;
+    background: var(--hm-0);
+
+    &[hidden] { display: none; }
+}
+.activity-year {
+    border: 0;
+    background: transparent;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--card-text-color-secondary);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover { color: var(--card-text-color-main); }
+    &.is-active {
+        background: var(--card-background);
+        color: var(--accent-color-darker);
+        box-shadow: var(--shadow-sm);
+    }
+}
+[data-scheme="dark"] .activity-year.is-active { color: var(--accent-color); background: rgba(255, 255, 255, 0.10); }
+
+/* ---- grid ---- */
+.heatmap-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.heatmap {
+    --hm-cell: 12px;
+    --hm-gap: 3px;
+    display: grid;
+    grid-template-columns: 22px repeat(var(--hm-weeks, 53), var(--hm-cell));
+    grid-template-rows: 16px repeat(7, var(--hm-cell));
+    gap: var(--hm-gap);
+    width: max-content;
+    margin: 0 auto;
+}
+
+.hm-month,
+.hm-wday {
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--card-text-color-tertiary);
+    white-space: nowrap;
+    user-select: none;
+}
+.hm-month { grid-row: 1; align-self: end; }
+.hm-wday { grid-column: 1; align-self: center; }
+
+.hm-cell {
+    display: block;
+    width: var(--hm-cell);
+    height: var(--hm-cell);
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: var(--hm-0);
+    box-shadow: inset 0 0 0 1px var(--hm-ring);
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+    &.is-out { visibility: hidden; }
+    &.is-future { opacity: 0.4; cursor: default; }
+
+    &:not(.is-out):not(.is-future):hover { transform: scale(1.18); }
+    &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 1px; }
+    &.is-selected {
+        box-shadow: 0 0 0 2px var(--card-background), 0 0 0 3.5px var(--accent-color);
+    }
+}
+
+.hm-l0 { background: var(--hm-0); }
+.hm-l1 { background: var(--hm-1); }
+.hm-l2 { background: var(--hm-2); }
+.hm-l3 { background: var(--hm-3); }
+.hm-l4 { background: var(--hm-4); }
+
+.heatmap-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    margin-top: 12px;
+    font-size: 1.2rem;
+    color: var(--card-text-color-tertiary);
+}
+.has-selection .heatmap-hint { visibility: hidden; }
+.heatmap-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+
+    i {
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        border-radius: 3px;
+        box-shadow: inset 0 0 0 1px var(--hm-ring);
+    }
+    i:first-of-type { margin-left: 4px; }
+    i:last-of-type { margin-right: 4px; }
+}
+
+.heatmap-noscript { margin: 8px 0 0; font-size: 1.3rem; color: var(--card-text-color-tertiary); }
+
+/* ---- tooltip ---- */
+.heatmap-tip {
+    position: absolute;
+    z-index: 5;
+    left: 0;
+    top: 0;
+    padding: 5px 10px;
+    border-radius: 7px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    color: #fff;
+    background: #1f2433;
+    box-shadow: var(--shadow-md);
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: var(--tip-arrow, 50%);
+        margin-left: -5px;
+        border: 5px solid transparent;
+        border-top-color: #1f2433;
+    }
+}
+[data-scheme="dark"] .heatmap-tip {
+    color: #111;
+    background: #e9ecef;
+    &::after { border-top-color: #e9ecef; }
+}
+
+/* ---- day panel ---- */
+.heatmap-day {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--hairline);
+    background: rgba(76, 110, 245, 0.04);
+    animation: hm-panel-in 0.18s ease;
+}
+[data-scheme="dark"] .heatmap-day { background: rgba(255, 255, 255, 0.03); }
+@keyframes hm-panel-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+.heatmap-day-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-size: 1.4rem;
+    color: var(--card-text-color-main);
+
+    strong { font-variant-numeric: tabular-nums; }
+}
+.heatmap-day-week,
+.heatmap-day-count { font-size: 1.3rem; color: var(--card-text-color-tertiary); }
+.heatmap-day-close {
+    margin-left: auto;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    font-size: 1.8rem;
+    line-height: 1;
+    color: var(--card-text-color-tertiary);
+    cursor: pointer;
+    &:hover { background: var(--hm-0); color: var(--card-text-color-main); }
+}
+.heatmap-day-empty {
+    margin: 8px 0 2px;
+    font-size: 1.35rem;
+    color: var(--card-text-color-secondary);
+}
+.heatmap-day-list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+.heatmap-day-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 4px;
+    font-size: 1.45rem;
+    min-width: 0;
+
+    & + & { border-top: 1px dashed var(--hairline); }
+}
+.heatmap-day-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+    color: var(--card-text-color-main);
+    > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    &:hover { color: var(--accent-color); }
+}
+
+/* ---- shared small labels ---- */
+.news-kind {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--accent-color-darker);
+    background: rgba(76, 110, 245, 0.12);
+}
+.news-kind--upd,
+.news-item--upd .news-kind { color: #b35c00; background: rgba(253, 126, 20, 0.14); }
+.news-item--note .news-kind { color: #0c8a6c; background: rgba(18, 184, 134, 0.14); }
+[data-scheme="dark"] {
+    .news-kind { color: var(--accent-color); background: rgba(145, 167, 255, 0.16); }
+    .news-kind--upd, .news-item--upd .news-kind { color: #ffc078; background: rgba(255, 169, 77, 0.16); }
+    .news-item--note .news-kind { color: #63e6be; background: rgba(99, 230, 190, 0.14); }
+}
+
+.news-tag {
+    flex-shrink: 0;
+    max-width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 1px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--hairline);
+    font-size: 1.15rem;
+    color: var(--card-text-color-tertiary);
+    &:hover { color: var(--accent-color); border-color: var(--accent-color); }
+}
+
+/* ---- 动态 · News ---- */
+.news-card {
+    list-style: none;
+    margin: 0;
+    padding: 8px var(--card-padding);
+}
+.news-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0 10px 18px;
+    min-width: 0;
+
+    /* timeline rail + dot */
+    &::before {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--hairline);
+    }
+    &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        margin-top: -4px;
+        border-radius: 50%;
+        background: var(--accent-color);
+        box-shadow: 0 0 0 3px var(--card-background);
+    }
+    &:first-child::before { top: 50%; }
+    &:last-child::before { bottom: 50%; }
+    &--upd::after { background: #fd7e14; }
+    &--note::after { background: #12b886; }
+}
+.news-date {
+    flex-shrink: 0;
+    width: 88px;
+    font-size: 1.3rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--card-text-color-tertiary);
+}
+.news-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.news-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    font-size: 1.5rem;
+    color: var(--card-text-color-main);
+    > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    p { margin: 0; display: inline; }
+}
+a.news-title:hover { color: var(--accent-color); }
+
+@media (max-width: 640px) {
+    .activity-card { padding: 16px 14px 14px; }
+    .news-card { padding: 4px 14px; }
+    .news-item {
+        flex-wrap: wrap;
+        gap: 4px 10px;
+        align-items: center;
+    }
+    .news-date { width: auto; }
+    .news-body { flex-basis: 100%; flex-wrap: wrap; gap: 4px 8px; }
+    .news-title > span:last-child { white-space: normal; }
+    .news-tag { max-width: 100%; }
+    .heatmap-day-item { flex-wrap: wrap; gap: 4px 8px; }
+    .heatmap-day-title > span:last-child { white-space: normal; }
+}
+
+/* Keep weekday labels visible while the grid scrolls (narrow screens) */
+.hm-wday {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-right: 4px;
+    background: var(--card-background);
+}
+.hm-wday.hm-corner { z-index: 2; }
+
+@media (max-width: 640px) {
+    .news-item::after { top: 19px; }
+    .news-item:first-child::before { top: 19px; }
+    .news-item:last-child::before { bottom: auto; height: 19px; }
+}
+
+/* ---- 分类 tiles on the archives page: keep artwork visible, title legible ---- */
+.template-archives .subsection-list .article-list--tile article {
+    &.has-image {
+        .article-image img { transition: transform 0.4s ease; }
+        &:hover .article-image img { transform: scale(1.04); }
+
+        /* Theme sets an inline colour-wash gradient; swap it for a bottom scrim. */
+        .article-details {
+            background: linear-gradient(0deg, rgba(10, 12, 20, 0.62) 0%, rgba(10, 12, 20, 0.22) 45%, rgba(10, 12, 20, 0) 75%) !important;
+        }
+        .article-title {
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+        }
+    }
+
+    /* Tiles without artwork: soft brand tint so they sit well next to image tiles. */
+    &:not(.has-image) {
+        background: linear-gradient(135deg, rgba(76, 110, 245, 0.10) 0%, rgba(112, 72, 232, 0.14) 100%), var(--card-background);
+        .article-title { color: var(--card-text-color-main); }
+    }
+}

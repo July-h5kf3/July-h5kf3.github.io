@@ -1,0 +1,15 @@
+# Manual entries for the 「动态 · News」 timeline on the archive page (/archives/).
+# They are merged with automatic post activity (发布 / 更新) and sorted by date.
+#
+# Fields:
+#   date: required, YYYY-MM-DD (or a full timestamp)
+#   text: required, short text; inline Markdown is allowed
+#   link: optional URL; the whole text becomes a link
+#   tag:  optional small label, e.g. 公告 / 项目 / 演讲 (default: 动态)
+#
+# Example (remove the leading "# " to enable):
+# - date: 2026-10-01
+#   text: 博客新增「从零开始的编译原理」专栏
+#   link: /column/编译原理/
+#   tag: 公告
+[]
