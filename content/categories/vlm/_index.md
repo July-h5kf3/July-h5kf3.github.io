@@ -1,8 +1,8 @@
 ---
 title: VLM
-image: su-143272210.webp
+image: conan-kurogane-haibara-official.webp
 imageCredit:
-    text: SU《藤原千花》（AI 生成）
-    site: pixiv
-    link: https://www.pixiv.net/artworks/143272210
+    text: 《名探偵コナン 黒鉄の魚影》官方海报
+    site: TMS
+    link: https://www.tms-e.co.jp/alltitles/conan/entry-25960.html
 ---

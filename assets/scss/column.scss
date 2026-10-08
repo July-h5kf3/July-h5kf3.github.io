@@ -643,12 +643,7 @@
         font-weight: 700;
         font-variant-numeric: tabular-nums;
     }
-    a.paper-overview-cat {
-        text-decoration: none;
-        background-image: none;
-        .category-pill { @include ds-pill(sm); }
-        &:hover .category-pill { box-shadow: inset 0 0 0 1px currentColor; }
-    }
+    .paper-overview-cats .subsection-list { margin-bottom: 0; }
 
     .paper-overview-track .article-list--compact { margin: 0; }
 }

@@ -1,11 +1,17 @@
 ---
 title: 现代GPU编程指南
+image: roxy-loong-131661822.webp
+imageCredit:
+    text: loong《💧💙》
+    site: pixiv
+    link: https://www.pixiv.net/artworks/131661822
 # 原「面向Hopper架构CUDA编程」系列；旧地址跳转到这里。
 aliases:
   - /column/面向hopper架构cuda编程/
   - /column/面向hopper架构cuda编程/page/1/
+# Card on the archive page (归档 → 专栏, menu "columns"); not in the left sidebar.
 menu:
-  main:
+  columns:
     name: 现代GPU编程指南
     weight: 8
     params:

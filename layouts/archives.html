@@ -4,15 +4,19 @@
     {{/* Blog activity heatmap + 动态 · News timeline (layouts/_partials/archives/activity.html). */}}
     {{ partial "archives/activity.html" . }}
 
+    {{/*
+        专栏 cards: the pages in menu "columns" (front matter of
+        content/series/论文解读 and content/column/*), ordered by weight,
+        labelled with the menu name, artwork = the page's `image` bundle file.
+        Paper categories (LLM / VLM) live on the 论文解读 page instead.
+    */}}
     <header>
-        {{- $taxonomy := $.Site.GetPage "taxonomyTerm" "categories" -}}
-        {{- $terms := $taxonomy.Pages -}}
-        {{ if $terms }}
-        <h2 class="section-title">{{ T "widget.categoriesCloud.title" }}</h2>
+        {{ with site.Menus.columns }}
+        <h2 class="section-title">专栏</h2>
         <div class="subsection-list">
             <div class="article-list--tile">
-                {{ range $terms }}
-                    {{ partial "article-list/tile" . }}
+                {{ range $m := . }}
+                    {{ with $m.Page }}{{ partial "article-list/tile" (dict "Page" . "Title" $m.Name) }}{{ end }}
                 {{ end }}
             </div>
         </div>

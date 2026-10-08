@@ -1,8 +1,8 @@
 ---
 title: LLM
-image: makeine-yanami-official.webp
+image: fxkurumi-official-kv.webp
 imageCredit:
-    text: 《負けヒロインが多すぎる！》官方图
+    text: 《FX戦士くるみちゃん》官方图
     site: 官网
-    link: https://makeine-anime.com/
+    link: https://fxkurumi-info.com/
 ---

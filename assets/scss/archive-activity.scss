@@ -396,8 +396,10 @@ a.news-title:hover { color: var(--accent-color); }
     .news-item:last-child::before { bottom: auto; height: 19px; }
 }
 
-/* ---- 分类 tiles on the archives page: keep artwork visible, title legible ---- */
-.template-archives .subsection-list .article-list--tile article {
+/* ---- Artwork tiles: 专栏 cards on the archives page and 分类 cards on the
+   论文解读 overview — keep artwork visible, title legible ---- */
+.template-archives .subsection-list .article-list--tile article,
+.paper-overview .subsection-list .article-list--tile article {
     &.has-image {
         .article-image img { transition: transform 0.4s ease; }
         &:hover .article-image img { transform: scale(1.04); }

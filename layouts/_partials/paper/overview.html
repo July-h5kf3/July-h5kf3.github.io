@@ -8,7 +8,9 @@
         direction in data/venues.yaml `tracks` (→ /tracks/…), last update;
       - 会议: one venue badge per venue (colour = field) with its count, plus
         the number of preprints (no venue);
-      - 分类: the posts' categories with counts (→ /categories/…);
+      - 分类: one artwork card per category the posts use, with its count,
+        right under the header (same tiles as the archive's 专栏 cards;
+        artwork = the category's `image`, content/categories/<name>/);
       - lists: all posts grouped by 方向, each list in the default order
         (weight, then newest first), rendered with the compact list card
         (venue badge + 方向 label). Posts without a direction go to 其他.
@@ -35,7 +37,7 @@
         {{- $preprints = add $preprints 1 -}}
     {{- end -}}
     {{- range .GetTerms "categories" -}}
-        {{- $c := index $cats .LinkTitle | default (dict "name" .LinkTitle "url" .RelPermalink "n" 0) -}}
+        {{- $c := index $cats .LinkTitle | default (dict "name" .LinkTitle "page" . "n" 0) -}}
         {{- $cats = merge $cats (dict .LinkTitle (merge $c (dict "n" (add $c.n 1)))) -}}
     {{- end -}}
     {{- if or (not $latest) (.Lastmod.After $latest.Lastmod) }}{{ $latest = . }}{{ end -}}
@@ -81,17 +83,23 @@
         </span>
     </div>
     {{- end }}
-    {{- with $catList }}
-    <div class="paper-overview-row">
-        <span class="paper-overview-label">分类</span>
-        <span class="paper-overview-chips">
-            {{- range . }}
-            <a class="paper-overview-chip paper-overview-cat" href="{{ .url }}"><span class="category-pill">{{ .name }}</span><span class="paper-overview-n">{{ .n }}</span></a>
-            {{- end }}
-        </span>
-    </div>
-    {{- end }}
 </header>
+
+{{- with $catList }}
+<section class="column-track paper-overview-cats" id="categories">
+    <header class="column-track-header">
+        <h2 class="column-track-title">分类</h2>
+        <span class="column-track-count">{{ len . }} 个</span>
+    </header>
+    <div class="subsection-list">
+        <div class="article-list--tile">
+            {{- range . }}
+            {{ partial "article-list/tile" (dict "Page" .page "Title" (printf "%s · %d 篇" .name .n)) }}
+            {{- end }}
+        </div>
+    </div>
+</section>
+{{- end }}
 
 {{- /* Intro card only when the page has real body content (e.g. the
        {{< column-refs >}} reference chips); otherwise the header
