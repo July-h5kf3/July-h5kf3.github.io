@@ -9,8 +9,8 @@ tags:
     - RoPE
     - 位置编码
     - Attention
-series:
-    - 技术分享
+column:
+    - blog
 math: true
 comments: false
 ---

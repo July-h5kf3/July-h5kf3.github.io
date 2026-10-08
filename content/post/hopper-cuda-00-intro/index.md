@@ -1,14 +1,12 @@
 ---
-title: "面向 Hopper 架构的 CUDA 编程（开篇）：新特性总览"
+title: "现代GPU编程指南（开篇）：Hopper 新特性总览"
 description: 梳理 Hopper（H100/H800，sm_90）为 CUDA 编程带来的关键新特性，并给出本系列的整体规划。
 date: 2026-08-27T09:00:00+08:00
 slug: hopper-cuda-00-intro
-series:
-    - 技术分享
 categories:
     - 算子开发
 column:
-    - 面向Hopper架构CUDA编程
+    - modern-gpu
 tags:
     - CUDA
     - Hopper
@@ -19,7 +17,7 @@ math: true
 comments: false
 ---
 
-这是「面向 Hopper 架构的 CUDA 编程」系列的开篇。之所以想单独开一个系列，是因为 Hopper（H100 / H800，计算能力 `sm_90`）相比 Ampere 并不只是"更大更快"，而是引入了一批**需要改变编程范式**才能吃满的新硬件特性。本篇先做一个总览，后续每篇再展开一个专题，并尽量用 GEMM / FlashAttention 这类真实算子把它们串起来。
+这是「现代GPU编程指南」系列的开篇。之所以想单独开一个系列，是因为 Hopper（H100 / H800，计算能力 `sm_90`）相比 Ampere 并不只是"更大更快"，而是引入了一批**需要改变编程范式**才能吃满的新硬件特性。本篇先做一个总览，后续每篇再展开一个专题，并尽量用 GEMM / FlashAttention 这类真实算子把它们串起来。
 
 ## Hopper 带来了什么
 

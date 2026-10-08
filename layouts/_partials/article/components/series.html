@@ -5,10 +5,15 @@
     Column-style titles ("[专栏][轨道] 短标题") are shown as a small 轨道 tag
     plus the short title; chapters announced in the column's
     `syllabus.upcoming` front matter are listed muted at the end.
+    Columns with `syllabus.collection: true` (e.g. Blog) are loose
+    collections, not ordered series: no box.
 */}}
 {{- $cur := . -}}
 {{- with .GetTerms "column" -}}
     {{- $series := index . 0 -}}
+    {{- $collection := false -}}
+    {{- with $series.Params.syllabus }}{{ $collection = .collection }}{{ end -}}
+    {{- if not $collection -}}
     {{- $posts := partial "helper/column-pages" $series -}}
     {{- $upcoming := slice -}}
     {{- with $series.Params.syllabus -}}{{- $upcoming = .upcoming | default slice -}}{{- end -}}
@@ -61,4 +66,5 @@
             </ol>
         </details>
     </aside>
+    {{- end -}}
 {{- end -}}

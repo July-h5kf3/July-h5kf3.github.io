@@ -2,8 +2,6 @@
 title: "[从零开始的编译原理][理论] Chapter 2：语法分析"
 date: 2026-10-03T15:32:40+08:00
 slug: compiler-ch2-syntax-analysis
-series:
-    - 技术分享
 categories:
     - 编译原理
 column:

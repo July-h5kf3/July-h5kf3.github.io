@@ -1,0 +1,15 @@
+{{ define "main" }}
+    {{/*
+        板块 (series) term pages — now only 论文解读 — use an overview page in
+        the same visual style as the column landing pages: hero with counts
+        computed from the posts, the term's own intro text, then every post
+        grouped by 方向 (tracks: algo | sys). See _partials/paper/overview.html.
+    */}}
+    {{ partial "paper/overview" . }}
+
+    {{ partialCached "footer/footer" . }}
+{{ end }}
+
+{{ define "right-sidebar" }}
+    {{ partial "sidebar/right.html" (dict "Context" . "Scope" "homepage") }}
+{{ end }}

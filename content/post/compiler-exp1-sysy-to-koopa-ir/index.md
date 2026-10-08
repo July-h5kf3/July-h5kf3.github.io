@@ -2,8 +2,6 @@
 title: "[从零开始的编译原理][实验] Exp Chapter 1：从 SysY 到 Koopa IR"
 date: 2026-09-29T20:23:03+08:00
 slug: compiler-exp1-sysy-to-koopa-ir
-series:
-    - 技术分享
 categories:
     - 编译原理
 column:

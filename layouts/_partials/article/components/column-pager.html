@@ -1,8 +1,10 @@
-{{/* Previous / next links within the post's column (系列文章). */}}
+{{/* Previous / next links within the post's column (系列文章); none for `syllabus.collection` columns (e.g. Blog). */}}
 {{- $cur := . -}}
 {{- with .GetTerms "column" -}}
     {{- $series := index . 0 -}}
-    {{- $posts := partial "helper/column-pages" $series -}}
+    {{- $collection := false -}}
+    {{- with $series.Params.syllabus }}{{ $collection = .collection }}{{ end -}}
+    {{- $posts := cond $collection slice (partial "helper/column-pages" $series) -}}
     {{- $prev := "" -}}{{- $next := "" -}}
     {{- range $i, $p := $posts -}}
         {{- if eq $p.RelPermalink $cur.RelPermalink -}}

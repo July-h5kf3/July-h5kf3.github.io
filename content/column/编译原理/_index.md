@@ -4,7 +4,7 @@ title: "从零开始的编译原理"
 menu:
   main:
     name: 编译原理
-    weight: 7
+    weight: 6
     params:
       icon: code
 description: "借着 Gap Year 系统性地重新学习编译原理：课程笔记参考 NJU 编译，实验参考 PKU 编译（SysY → Koopa IR → RISC-V），最终走向 AI compiler（TVM / MLC）。"

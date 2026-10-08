@@ -2,8 +2,6 @@
 title: "[从零开始的编译原理][实验] Exp Chapter 0：实验环境搭建"
 date: 2026-09-28T16:36:25+08:00
 slug: compiler-exp0-environment
-series:
-    - 技术分享
 categories:
     - 编译原理
 column:

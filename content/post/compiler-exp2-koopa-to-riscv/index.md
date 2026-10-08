@@ -2,8 +2,6 @@
 title: "[从零开始的编译原理][实验] Exp Chapter 2：从 Koopa IR 到 RISC-V"
 date: 2026-10-06T20:24:45+08:00
 slug: compiler-exp2-koopa-to-riscv
-series:
-    - 技术分享
 categories:
     - 编译原理
 column:
