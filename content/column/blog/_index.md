@@ -12,7 +12,7 @@ menu:
     weight: 7
     params:
       icon: notes
-description: "独立成篇的技术笔记：低精度浮点数、Triton、Hessian 矩阵、Transformer 位置编码等。"
+description: "独立成篇的技术笔记：低精度浮点数、Triton、Hessian 矩阵、Transformer 位置编码等，按发布时间排列。"
 
 # Same landing page as 编译原理 (layouts/_partials/column/syllabus.html),
 # single track, ordered by date.
@@ -22,5 +22,3 @@ description: "独立成篇的技术笔记：低精度浮点数、Triton、Hessia
 syllabus:
   collection: true
 ---
-
-这里收录不属于某个专栏、各自独立成篇的技术文章，按发布时间排列。
