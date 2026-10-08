@@ -29,10 +29,9 @@
             {{- end }}
         </span>
     </span>
-    <span class="prize-pool-meta">
-        {{- if $counted }}已计入 <strong>{{ $counted }}</strong> / {{ len $awards }} 项比赛
-        {{- else }}<span class="prize-pool-pending">待统计</span>{{ end -}}
-    </span>
+    {{- if not $counted }}
+    <span class="prize-pool-meta"><span class="prize-pool-pending">待统计</span></span>
+    {{- end }}
 </section>
 
 {{- $years := slice -}}
