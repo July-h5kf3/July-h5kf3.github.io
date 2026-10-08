@@ -1,6 +1,10 @@
-{{/* Theme tile; column posts show 专栏 / 轨道 pills above the title (helper/column-meta); paper posts show 会议徽章 + 方向标签 (helper/paper-title, paper/badges). */}}
+{{/* Theme tile; column posts show 专栏 / 轨道 pills above the title (helper/column-meta); paper posts show 会议徽章 + 方向标签 (helper/paper-title, paper/badges).
+    Input: a page, or dict "Page" + "Title" (label shown instead of the page title, e.g. the archive's 专栏 cards use the menu name). */}}
+{{- $label := "" -}}
+{{- if reflect.IsMap . }}{{ $label = .Title }}{{ end -}}
+{{- with (cond (reflect.IsMap .) .Page .) -}}
 {{ $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) }}
-{{- $cm := dict "show" false "title" .Title -}}
+{{- $cm := dict "show" false "title" ($label | default .Title) -}}
 {{- $pt := dict "show" false -}}
 {{- if eq .Kind "page" -}}{{- $cm = partial "helper/column-meta" . -}}{{- $pt = partial "helper/paper-title" . -}}{{- end -}}
 <article class="{{ if $image }}has-image{{ end }}">
@@ -46,3 +50,4 @@
         </div>
     </a>
 </article>
+{{- end -}}

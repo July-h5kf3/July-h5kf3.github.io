@@ -1,7 +1,13 @@
 ---
 title: 论文解读
+image: makeine-yanami-official.webp
+imageCredit:
+    text: 《負けヒロインが多すぎる！》官方图
+    site: 官网
+    link: https://makeine-anime.com/
+# Card on the archive page (归档 → 专栏, menu "columns"); not in the left sidebar.
 menu:
-  main:
+  columns:
     name: 论文解读
     weight: 5
     params:

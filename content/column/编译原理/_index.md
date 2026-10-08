@@ -1,8 +1,13 @@
 ---
 title: "从零开始的编译原理"
-# Left sidebar entry (active on this page).
+image: anime-screenshot-fancaps-13192448.webp
+imageCredit:
+    text: 动画截图
+    site: fancaps
+    link: https://fancaps.net/anime/picture.php?/13192448
+# Card on the archive page (归档 → 专栏, menu "columns"); not in the left sidebar.
 menu:
-  main:
+  columns:
     name: 编译原理
     weight: 6
     params:

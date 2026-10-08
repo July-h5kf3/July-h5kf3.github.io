@@ -1,13 +1,19 @@
 ---
 title: Blog
+image: su-143272210.webp
+imageCredit:
+    text: SU《藤原千花》（AI 生成）
+    site: pixiv
+    link: https://www.pixiv.net/artworks/143272210
 # 原「技术分享」板块中不属于专栏的文章；旧地址 /series/技术分享/ 跳转到这里。
 aliases:
   - /series/技术分享/
   - /series/技术分享/page/1/
   - /series/技术分享/page/2/
   - /series/技术分享/page/3/
+# Card on the archive page (归档 → 专栏, menu "columns"); not in the left sidebar.
 menu:
-  main:
+  columns:
     name: Blog
     weight: 7
     params:
