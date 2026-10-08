@@ -41,11 +41,6 @@
     {{- if or (not $latest) ($p.Lastmod.After $latest.Lastmod) }}{{ $latest = $p }}{{ end -}}
 {{- end -}}
 
-{{- $done := len $pages -}}
-{{- $total := add $done (len $upcoming) -}}
-{{- $pct := 0 -}}
-{{- if gt $total 0 }}{{ $pct = div (mul $done 100) $total }}{{ end -}}
-
 <div class="column-syllabus">
 <header class="column-hero">
     <nav class="column-hero-crumb">
@@ -55,25 +50,16 @@
     <h1 class="column-hero-title">{{ .Title }}</h1>
     {{ with .Params.description }}<p class="column-hero-desc">{{ . }}</p>{{ end }}
 
-    <div class="column-hero-stats">
-        <div class="column-progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ $total }}" aria-valuenow="{{ $done }}" aria-label="已完成 {{ $done }} / {{ $total }} 篇">
-            <div class="column-progress-head">
-                <span class="column-progress-count"><strong>{{ $done }}</strong> / {{ $total }} 篇已完成</span>
-                <span class="column-progress-pct">{{ $pct }}%</span>
-            </div>
-            <div class="column-progress-bar"><span style="{{ printf "width: %d%%" $pct | safeCSS }}"></span></div>
-        </div>
-        <ul class="column-hero-facts">
-            {{- range $tracks }}
-            {{- $n := len (index $groups .name | default slice) }}
-            {{- $key := index (dict "理论" "theory" "实验" "lab") .name | default "other" }}
-            <li><a class="track-tag track-{{ $key }}" href="#track-{{ $key }}">{{ .name }}</a><span>{{ $n }} 篇</span></li>
-            {{- end }}
-            {{- with $latest }}
-            <li>{{ partial "helper/icon" "clock" }}<span>更新于 {{ .Lastmod | time.Format ":date_medium" }}</span></li>
-            {{- end }}
-        </ul>
-    </div>
+    <ul class="column-hero-facts">
+        {{- range $tracks }}
+        {{- $n := len (index $groups .name | default slice) }}
+        {{- $key := index (dict "理论" "theory" "实验" "lab") .name | default "other" }}
+        <li><a class="track-tag track-{{ $key }}" href="#track-{{ $key }}">{{ .name }}</a><span>{{ $n }} 篇</span></li>
+        {{- end }}
+        {{- with $latest }}
+        <li>{{ partial "helper/icon" "clock" }}<span>更新于 {{ .Lastmod | time.Format ":date_medium" }}</span></li>
+        {{- end }}
+    </ul>
 </header>
 
 {{- with .Content }}
