@@ -8,11 +8,12 @@
 */}}
 {{- $page := .Page -}}
 {{- $awards := hugo.Data.awards | default slice -}}
+{{- $scholarships := hugo.Data.scholarships | default slice -}}
 
 {{- /* prize pool */ -}}
 {{- $total := 0.0 -}}
 {{- $counted := 0 -}}
-{{- range $awards }}
+{{- range $awards | append $scholarships }}
     {{- if ne .prize nil }}{{ $total = add $total (float .prize) }}{{ $counted = add $counted 1 }}{{ end }}
 {{- end -}}
 {{- $prec := cond (eq $total (math.Floor $total)) 0 2 -}}
@@ -73,6 +74,13 @@
     </section>
 {{- end }}
 </div>
+{{- with $scholarships }}
+<p class="awards-scholarship">奖学金：
+    {{- range $i, $s := . }}{{ if $i }}、{{ end }}{{ $s.name }}
+        {{- if gt (float ($s.prize | default 0)) 0 }}{{ $p := float $s.prize }} <span class="award-prize" title="奖金">¥{{ lang.FormatNumberCustom (cond (eq $p (math.Floor $p)) 0 2) $p }}</span>{{ end }}
+    {{- end }}
+</p>
+{{- end }}
 {{- if $counted }}{{ with resources.Get "js/prize-pool.js" }}{{ $js := . | minify | fingerprint }}
 <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
 {{- end }}{{ end }}

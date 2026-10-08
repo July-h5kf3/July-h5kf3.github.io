@@ -21,4 +21,3 @@ comments: false
 
 {{< awards >}}
 
-奖学金：创新奖学金

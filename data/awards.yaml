@@ -6,7 +6,7 @@
 #     prize: 5000
 #     prize: 12500.5
 #   留空（prize: 后面什么都不写）= 未统计：不计入总额，也不在该条目上显示金额。
-#   页面顶部的「奖金累计」卡片自动求和，并显示「已计入 N / 总数 项」。
+#   页面顶部的「奖金累计」卡片自动求和（含 data/scholarships.yaml 里的奖学金）。
 #
 # Other fields:
 #   name + level: the resume's own wording (resume-zh_CN.pdf, 「竞赛获奖」),

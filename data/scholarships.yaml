@@ -1,0 +1,4 @@
+# 奖学金 — shown under the awards timeline on /about/; `prize` (元，只写数字) is
+# added to the 奖金累计 total, same rules as data/awards.yaml (留空 = 不计入).
+- name: "创新奖学金"
+  prize: 2000

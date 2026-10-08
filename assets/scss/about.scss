@@ -240,3 +240,12 @@
     .award-when { width: auto; flex-basis: 100%; }
     .award-detail, .award-media { margin-left: 0; }
 }
+
+.awards-scholarship {
+    margin-top: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    .award-prize { margin-left: 2px; }
+}
