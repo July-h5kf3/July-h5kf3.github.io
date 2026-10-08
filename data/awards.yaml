@@ -1,0 +1,64 @@
+# 竞赛获奖 — shown on /about/ by the {{< awards >}} shortcode.
+# name + level are the resume's own wording (resume-zh_CN.pdf, 「竞赛获奖」),
+# only split into competition / level; when = the date as written there.
+# certs: redacted certificate images in content/page/about/certs/.
+# evidence: public report for an award without a certificate photo.
+- year: 2026
+  when: "2026 年 7 月"
+  name: "2026百度商业AI技术创新大赛（决赛）赛题：生成式推荐广告排序推理性能优化"
+  level: "三等奖"
+  # not in the resume's 「竞赛获奖」 list; name/level as printed on the certificate
+  certs:
+    - { file: cti-2026 }
+- year: 2025
+  when: "2025 年 12 月"
+  name: "2025 腾讯游戏算法大赛 (TGAC)"
+  level: "第四名"
+  certs:
+    - { file: tgac-2025 }
+- year: 2025
+  when: "2025 年 11 月"
+  name: "DataCon2025 大数据安全分析竞赛"
+  level: "全国一等奖"
+  evidence:
+    title: "DataCon2025颁奖典礼在京召开"
+    source: "雷峰网"
+    date: 2026-05-27
+    url: "https://www.leiphone.com/category/industrynews/nptvAexR4qAtoUIp.html"
+    image: datacon-2025-report
+- year: 2025
+  when: "2025 年 11 月"
+  name: "第十届全国密码技术竞赛"
+  level: "全国三等奖"
+- year: 2025
+  when: "2025 年 11 月"
+  name: "2025 年全国大学生数学建模竞赛"
+  level: "天津市一等奖"
+  certs:
+    - { file: cumcm-tj-2025 }
+- year: 2025
+  when: "2025 年 9 月"
+  name: "第八届 CCF-TCARCH 2025 计算机体系结构挑战赛"
+  level: "全国三等奖"
+  certs:
+    - { file: ccf-tcarch-2025 }
+- year: 2024
+  when: "2024 年 11 月"
+  name: "2024 年全国大学生数学建模竞赛"
+  level: "天津市二等奖"
+- year: 2024
+  when: "2024 年 8 月"
+  name: "第十七届全国大学生信息安全竞赛"
+  level: "全国一等奖"
+  certs:
+    - { file: ciscn-2024 }
+- year: 2024
+  when: "2024 年 7 月"
+  name: "2024 年全国普通高校大学生数学竞赛"
+  level: "天津市二等奖"
+  certs:
+    - { file: math-tj-2024 }
+- year: 2021
+  when: "2021 年 11 月"
+  name: "NOIP2021 (全国信息学奥林匹克竞赛)"
+  level: "湖南省二等奖"

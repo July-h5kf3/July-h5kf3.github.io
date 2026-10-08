@@ -1,0 +1,59 @@
+{{/*
+    Awards timeline for the About page, from data/awards.yaml.
+    Grouped by year (newest first). Certificate thumbnails open in a small
+    built-in lightbox (assets/js/lightbox.js); without JS they link to the image.
+    Images are page resources: content/page/about/certs/<file>.webp (+ -thumb).
+*/}}
+{{- $page := .Page -}}
+{{- $awards := hugo.Data.awards | default slice -}}
+{{- $years := slice -}}
+{{- range $awards }}{{ if not (in $years .year) }}{{ $years = $years | append .year }}{{ end }}{{ end -}}
+<div class="awards">
+{{- range $y := sort $years "value" "desc" }}
+    <section class="awards-year">
+        <h3 class="awards-year-title">{{ $y }}</h3>
+        <ol class="awards-list">
+        {{- range where $awards "year" $y }}
+            {{- $a := . -}}
+            {{- $national := or (strings.Contains .level "全国") (strings.Contains .level "名") }}
+            <li class="award">
+                <div class="award-head">
+                    <span class="award-when">{{ .when }}</span>
+                    <span class="award-name">{{ .name }}</span>
+                    <span class="award-level{{ if $national }} is-national{{ end }}">{{ .level }}</span>
+                </div>
+                {{- if or .certs .evidence }}
+                <div class="award-media">
+                    {{- range .certs }}
+                        {{- $full := $page.Resources.Get (printf "certs/%s.webp" .file) -}}
+                        {{- $thumb := $page.Resources.Get (printf "certs/%s-thumb.webp" .file) -}}
+                        {{- if and $full $thumb }}
+                        {{- $alt := printf "%s %s 获奖证书" $a.name $a.level }}
+                        <a class="cert-thumb" href="{{ $full.RelPermalink }}" data-lightbox data-w="{{ $full.Width }}" data-h="{{ $full.Height }}" title="{{ $alt }}">
+                            <img src="{{ $thumb.RelPermalink }}" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" alt="{{ $alt }}" loading="lazy">
+                            <span class="cert-zoom" aria-hidden="true">{{ partial "helper/icon" "zoom-in" }}</span>
+                        </a>
+                        {{- else }}{{ warnf "awards: missing certificate image %s" .file }}{{ end }}
+                    {{- end }}
+                    {{- with .evidence }}
+                    <a class="evidence-card" href="{{ .url }}" target="_blank" rel="noopener">
+                        {{- with .image }}{{ with $page.Resources.Get (printf "certs/%s.webp" .) }}
+                        <img src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="报道截图" loading="lazy">
+                        {{- end }}{{ end }}
+                        <span class="evidence-text">
+                            <span class="evidence-title">{{ partial "helper/icon" "link" }}<span>{{ .title }}</span></span>
+                            <span class="evidence-meta">{{ .source }} · <time datetime="{{ time.Format "2006-01-02" .date }}">{{ time.Format site.Params.dateFormat.published .date }}</time></span>
+                        </span>
+                    </a>
+                    {{- end }}
+                </div>
+                {{- end }}
+            </li>
+        {{- end }}
+        </ol>
+    </section>
+{{- end }}
+</div>
+{{- with resources.Get "js/lightbox.js" }}{{ $js := . | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+{{- end }}

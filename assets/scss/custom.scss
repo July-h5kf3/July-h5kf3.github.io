@@ -226,6 +226,9 @@ body {
 /* ---- Archive page: activity heatmap + 动态 · News ---- */
 @import "archive-activity";
 
+/* ---- About page: intro, resume, awards timeline, certificate lightbox ---- */
+@import "about";
+
 /* ---- 6. Pagination + misc ---- */
 .pagination .page-item {
     border-radius: var(--radius-inner);
