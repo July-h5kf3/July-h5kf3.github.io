@@ -414,26 +414,6 @@ a.news-title:hover { color: var(--accent-color); }
     .news-item:last-child::before { bottom: auto; height: 19px; }
 }
 
-/* ---- 分类配图 credits (archives page, under the category tiles) ---- */
-.category-credits {
-    margin: 10px 4px 0;
-    font-size: 1.2rem;
-    line-height: 1.7;
-    color: var(--card-text-color-tertiary);
-    opacity: 0.85;
-
-    a {
-        color: inherit;
-        text-decoration: underline;
-        text-decoration-color: var(--hairline, rgba(0, 0, 0, 0.15));
-        text-underline-offset: 2px;
-        &:hover { color: var(--accent-color); }
-    }
-
-    .category-credits__label { margin-right: 6px; font-weight: 600; }
-    .category-credits__sep { margin: 0 6px; opacity: 0.6; }
-}
-
 /* ---- 分类 tiles on the archives page: keep artwork visible, title legible ---- */
 .template-archives .subsection-list .article-list--tile article {
     &.has-image {

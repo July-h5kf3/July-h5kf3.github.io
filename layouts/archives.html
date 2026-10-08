@@ -16,19 +16,6 @@
                 {{ end }}
             </div>
         </div>
-        {{- /* Image credits for category tiles (front matter `imageCredit` in content/categories/<name>/_index.md). */ -}}
-        {{- $credited := where $terms "Params.imageCredit" "!=" nil -}}
-        {{- with $credited }}
-        <p class="category-credits">
-            <span class="category-credits__label">分类配图</span>
-            {{- range $i, $t := . -}}
-                {{- with $t.Params.imageCredit -}}
-                {{ if $i }}<span class="category-credits__sep">·</span>{{ end }}
-                <span class="category-credits__item">{{ $t.Title }}：{{ if .link }}<a href="{{ .link }}" target="_blank" rel="noopener nofollow">{{ .text }}{{ with .site }}（{{ . }}）{{ end }}</a>{{ else }}{{ .text }}{{ end }}</span>
-                {{- end -}}
-            {{- end }}
-        </p>
-        {{- end }}
         {{ end }}
     </header>
 
