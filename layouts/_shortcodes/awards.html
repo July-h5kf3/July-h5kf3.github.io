@@ -11,11 +11,16 @@
 {{- $scholarships := hugo.Data.scholarships | default slice -}}
 
 {{- /* prize pool */ -}}
-{{- $total := 0.0 -}}
+{{- $compTotal := 0.0 -}}
+{{- $schTotal := 0.0 -}}
 {{- $counted := 0 -}}
-{{- range $awards | append $scholarships }}
-    {{- if ne .prize nil }}{{ $total = add $total (float .prize) }}{{ $counted = add $counted 1 }}{{ end }}
+{{- range $awards }}
+    {{- if ne .prize nil }}{{ $compTotal = add $compTotal (float .prize) }}{{ $counted = add $counted 1 }}{{ end }}
 {{- end -}}
+{{- range $scholarships }}
+    {{- if ne .prize nil }}{{ $schTotal = add $schTotal (float .prize) }}{{ $counted = add $counted 1 }}{{ end }}
+{{- end -}}
+{{- $total := add $compTotal $schTotal -}}
 {{- $prec := cond (eq $total (math.Floor $total)) 0 2 -}}
 <section class="about-card prize-pool{{ if not $counted }} is-empty{{ end }}" aria-label="奖金累计">
     <span class="prize-pool-icon" aria-hidden="true">{{ partial "helper/icon" "coin-yuan" }}</span>
@@ -27,6 +32,12 @@
             <span class="prize-pool-value" data-count-to="{{ $total }}" data-precision="{{ $prec }}">{{ lang.FormatNumberCustom $prec $total }}</span>
             {{- else }}
             <span class="prize-pool-value">—</span>
+            {{- end }}
+            {{- if and (gt $compTotal 0) (gt $schTotal 0) }}
+            <span class="prize-pool-breakdown">=
+                <span class="prize-pool-part">比赛奖金 <b>¥{{ lang.FormatNumberCustom (cond (eq $compTotal (math.Floor $compTotal)) 0 2) $compTotal }}</b></span>
+                <span class="prize-pool-part">+ 奖学金 <b>¥{{ lang.FormatNumberCustom (cond (eq $schTotal (math.Floor $schTotal)) 0 2) $schTotal }}</b></span>
+            </span>
             {{- end }}
         </span>
     </span>

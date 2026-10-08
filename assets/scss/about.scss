@@ -94,6 +94,7 @@
 }
 .prize-pool-amount {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: baseline;
     gap: 4px;
     color: var(--card-text-color-main);
@@ -101,6 +102,17 @@
 }
 .prize-pool-currency { font-size: 1.8rem; font-weight: 700; color: var(--tone-update); }
 .prize-pool-value { font-size: 2.8rem; font-weight: 800; letter-spacing: 0.5px; }
+.prize-pool-breakdown {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 6px;
+    margin-left: 8px;
+    font-size: 1.4rem;
+    color: var(--card-text-color-secondary);
+    b { font-weight: 700; color: var(--card-text-color-main); }
+}
+.prize-pool-part { white-space: nowrap; }
 .prize-pool-meta {
     flex-shrink: 0;
     font-size: 1.3rem;
@@ -237,6 +249,7 @@
     .resume-card { flex-wrap: wrap; }
     .prize-pool { padding: 14px 16px; }
     .prize-pool-value { font-size: 2.4rem; }
+    .prize-pool-breakdown { flex-basis: 100%; margin-left: 0; font-size: 1.3rem; }
     .award-when { width: auto; flex-basis: 100%; }
     .award-detail, .award-media { margin-left: 0; }
 }
