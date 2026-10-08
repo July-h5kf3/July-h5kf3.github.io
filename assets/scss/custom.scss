@@ -310,6 +310,19 @@ body {
     }
 }
 
+/* Column landing page: index prose between the header card and the post list. */
+.column-index {
+    background: var(--card-background);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--shadow-l1);
+    padding: var(--card-padding);
+    margin: 24px 0;
+    color: var(--card-text-color-main);
+
+    > :first-child { margin-top: 0; }
+    > :last-child { margin-bottom: 0; }
+}
+
 /* ---- 6. Pagination + misc ---- */
 .pagination .page-item {
     border-radius: 10px;

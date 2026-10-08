@@ -1,13 +1,18 @@
 {{/*
     Article-series navigation box.
     Renders on any post that belongs to a `column` taxonomy term ("系列文章").
-    Lists every post in the series (ordered by front-matter `weight`, then date),
-    highlighting the current one, so readers can move through the series.
+    Order is front-matter `seriesOrder` when every post in the series sets it
+    (so those posts can omit `weight` and stay out of the homepage pinned area).
+    Otherwise order is `weight`, then date — the Hopper series uses that.
 */}}
 {{- $cur := . -}}
 {{- with .GetTerms "column" -}}
     {{- $series := index . 0 -}}
     {{- $posts := sort (sort $series.Pages "Date" "asc") "Weight" -}}
+    {{- $withOrder := where $series.Pages "Params.seriesorder" "ge" 1 -}}
+    {{- if and (gt (len $withOrder) 0) (eq (len $withOrder) (len $series.Pages)) -}}
+        {{- $posts = sort $series.Pages "Params.seriesorder" "asc" -}}
+    {{- end -}}
     {{- $count := len $posts -}}
     <aside class="article-series">
         <details open>
