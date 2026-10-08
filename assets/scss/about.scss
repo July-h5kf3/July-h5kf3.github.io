@@ -1,6 +1,6 @@
 /* =========================================================================
-   About page (content/page/about): intro card, resume card, awards timeline,
-   certificate lightbox — built on the shared design system (design.scss).
+   About page (content/page/about): intro card, resume card, 奖金累计 card,
+   awards timeline — built on the shared design system (design.scss).
    ========================================================================= */
 
 .about-card {
@@ -62,6 +62,59 @@
     transition: background-color 0.15s ease, box-shadow 0.15s ease;
     svg { width: 16px; height: 16px; }
     &:hover { color: var(--accent-color-text); background: var(--accent-color-darker); box-shadow: var(--shadow-md); }
+}
+
+/* 奖金累计 (prize pool) — sum of data/awards.yaml `prize` */
+.prize-pool {
+    position: relative;
+    overflow: hidden;
+    padding: 16px 20px;
+    background:
+        radial-gradient(420px 160px at 0% 0%, var(--tone-update-soft), transparent 72%),
+        var(--card-background);
+}
+.prize-pool-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-inner);
+    color: var(--tone-update);
+    background: var(--tone-update-soft);
+    svg { width: 24px; height: 24px; }
+}
+.prize-pool-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; line-height: 1.2; }
+.prize-pool-label {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--card-text-color-tertiary);
+}
+.prize-pool-amount {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    color: var(--card-text-color-main);
+    font-variant-numeric: tabular-nums;
+}
+.prize-pool-currency { font-size: 1.8rem; font-weight: 700; color: var(--tone-update); }
+.prize-pool-value { font-size: 2.8rem; font-weight: 800; letter-spacing: 0.5px; }
+.prize-pool-meta {
+    flex-shrink: 0;
+    font-size: 1.3rem;
+    color: var(--card-text-color-secondary);
+    font-variant-numeric: tabular-nums;
+    strong { color: var(--tone-update); font-weight: 700; }
+}
+.prize-pool-pending {
+    @include ds-pill(sm);
+    @include ds-tone(neutral);
+}
+.prize-pool.is-empty {
+    .prize-pool-currency { color: var(--card-text-color-tertiary); }
+    .prize-pool-value { font-weight: 700; color: var(--card-text-color-secondary); }
 }
 
 /* awards timeline */
@@ -128,6 +181,12 @@
     align-self: center;
     &.is-national { @include ds-tone(accent); }
 }
+.award-prize {
+    @include ds-pill(sm);
+    @include ds-tone(update);
+    align-self: center;
+    font-variant-numeric: tabular-nums;
+}
 .award-detail {
     margin: 2px 0 0 calc(9.75rem + 10px);
     font-size: 1.35rem;
@@ -140,50 +199,6 @@
     gap: var(--space-2) var(--space-3);
     margin: var(--space-2) 0 var(--space-1) calc(9.75rem + 10px);
 }
-.main-article .article-content a.cert-thumb {
-    position: relative;
-    display: block;
-    height: 120px;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    border: 1px solid var(--hairline);
-    background-image: none;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-    img {
-        display: block;
-        height: 100%;
-        width: auto;
-        max-width: none;
-        margin: 0;
-        border-radius: 0;
-        box-shadow: none;
-    }
-    .cert-zoom {
-        position: absolute;
-        right: 6px;
-        bottom: 6px;
-        width: 26px;
-        height: 26px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        color: #fff;
-        background: rgba(10, 12, 20, 0.55);
-        opacity: 0;
-        transition: opacity 0.15s ease;
-        svg { width: 15px; height: 15px; }
-    }
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-        background-size: auto;
-        .cert-zoom { opacity: 1; }
-    }
-}
-
 .main-article .article-content a.evidence-card {
     display: flex;
     flex-direction: column;
@@ -222,67 +237,9 @@
 @media (max-width: 640px) {
     .about-card { padding: 16px; gap: var(--space-3); }
     .resume-card { flex-wrap: wrap; }
+    .prize-pool { flex-wrap: wrap; padding: 14px 16px; }
+    .prize-pool-meta { flex-basis: 100%; margin-top: -4px; padding-left: calc(44px + var(--space-3)); }
+    .prize-pool-value { font-size: 2.4rem; }
     .award-when { width: auto; flex-basis: 100%; }
     .award-detail, .award-media { margin-left: 0; }
-    .main-article .article-content a.cert-thumb { height: 96px; }
-}
-
-/* lightbox */
-dialog.lightbox {
-    max-width: none;
-    max-height: none;
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    overflow: hidden;
-
-    &::backdrop { background: rgba(10, 12, 20, 0.92); }
-}
-.lightbox-figure {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 48px 56px 64px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-}
-.lightbox-img {
-    max-width: 100%;
-    max-height: calc(100% - 36px);
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-lg);
-    background: #fff;
-}
-.lightbox-caption { color: rgba(255, 255, 255, 0.85); font-size: 1.4rem; text-align: center; }
-.lightbox-btn {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    border: 0;
-    border-radius: 50%;
-    color: #fff;
-    background: rgba(255, 255, 255, 0.12);
-    font-size: 2.6rem;
-    line-height: 1;
-    cursor: pointer;
-    &:hover { background: rgba(255, 255, 255, 0.24); }
-}
-.lightbox-close { top: 12px; right: 12px; }
-.lightbox-prev { left: 10px; top: 50%; margin-top: -20px; }
-.lightbox-next { right: 10px; top: 50%; margin-top: -20px; }
-.lightbox.is-single .lightbox-prev,
-.lightbox.is-single .lightbox-next { display: none; }
-@media (max-width: 640px) {
-    .lightbox-figure { padding: 52px 10px 40px; }
-    .lightbox-prev, .lightbox-next { top: auto; bottom: 10px; margin-top: 0; }
 }

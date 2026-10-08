@@ -1,11 +1,40 @@
 {{/*
-    Awards timeline for the About page, from data/awards.yaml.
-    Grouped by year (newest first). Certificate thumbnails open in a small
-    built-in lightbox (assets/js/lightbox.js); without JS they link to the image.
-    Images are page resources: content/page/about/certs/<file>.webp (+ -thumb).
+    Awards for the About page, from data/awards.yaml:
+      1. 奖金累计 card — sum of every award's optional `prize` (CNY, number);
+         empty prizes are not counted; nothing filled → "¥ —" + 待统计.
+      2. timeline grouped by year (newest first), data order within a year;
+         an award with a prize gets a small ¥ chip.
+    The news-report card image is a page resource: content/page/about/press/<image>.webp.
 */}}
 {{- $page := .Page -}}
 {{- $awards := hugo.Data.awards | default slice -}}
+
+{{- /* prize pool */ -}}
+{{- $total := 0.0 -}}
+{{- $counted := 0 -}}
+{{- range $awards }}
+    {{- if ne .prize nil }}{{ $total = add $total (float .prize) }}{{ $counted = add $counted 1 }}{{ end }}
+{{- end -}}
+{{- $prec := cond (eq $total (math.Floor $total)) 0 2 -}}
+<section class="about-card prize-pool{{ if not $counted }} is-empty{{ end }}" aria-label="奖金累计">
+    <span class="prize-pool-icon" aria-hidden="true">{{ partial "helper/icon" "coin-yuan" }}</span>
+    <span class="prize-pool-text">
+        <span class="prize-pool-label">奖金累计</span>
+        <span class="prize-pool-amount">
+            <span class="prize-pool-currency">¥</span>
+            {{- if $counted }}
+            <span class="prize-pool-value" data-count-to="{{ $total }}" data-precision="{{ $prec }}">{{ lang.FormatNumberCustom $prec $total }}</span>
+            {{- else }}
+            <span class="prize-pool-value">—</span>
+            {{- end }}
+        </span>
+    </span>
+    <span class="prize-pool-meta">
+        {{- if $counted }}已计入 <strong>{{ $counted }}</strong> / {{ len $awards }} 项比赛
+        {{- else }}<span class="prize-pool-pending">待统计</span>{{ end -}}
+    </span>
+</section>
+
 {{- $years := slice -}}
 {{- range $awards }}{{ if not (in $years .year) }}{{ $years = $years | append .year }}{{ end }}{{ end -}}
 <div class="awards">
@@ -14,39 +43,29 @@
         <h3 class="awards-year-title">{{ $y }}</h3>
         <ol class="awards-list">
         {{- range where $awards "year" $y }}
-            {{- $a := . -}}
             {{- $national := or (strings.Contains .level "全国") (strings.Contains .level "名") }}
             <li class="award">
                 <div class="award-head">
                     <span class="award-when">{{ .when }}</span>
                     <span class="award-name">{{ .name }}</span>
                     <span class="award-level{{ if $national }} is-national{{ end }}">{{ .level }}</span>
+                    {{- if gt (float (.prize | default 0)) 0 }}
+                    {{- $p := float .prize }}
+                    <span class="award-prize" title="奖金">¥{{ lang.FormatNumberCustom (cond (eq $p (math.Floor $p)) 0 2) $p }}</span>
+                    {{- end }}
                 </div>
                 {{- with .detail }}<p class="award-detail">{{ . }}</p>{{ end }}
-                {{- if or .certs .evidence }}
+                {{- with .evidence }}
                 <div class="award-media">
-                    {{- range .certs }}
-                        {{- $full := $page.Resources.Get (printf "certs/%s.webp" .file) -}}
-                        {{- $thumb := $page.Resources.Get (printf "certs/%s-thumb.webp" .file) -}}
-                        {{- if and $full $thumb }}
-                        {{- $alt := printf "%s %s 获奖证书" $a.name $a.level }}
-                        <a class="cert-thumb" href="{{ $full.RelPermalink }}" data-lightbox data-w="{{ $full.Width }}" data-h="{{ $full.Height }}" title="{{ $alt }}">
-                            <img src="{{ $thumb.RelPermalink }}" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" alt="{{ $alt }}" loading="lazy">
-                            <span class="cert-zoom" aria-hidden="true">{{ partial "helper/icon" "zoom-in" }}</span>
-                        </a>
-                        {{- else }}{{ warnf "awards: missing certificate image %s" .file }}{{ end }}
-                    {{- end }}
-                    {{- with .evidence }}
                     <a class="evidence-card" href="{{ .url }}" target="_blank" rel="noopener">
-                        {{- with .image }}{{ with $page.Resources.Get (printf "certs/%s.webp" .) }}
+                        {{- with .image }}{{ with $page.Resources.Get (printf "press/%s.webp" .) }}
                         <img src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="报道截图" loading="lazy">
-                        {{- end }}{{ end }}
+                        {{- else }}{{ warnf "awards: missing report image press/%s.webp" . }}{{ end }}{{ end }}
                         <span class="evidence-text">
                             <span class="evidence-title">{{ partial "helper/icon" "link" }}<span>{{ .title }}</span></span>
                             <span class="evidence-meta">{{ .source }}{{ with .date }} · <time datetime="{{ time.Format "2006-01-02" . }}">{{ time.Format site.Params.dateFormat.published . }}</time>{{ end }}</span>
                         </span>
                     </a>
-                    {{- end }}
                 </div>
                 {{- end }}
             </li>
@@ -55,6 +74,6 @@
     </section>
 {{- end }}
 </div>
-{{- with resources.Get "js/lightbox.js" }}{{ $js := . | minify | fingerprint }}
+{{- if $counted }}{{ with resources.Get "js/prize-pool.js" }}{{ $js := . | minify | fingerprint }}
 <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
-{{- end }}
+{{- end }}{{ end }}
