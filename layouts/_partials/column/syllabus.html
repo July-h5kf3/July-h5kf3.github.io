@@ -78,11 +78,11 @@
 {{- /* Intro card only when the page has real body content (e.g. the
        {{< column-refs >}} reference chips); otherwise the header
        description is the whole introduction — no empty extra module. */ -}}
-{{- with .Content | strings.TrimSpace }}
+{{- with .Content }}{{- if strings.TrimSpace . }}
 <section class="article-content column-intro">
     {{ . }}
 </section>
-{{- end }}
+{{- end }}{{- end }}
 
 
 {{- range $tracks }}
