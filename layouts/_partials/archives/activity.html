@@ -1,0 +1,75 @@
+{{/*
+    Archive page header: GitHub-style activity heatmap + 「动态 · News」.
+
+    - Heatmap: data embedded as JSON (archives/events), grid drawn by
+      assets/js/activity-heatmap.js (vanilla, no dependencies).
+    - News: newest 10 items from post activity merged with optional manual
+      entries in data/news.yaml (date, text, optional link / tag); rendered
+      here, works without JavaScript.
+*/}}
+{{- $events := partial "archives/events.html" . -}}
+
+<section class="activity-section" aria-labelledby="activity-title">
+    <h2 class="section-title" id="activity-title">写作日历</h2>
+    <div class="activity-card" data-activity>
+        <div class="activity-head">
+            <p class="activity-summary" data-summary>&nbsp;</p>
+            <div class="activity-years" data-years role="group" aria-label="选择时间范围" hidden></div>
+        </div>
+        <div class="heatmap-scroll" data-scroll>
+            <div class="heatmap" data-grid role="group" aria-label="每日文章发布与更新热力图"></div>
+        </div>
+        <div class="heatmap-foot">
+            <span class="heatmap-hint">点击方块查看当天的文章</span>
+            <span class="heatmap-legend" aria-hidden="true">
+                少<i class="hm-l0"></i><i class="hm-l1"></i><i class="hm-l2"></i><i class="hm-l3"></i><i class="hm-l4"></i>多
+            </span>
+        </div>
+        <div class="heatmap-day" data-panel aria-live="polite" hidden></div>
+        <div class="heatmap-tip" data-tip role="tooltip" hidden></div>
+        <noscript><p class="heatmap-noscript">热力图需要启用 JavaScript；下方「动态」与归档列表不受影响。</p></noscript>
+        <script type="application/json" data-activity-json>{{ $events | jsonify | safeJS }}</script>
+    </div>
+</section>
+
+{{- /* 动态 · News: post activity + manual entries from data/news.yaml */ -}}
+{{- $items := slice -}}
+{{- range first 10 $events -}}
+    {{- $items = $items | append (merge . (dict "manual" false)) -}}
+{{- end -}}
+{{- range $n := (hugo.Data.news | default slice) -}}
+    {{- if and $n.date $n.text -}}
+        {{- $t := time.AsTime $n.date -}}
+        {{- $items = $items | append (dict "manual" true "ts" $t.Unix "d" ($t.Format "2006-01-02") "text" $n.text "link" ($n.link | default "") "tag" ($n.tag | default "动态")) -}}
+    {{- end -}}
+{{- end -}}
+{{- $items = first 10 (sort $items "ts" "desc") -}}
+
+{{- with $items }}
+<section class="news-section" aria-labelledby="news-title">
+    <h2 class="section-title" id="news-title">动态 · News</h2>
+    <ol class="news-card">
+        {{- range $it := . }}
+        {{- $kind := cond .manual "note" .k }}
+        <li class="news-item news-item--{{ $kind }}">
+            <time class="news-date" datetime="{{ .d }}">{{ .d }}</time>
+            <span class="news-kind">{{ if .manual }}{{ .tag }}{{ else if eq .k "upd" }}更新{{ else }}发布{{ end }}</span>
+            <span class="news-body">
+                {{- if .manual -}}
+                    {{- if .link }}<a class="news-title" href="{{ .link }}">{{ .text | markdownify }}</a>{{ else }}<span class="news-title">{{ .text | markdownify }}</span>{{ end -}}
+                {{- else -}}
+                    <a class="news-title" href="{{ .url }}" title="{{ .full }}">
+                        {{- with .track }}<span class="track-tag track-{{ $it.trackKey | default "other" }}">{{ . }}</span>{{ end -}}
+                        <span>{{ .title }}</span>
+                    </a>
+                    {{- with .tag }}<a class="news-tag" href="{{ $it.tagUrl }}">{{ . }}</a>{{ end -}}
+                {{- end -}}
+            </span>
+        </li>
+        {{- end }}
+    </ol>
+</section>
+{{- end }}
+
+{{- $js := resources.Get "js/activity-heatmap.js" | minify | fingerprint -}}
+<script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>

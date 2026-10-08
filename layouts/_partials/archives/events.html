@@ -1,0 +1,46 @@
+{{/*
+    Blog activity events, built at site build time.
+
+    One "pub" (发布) event per post on its publish date, plus one "upd" (更新)
+    event on its `lastmod` date when that is a later day — so a post counts at
+    most once per day. Only main-section posts that are built (no drafts) and
+    not invite-locked (`locked`, whose dates are not public) are included.
+
+    Return: slice of dicts sorted newest first
+        d  "2006-01-02"   k  "pub" | "upd"   ts  unix seconds
+        title  short title for column posts ("[专栏][轨道] 短标题"), else full title
+        full   full title     url  permalink (relative)
+        track / trackKey      column track (理论 / 实验) or ""
+        tag / tagUrl          column name, else first category
+*/}}
+{{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections -}}
+{{- $events := slice -}}
+{{- range $pages -}}
+    {{- if not .Params.locked -}}
+        {{- $ct := partial "helper/column-title" . -}}
+        {{- $tag := "" -}}{{- $tagUrl := "" -}}
+        {{- with .GetTerms "column" -}}
+            {{- $t := index . 0 -}}{{- $tag = $t.LinkTitle -}}{{- $tagUrl = $t.RelPermalink -}}
+        {{- else -}}
+            {{- with .GetTerms "categories" -}}
+                {{- $t := index . 0 -}}{{- $tag = $t.LinkTitle -}}{{- $tagUrl = $t.RelPermalink -}}
+            {{- end -}}
+        {{- end -}}
+        {{- $base := dict
+            "title" (cond $ct.matched $ct.short .Title)
+            "full" .Title
+            "url" .RelPermalink
+            "track" (cond $ct.matched $ct.track "")
+            "trackKey" (cond $ct.matched $ct.trackKey "")
+            "tag" $tag
+            "tagUrl" $tagUrl
+        -}}
+        {{- $pub := .Date.Format "2006-01-02" -}}
+        {{- $events = $events | append (merge $base (dict "d" $pub "k" "pub" "ts" .Date.Unix)) -}}
+        {{- $upd := .Lastmod.Format "2006-01-02" -}}
+        {{- if and (ne $upd $pub) (.Lastmod.After .Date) -}}
+            {{- $events = $events | append (merge $base (dict "d" $upd "k" "upd" "ts" .Lastmod.Unix)) -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+{{- return (sort $events "ts" "desc") -}}
