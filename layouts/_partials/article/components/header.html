@@ -1,0 +1,35 @@
+{{/*
+    Theme header, unchanged except: posts titled "[专栏][轨道] 短标题" render
+    through article/components/column-details (pills + short title).
+    Locked posts keep the regular details partial.
+*/}}
+{{- $IsList := .IsList -}}
+{{- $Page := .Page -}}
+<header class="article-header">
+    {{- $image := partial "helper/image" (dict "Image" $Page.Params.image "Resources" $Page.Resources "Context" $Page) -}}
+    {{ if $image }}
+    <div class="article-image">
+        <a href="{{ $Page.RelPermalink }}">
+            {{ partial "helper/responsive-image" (dict
+                "Resource" $image.Resource
+                "Widths" (cond $Page.Site.Params.ImageProcessing.Content.Enabled $Page.Site.Params.ImageProcessing.Content.Widths nil)
+                "Attributes" (dict
+                    "src" $image.Permalink
+                    "width" $image.Width
+                    "height" $image.Height
+                    "alt" (printf "Featured image of post %s" $Page.Title)
+                    "loading" "lazy"
+                    "sizes" "(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"
+                )
+            ) }}
+        </a>
+    </div>
+    {{ end }}
+
+    {{- $ct := partial "helper/column-title" $Page -}}
+    {{- if and $ct.matched (not $Page.Params.locked) -}}
+        {{ partial "article/components/column-details" (dict "Page" $Page "IsList" $IsList "Title" $ct) }}
+    {{- else -}}
+        {{ partial "article/components/details" (dict "Page" $Page "IsList" $IsList) }}
+    {{- end -}}
+</header>

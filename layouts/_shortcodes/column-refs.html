@@ -1,0 +1,22 @@
+{{/*
+    Reference-material chips for a column landing page.
+    Reads `syllabus.references` from the page's front matter:
+        - { name: "PKU 编译", url: "https://…", kind: "Assignment" }
+*/}}
+{{- with .Page.Params.syllabus -}}
+{{- with .references -}}
+<div class="column-refs">
+    {{- range . -}}
+    {{- $u := urls.Parse .url -}}
+    <a class="column-ref" href="{{ .url }}" title="{{ $u.Host }}" target="_blank" rel="noopener">
+        <span class="column-ref-icon">{{ partial "helper/icon" "link" }}</span>
+        <span class="column-ref-text">
+            <span class="column-ref-name">{{ .name }}</span>
+            {{ with .kind }}<span class="column-ref-kind">{{ . }}</span>{{ end }}
+        </span>
+        <span class="column-ref-ext">{{ partial "helper/icon" "chevron-right" }}</span>
+    </a>
+    {{- end -}}
+</div>
+{{- end -}}
+{{- end -}}

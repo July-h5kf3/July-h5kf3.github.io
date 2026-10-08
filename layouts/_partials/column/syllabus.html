@@ -1,0 +1,125 @@
+{{/*
+    Course-style landing page for a `column` term whose _index.md sets
+    `syllabus` front matter:
+
+        syllabus:
+          tracks:            # sections, in display order
+            - name: 理论      # matches the [轨道] in post titles
+              title: 课程文档
+              subtitle: …     # optional
+              badge: CH       # optional, small text in the chapter badge
+          upcoming:          # optional placeholders, shown muted, no link
+            - { track: 实验, title: "Exp Chapter 3：…" }
+          references:        # rendered by the {{< column-refs >}} shortcode
+            - { name: …, url: …, kind: … }
+
+    Chapter cards are generated from the term's pages (ordered by
+    helper/column-pages); each post goes to the track named in its title
+    prefix "[专栏][轨道] 短标题". Posts without a known track are listed
+    under "其他" so nothing disappears.
+*/}}
+{{- $term := . -}}
+{{- $cfg := .Params.syllabus -}}
+{{- $tracks := $cfg.tracks | default slice -}}
+{{- $upcoming := $cfg.upcoming | default slice -}}
+{{- $pages := partial "helper/column-pages" . -}}
+
+{{- /* Group pages by track. */ -}}
+{{- $known := slice -}}
+{{- range $tracks }}{{ $known = $known | append .name }}{{ end -}}
+{{- $groups := dict -}}
+{{- $other := slice -}}
+{{- $latest := "" -}}
+{{- range $i, $p := $pages -}}
+    {{- $ct := partial "helper/column-title" $p -}}
+    {{- $item := dict "Page" $p "Title" $ct "Index" (add $i 1) -}}
+    {{- if and $ct.matched (in $known $ct.track) -}}
+        {{- $groups = merge $groups (dict $ct.track ((index $groups $ct.track | default slice) | append $item)) -}}
+    {{- else -}}
+        {{- $other = $other | append $item -}}
+    {{- end -}}
+    {{- if or (not $latest) ($p.Lastmod.After $latest.Lastmod) }}{{ $latest = $p }}{{ end -}}
+{{- end -}}
+
+{{- $done := len $pages -}}
+{{- $total := add $done (len $upcoming) -}}
+{{- $pct := 0 -}}
+{{- if gt $total 0 }}{{ $pct = div (mul $done 100) $total }}{{ end -}}
+
+<div class="column-syllabus">
+<header class="column-hero">
+    <nav class="column-hero-crumb">
+        {{ partial "helper/icon" "messages" }}
+        <a href="{{ with .Parent }}{{ .RelPermalink }}{{ end }}">系列专栏</a>
+    </nav>
+    <h1 class="column-hero-title">{{ .Title }}</h1>
+    {{ with .Params.description }}<p class="column-hero-desc">{{ . }}</p>{{ end }}
+
+    <div class="column-hero-stats">
+        <div class="column-progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ $total }}" aria-valuenow="{{ $done }}" aria-label="已完成 {{ $done }} / {{ $total }} 篇">
+            <div class="column-progress-head">
+                <span class="column-progress-count"><strong>{{ $done }}</strong> / {{ $total }} 篇已完成</span>
+                <span class="column-progress-pct">{{ $pct }}%</span>
+            </div>
+            <div class="column-progress-bar"><span style="{{ printf "width: %d%%" $pct | safeCSS }}"></span></div>
+        </div>
+        <ul class="column-hero-facts">
+            {{- range $tracks }}
+            {{- $n := len (index $groups .name | default slice) }}
+            {{- $key := index (dict "理论" "theory" "实验" "lab") .name | default "other" }}
+            <li><a class="track-tag track-{{ $key }}" href="#track-{{ $key }}">{{ .name }}</a><span>{{ $n }} 篇</span></li>
+            {{- end }}
+            {{- with $latest }}
+            <li>{{ partial "helper/icon" "clock" }}<span>更新于 {{ .Lastmod | time.Format ":date_medium" }}</span></li>
+            {{- end }}
+        </ul>
+    </div>
+</header>
+
+{{- with .Content }}
+<section class="article-content column-intro">
+    {{ . }}
+</section>
+{{- end }}
+
+
+{{- range $tracks }}
+    {{- $track := . -}}
+    {{- $key := index (dict "理论" "theory" "实验" "lab") .name | default "other" -}}
+    {{- $items := index $groups .name | default slice -}}
+    {{- $soon := where $upcoming "track" .name -}}
+    {{- if or $items $soon }}
+<section class="column-track track-{{ $key }}" id="track-{{ $key }}">
+    <header class="column-track-header">
+        <span class="track-pill track-{{ $key }}">{{ .name }}</span>
+        <h2 class="column-track-title">{{ .title | default .name }}</h2>
+        <span class="column-track-count">{{ len $items }} 篇{{ with $soon }} · {{ len . }} 篇编写中{{ end }}</span>
+        {{ with .subtitle }}<p class="column-track-sub">{{ . }}</p>{{ end }}
+    </header>
+    <ol class="chapter-list">
+        {{- range $items }}
+            {{- partial "column/card" (dict "Page" .Page "Title" .Title "Index" .Index "Badge" ($track.badge | default "CH")) -}}
+        {{- end }}
+        {{- range $j, $u := $soon }}
+            {{- $ct := partial "helper/column-title" (dict "Title" (printf "[%s][%s] %s" $term.Title $u.track $u.title)) -}}
+            {{- partial "column/card" (dict "Page" false "Title" $ct "Index" (add (len $items) $j 1) "Badge" ($track.badge | default "CH") "Description" $u.description) -}}
+        {{- end }}
+    </ol>
+</section>
+    {{- end }}
+{{- end }}
+
+{{- with $other }}
+<section class="column-track track-other" id="track-other">
+    <header class="column-track-header">
+        <h2 class="column-track-title">其他</h2>
+        <span class="column-track-count">{{ len . }} 篇</span>
+    </header>
+    <ol class="chapter-list">
+        {{- range . }}
+            {{- partial "column/card" (dict "Page" .Page "Title" .Title "Index" .Index "Badge" "#") -}}
+        {{- end }}
+    </ol>
+</section>
+{{- end }}
+</div>

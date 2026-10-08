@@ -1,4 +1,8 @@
 {{ define "main" }}
+{{- if .Params.syllabus -}}
+    {{/* Course-style landing page (hero, references, chapter cards). See _partials/column/syllabus.html. */}}
+    {{ partial "column/syllabus" . }}
+{{- else -}}
     <header>
         <h3 class="section-title">
             {{ if eq .Parent (.GetPage "/") }}
@@ -93,6 +97,7 @@
     {{- end -}}
 
     {{- partial "pagination.html" . -}}
+{{- end -}}
 
     {{ partialCached "footer/footer" . }}
 {{ end }}
