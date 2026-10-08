@@ -1,6 +1,5 @@
 ---
 title: "[从零开始的编译原理][实验] Exp Chapter 2：从 Koopa IR 到 RISC-V"
-description: 理解 RISC-V 汇编中的函数入口、返回值寄存器和 li/ret 伪指令，并实现遍历 Koopa IR 生成 RISC-V 汇编的 CodeGen。
 date: 2026-10-06T20:24:45+08:00
 slug: compiler-exp2-koopa-to-riscv
 series:

@@ -1,6 +1,5 @@
 ---
 title: "[从零开始的编译原理][实验] Exp Chapter 1：从 SysY 到 Koopa IR"
-description: 用 Flex/Bison 实现 SysY 的词法与语法分析，设计并构建 AST，再通过 IRGenerator 和 IRPrinter 生成 Koopa IR。
 date: 2026-09-29T20:23:03+08:00
 slug: compiler-exp1-sysy-to-koopa-ir
 series:
@@ -1075,7 +1074,7 @@ Token Stream
 
 ## 解析 main 函数：构建 AST
 
-在 `Exp 1.0` 中，我们借助 Flex 和 Bison 实现了一个能够解析简单 `main` 函数的编译器前端。
+在第一节中，我们借助 Flex 和 Bison 实现了一个能够解析简单 `main` 函数的编译器前端。
 
 不过，此时语法分析器只是将解析结果重新拼接成一个字符串。虽然这足以帮助我们理解 Bison 的基本工作方式，但字符串并不适合作为后续编译阶段处理程序的数据结构。
 

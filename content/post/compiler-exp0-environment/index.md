@@ -1,6 +1,5 @@
 ---
 title: "[从零开始的编译原理][实验] Exp Chapter 0：实验环境搭建"
-description: 编译器实验的准备工作：Docker 实验环境、Koopa IR 与 RISC-V 简介，以及基于 CMake 模板的 C++ 项目构建。
 date: 2026-09-28T16:36:25+08:00
 slug: compiler-exp0-environment
 series:

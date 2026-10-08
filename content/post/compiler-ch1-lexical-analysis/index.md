@@ -1,6 +1,5 @@
 ---
 title: "[从零开始的编译原理][理论] Chapter 1：词法分析"
-description: 词法分析的基本概念、用 ANTLR 编写词法/语法规则，以及从正则表达式到 NFA、DFA 再到最小化 DFA 的原理。
 date: 2026-09-28T20:15:14+08:00
 slug: compiler-ch1-lexical-analysis
 series:

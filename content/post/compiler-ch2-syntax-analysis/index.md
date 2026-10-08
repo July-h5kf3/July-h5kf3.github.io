@@ -1,6 +1,5 @@
 ---
 title: "[从零开始的编译原理][理论] Chapter 2：语法分析"
-description: 用 ANTLR 描述 Cymbol 语法并处理二义性，介绍上下文无关文法，以及 LL(1) 分析中 FIRST/FOLLOW/SELECT 集与预测分析表的构造。
 date: 2026-10-03T15:32:40+08:00
 slug: compiler-ch2-syntax-analysis
 series:
