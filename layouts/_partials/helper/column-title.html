@@ -1,0 +1,35 @@
+{{/*
+    Split a column post's title into its parts.
+
+    Column posts are titled "[专栏名][轨道] 短标题", e.g.
+        [从零开始的编译原理][理论] Chapter 1：词法分析
+    The full title stays the page title (<title>, RSS, search, OpenGraph);
+    templates use the parts to show pills + the short title instead.
+
+    Input:  a page (or a dict with "Title", for upcoming placeholders).
+    Return: dict
+        matched  bool    title had the "[a][b] rest" prefix
+        column   string  专栏名   (a)
+        track    string  轨道     (b), e.g. 理论 / 实验
+        trackKey string  CSS-safe key: theory / lab / other
+        short    string  rest, e.g. "Chapter 1：词法分析"
+        label    string  part before "：", e.g. "Chapter 1"
+        name     string  part after  "：", e.g. "词法分析"  (= short if no colon)
+        num      string  first number in label, e.g. "1"
+*/}}
+{{- $title := .Title -}}
+{{- $r := dict "matched" false "column" "" "track" "" "trackKey" "" "short" $title "label" "" "name" $title "num" "" -}}
+{{- with findRESubmatch `^\s*\[([^\]]+)\]\s*\[([^\]]+)\]\s*(.+)$` $title 1 -}}
+    {{- $g := index . 0 -}}
+    {{- $track := index $g 2 -}}
+    {{- $r = merge $r (dict "matched" true "column" (index $g 1) "track" $track "short" (index $g 3) "name" (index $g 3)) -}}
+{{- end -}}
+{{- with findRESubmatch `^(.+?)\s*[：:]\s*(.+)$` $r.short 1 -}}
+    {{- $g := index . 0 -}}
+    {{- $r = merge $r (dict "label" (index $g 1) "name" (index $g 2)) -}}
+{{- end -}}
+{{- with findRESubmatch `(\d+)` (cond (ne $r.label "") $r.label $r.short) 1 -}}
+    {{- $r = merge $r (dict "num" (index (index . 0) 1)) -}}
+{{- end -}}
+{{- $r = merge $r (dict "trackKey" (index (dict "理论" "theory" "实验" "lab") $r.track | default "other")) -}}
+{{- return $r -}}

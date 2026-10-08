@@ -1,0 +1,93 @@
+{{/*
+    Article details for column posts ("[专栏][轨道] 短标题").
+    Same structure as the theme's details partial, but the bracket prefix is
+    shown as two pills (专栏 → column page, 轨道 → its section there) and the
+    title is the short title. Categories already named by the column pill
+    (e.g. 编译原理 ⊂ 从零开始的编译原理) are not repeated.
+*/}}
+{{- $IsList := .IsList -}}
+{{- $Page := .Page -}}
+{{- $ct := .Title -}}
+{{- $term := "" -}}
+{{- with $Page.GetTerms "column" -}}{{- $term = index . 0 -}}{{- end -}}
+<div class="article-details">
+    <header class="article-category article-category--column">
+        {{- if $term }}
+            <a class="column-pill" href="{{ $term.RelPermalink }}">{{ partial "helper/icon" "messages" }}<span>{{ $ct.column }}</span></a>
+            <a class="track-pill track-{{ $ct.trackKey }}" href="{{ $term.RelPermalink }}#track-{{ $ct.trackKey }}">{{ $ct.track }}</a>
+        {{- else }}
+            <span class="column-pill">{{ partial "helper/icon" "messages" }}<span>{{ $ct.column }}</span></span>
+            <span class="track-pill track-{{ $ct.trackKey }}">{{ $ct.track }}</span>
+        {{- end }}
+        {{- range ($Page.GetTerms "categories") }}
+            {{- if not (strings.Contains $ct.column .LinkTitle) }}
+            {{ $color := partial "helper/color-from-str" .LinkTitle }}
+            {{ $BackgroundColor := default $color.BackgroundColor .Params.style.background }}
+            {{ $TextColor := default $color.TextColor .Params.style.color }}
+            <a href="{{ .RelPermalink }}" style="background-color: {{ $BackgroundColor | safeCSS }}; color: {{ $TextColor | safeCSS }};">
+                {{ .LinkTitle }}
+            </a>
+            {{- end }}
+        {{- end }}
+    </header>
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title article-title--column">
+            <a href="{{ $Page.RelPermalink }}">
+                {{- $ct.short -}}
+            </a>
+        </h2>
+
+        {{ with $Page.Params.description }}
+        <h3 class="article-subtitle">
+            {{ . }}
+        </h3>
+        {{ end }}
+    </div>
+
+    {{ $showReadingTime := $Page.Params.readingTime | default ($Page.Site.Params.article.readingTime) }}
+    {{ $showDate := not $Page.Date.IsZero }}
+    {{ $showTime := or $showDate $showReadingTime }}
+    {{ $showTranslations := $Page.IsTranslated }}
+    {{ $showTags := and $Page.Site.Params.Article.List.ShowTags ($Page.GetTerms "tags") $IsList }}
+
+    {{ if or $showTime $showTranslations $showTags }}
+    <footer class="article-meta">
+        {{ if $showTime }}
+            <div class="inline-meta">
+                {{ if $showDate }}
+                    {{ partial "helper/icon" "date" }}
+                    <time class="article-time--published" datetime='{{ $Page.Date.Format "2006-01-02T15:04:05Z07:00" }}'>
+                        {{- $Page.Date | time.Format $Page.Site.Params.dateFormat.published -}}
+                    </time>
+                {{ end }}
+
+                {{ if $showReadingTime }}
+                    {{ partial "helper/icon" "clock" }}
+                    <time class="article-time--reading">
+                        {{ T "article.readingTime" $Page.ReadingTime }}
+                    </time>
+                {{ end }}
+            </div>
+        {{ end }}
+
+        {{ if $showTranslations }}
+            <div class="inline-meta">
+                {{ partial "helper/icon" "language" }}
+                {{ range $Page.Translations }}
+                    <a href="{{ .RelPermalink }}" class="link">{{ .Language.Label }}</a>
+                {{ end }}
+            </div>
+        {{ end }}
+
+        {{ if $showTags }}
+            <div class="article-tags inline-meta">
+                {{ partial "helper/icon" "tag" }}
+                {{ range ($Page.GetTerms "tags") }}
+                    <a href="{{ .RelPermalink }}" class="link">{{ .LinkTitle }}</a>
+                {{ end }}
+            </div>
+        {{ end }}
+    </footer>
+    {{ end }}
+</div>

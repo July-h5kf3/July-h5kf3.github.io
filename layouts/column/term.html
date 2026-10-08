@@ -1,0 +1,107 @@
+{{ define "main" }}
+{{- if .Params.syllabus -}}
+    {{/* Course-style landing page (hero, references, chapter cards). See _partials/column/syllabus.html. */}}
+    {{ partial "column/syllabus" . }}
+{{- else -}}
+    <header>
+        <h3 class="section-title">
+            {{ if eq .Parent (.GetPage "/") }}
+                {{ T "list.section" }}
+            {{ else }}
+                {{ .Parent.Title }}
+            {{ end }}
+        </h3>
+
+        <div class="section-card">
+            <div class="section-details">
+                <h3 class="section-count">{{ T "list.page" (len .Pages) }}</h3>
+                <h1 class="section-term">{{ .Title }}</h1>
+                {{ with .Params.description }}
+                    <h2 class="section-description">{{ . }}</h2>
+                {{ end }}
+            </div>
+
+            {{- $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) -}}
+            {{ if $image }}
+                <div class="section-image">
+                    {{ partial "helper/thumbnail-image" (dict
+                        "Resource" $image.Resource
+                        "Width" 60
+                        "Height" 60
+                        "Resize" .Site.Params.ImageProcessing.Thumbnail.Enabled
+                        "Attributes" (dict
+                            "src" $image.Permalink
+                            "alt" .Title
+                            "loading" "lazy"
+                            "width" $image.Width
+                            "height" $image.Height
+                        )
+                    ) }}
+                </div>
+            {{ end }}
+        </div>
+    </header>
+
+    {{/* Index prose (e.g. the series introduction). Empty on columns that only list posts. */}}
+    {{- with .Content -}}
+        <section class="article-content column-index">
+            {{ . }}
+        </section>
+    {{- end -}}
+
+    {{- $pages := partial "helper/pages.html" . -}}
+    {{- $subsections := .Sections -}}
+
+    {{- if and (eq (len $pages) (len $subsections)) (eq $pages $subsections) -}}
+        {{- $subsections = slice -}}
+    {{- end -}}
+
+    {{- with $subsections -}}
+        <aside>
+            <h2 class="section-title">{{ T "list.subsection" (len $subsections) }}</h2>
+            <div class="subsection-list">
+                <div class="article-list--tile">
+                    {{ range . }}
+                        {{ partial "article-list/tile" . }}
+                    {{ end }}
+                </div>
+            </div>
+        </aside>
+    {{- end -}}
+
+    {{/*
+        `weight` also pins posts on the homepage, so a series that must not
+        disturb that order sets `seriesOrder` instead. Use it only when every
+        page in the term has one; otherwise keep the theme's default order
+        (weight, then date), which the Hopper series relies on.
+    */}}
+    {{- $withOrder := where $pages "Params.seriesorder" "ge" 1 -}}
+    {{- if and (gt (len $withOrder) 0) (eq (len $withOrder) (len $pages)) -}}
+        {{- $pages = sort $pages "Params.seriesorder" "asc" -}}
+    {{- end -}}
+
+    {{/*
+        `.Paginate` is cached on the page the first time anything asks for a
+        paginator, and that cache keeps Hugo's default order. Slice the
+        already ordered list with the current page number instead.
+    */}}
+    {{- $pager := .Paginator -}}
+    {{- $start := mul (sub $pager.PageNumber 1) $pager.PagerSize -}}
+    {{- $visible := $pages | after $start | first $pager.PagerSize -}}
+    {{- with $visible -}}
+        <section class="article-list--compact">
+            {{ range . }}
+                {{ partial "article-list/compact" . }}
+            {{ end }}
+        </section>
+    {{- end -}}
+
+    {{- partial "pagination.html" . -}}
+{{- end -}}
+
+    {{ partialCached "footer/footer" . }}
+{{ end }}
+
+{{ define "right-sidebar" }}
+    {{ partial "sidebar/right.html" (dict "Context" . "Scope" "homepage") }}
+{{ end }}

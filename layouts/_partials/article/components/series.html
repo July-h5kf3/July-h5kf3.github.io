@@ -1,32 +1,61 @@
 {{/*
     Article-series navigation box.
     Renders on any post that belongs to a `column` taxonomy term ("系列文章").
-    Lists every post in the series (ordered by front-matter `weight`, then date),
-    highlighting the current one, so readers can move through the series.
+    Order comes from helper/column-pages (seriesOrder, else weight then date).
+    Column-style titles ("[专栏][轨道] 短标题") are shown as a small 轨道 tag
+    plus the short title; chapters announced in the column's
+    `syllabus.upcoming` front matter are listed muted at the end.
 */}}
 {{- $cur := . -}}
 {{- with .GetTerms "column" -}}
     {{- $series := index . 0 -}}
-    {{- $posts := sort (sort $series.Pages "Date" "asc") "Weight" -}}
+    {{- $posts := partial "helper/column-pages" $series -}}
+    {{- $upcoming := slice -}}
+    {{- with $series.Params.syllabus -}}{{- $upcoming = .upcoming | default slice -}}{{- end -}}
     {{- $count := len $posts -}}
+    {{- $pos := 0 -}}
+    {{- range $i, $p := $posts -}}{{- if eq $p.RelPermalink $cur.RelPermalink -}}{{- $pos = add $i 1 -}}{{- end -}}{{- end -}}
     <aside class="article-series">
         <details open>
             <summary>
                 <div class="article-series-title">
                     {{ partial "helper/icon" "messages" }}
-                    <span>系列：<a href="{{ $series.RelPermalink }}">{{ $series.LinkTitle }}</a>（共 {{ $count }} 篇）</span>
+                    <span class="article-series-kicker">系列</span>
+                    <a href="{{ $series.RelPermalink }}">{{ $series.LinkTitle }}</a>
+                    <span class="article-series-progress">{{ $pos }} / {{ $count }}</span>
+                    <span class="article-series-chevron">{{ partial "helper/icon" "chevron-right" }}</span>
                 </div>
             </summary>
             <ol class="article-series-list">
                 {{- range $i, $p := $posts -}}
                     {{- $isCurrent := eq $p.RelPermalink $cur.RelPermalink -}}
-                    <li class="{{ if $isCurrent }}current{{ end }}">
-                        {{- if $isCurrent -}}
-                            <span>{{ $p.LinkTitle }}</span>
-                            <em>当前</em>
-                        {{- else -}}
-                            <a href="{{ $p.RelPermalink }}">{{ $p.LinkTitle }}</a>
-                        {{- end -}}
+                    {{- $ct := partial "helper/column-title" $p -}}
+                    <li class="article-series-item{{ if $isCurrent }} current{{ end }}">
+                        {{- if $isCurrent }}
+                        <span class="article-series-link" aria-current="page">
+                            <span class="article-series-num">{{ add $i 1 }}</span>
+                            {{- if $ct.matched }}<span class="track-tag track-{{ $ct.trackKey }}">{{ $ct.track }}</span>{{ end -}}
+                            <span class="article-series-name">{{ $ct.short }}</span>
+                            <span class="article-series-here">正在阅读</span>
+                        </span>
+                        {{- else }}
+                        <a class="article-series-link" href="{{ $p.RelPermalink }}">
+                            <span class="article-series-num">{{ add $i 1 }}</span>
+                            {{- if $ct.matched }}<span class="track-tag track-{{ $ct.trackKey }}">{{ $ct.track }}</span>{{ end -}}
+                            <span class="article-series-name">{{ $ct.short }}</span>
+                        </a>
+                        {{- end }}
+                    </li>
+                {{- end -}}
+                {{- range $j, $u := $upcoming -}}
+                    {{- $ct := partial "helper/column-title" (dict "Title" (printf "[%s][%s] %s" $series.LinkTitle $u.track $u.title)) -}}
+                    <li class="article-series-item upcoming">
+                        <span class="article-series-link">
+                            <span class="article-series-num">{{ add $count $j 1 }}</span>
+                            <span class="track-tag track-{{ $ct.trackKey }}">{{ $ct.track }}</span>
+                            <span class="article-series-name">{{ $ct.short }}</span>
+                            <span class="article-series-soon">编写中</span>
+                        </span>
                     </li>
                 {{- end -}}
             </ol>

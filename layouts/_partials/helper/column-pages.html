@@ -1,0 +1,12 @@
+{{/*
+    Ordered pages of a `column` term.
+    Uses front-matter `seriesOrder` when every page sets it (those posts can
+    omit `weight` and stay out of the homepage pinned area); otherwise
+    `weight`, then date — the Hopper series relies on that.
+*/}}
+{{- $pages := sort (sort .Pages "Date" "asc") "Weight" -}}
+{{- $withOrder := where .Pages "Params.seriesorder" "ge" 1 -}}
+{{- if and (gt (len $withOrder) 0) (eq (len $withOrder) (len .Pages)) -}}
+    {{- $pages = sort .Pages "Params.seriesorder" "asc" -}}
+{{- end -}}
+{{- return $pages -}}
