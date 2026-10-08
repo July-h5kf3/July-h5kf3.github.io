@@ -2,14 +2,21 @@
 # name + level are the resume's own wording (resume-zh_CN.pdf, 「竞赛获奖」),
 # only split into competition / level; when = the date as written there.
 # certs: redacted certificate images in content/page/about/certs/.
-# evidence: public report for an award without a certificate photo.
+# detail: short extra line (user-confirmed facts).
+# evidence: link card to a public report / official results page.
 - year: 2026
   when: "2026 年 7 月"
-  name: "2026百度商业AI技术创新大赛（决赛）赛题：生成式推荐广告排序推理性能优化"
-  level: "三等奖"
-  # not in the resume's 「竞赛获奖」 list; name/level as printed on the certificate
+  # not in the resume's 「竞赛获奖」 list; competition / track / prize as on the
+  # certificate, final rank from the official ranking page (resume 「榜单第 3」 = preliminary round)
+  name: "2026百度商业AI技术创新大赛 · 生成式推荐广告排序推理性能优化"
+  level: "决赛第五名 · 三等奖"
   certs:
     - { file: cti-2026 }
+  evidence:
+    title: "排行榜 · 2026百度商业AI技术创新大赛"
+    source: "百度商业AI技术创新大赛官网"
+    url: "https://cti.baidu.com/ranking.html"
+    image: cti-2026-ranking
 - year: 2025
   when: "2025 年 12 月"
   name: "2025 腾讯游戏算法大赛 (TGAC)"
@@ -20,6 +27,7 @@
   when: "2025 年 11 月"
   name: "DataCon2025 大数据安全分析竞赛"
   level: "全国一等奖"
+  detail: "口令安全赛道亚军 · NKPwd 战队队长"
   evidence:
     title: "DataCon2025颁奖典礼在京召开"
     source: "雷峰网"

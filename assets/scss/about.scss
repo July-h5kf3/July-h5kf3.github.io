@@ -116,7 +116,7 @@
 }
 .award-when {
     flex-shrink: 0;
-    width: 7.5em;
+    width: 9.75rem;
     font-size: 1.3rem;
     font-variant-numeric: tabular-nums;
     color: var(--card-text-color-tertiary);
@@ -128,11 +128,17 @@
     align-self: center;
     &.is-national { @include ds-tone(accent); }
 }
+.award-detail {
+    margin: 2px 0 0 calc(9.75rem + 10px);
+    font-size: 1.35rem;
+    color: var(--card-text-color-secondary);
+}
+
 .award-media {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2) var(--space-3);
-    margin: var(--space-2) 0 var(--space-1) calc(7.5em * 1.3 / 1.6 + 10px);
+    margin: var(--space-2) 0 var(--space-1) calc(9.75rem + 10px);
 }
 .main-article .article-content a.cert-thumb {
     position: relative;
@@ -217,7 +223,7 @@
     .about-card { padding: 16px; gap: var(--space-3); }
     .resume-card { flex-wrap: wrap; }
     .award-when { width: auto; flex-basis: 100%; }
-    .award-media { margin-left: 0; }
+    .award-detail, .award-media { margin-left: 0; }
     .main-article .article-content a.cert-thumb { height: 96px; }
 }
 

@@ -22,6 +22,7 @@
                     <span class="award-name">{{ .name }}</span>
                     <span class="award-level{{ if $national }} is-national{{ end }}">{{ .level }}</span>
                 </div>
+                {{- with .detail }}<p class="award-detail">{{ . }}</p>{{ end }}
                 {{- if or .certs .evidence }}
                 <div class="award-media">
                     {{- range .certs }}
@@ -42,7 +43,7 @@
                         {{- end }}{{ end }}
                         <span class="evidence-text">
                             <span class="evidence-title">{{ partial "helper/icon" "link" }}<span>{{ .title }}</span></span>
-                            <span class="evidence-meta">{{ .source }} · <time datetime="{{ time.Format "2006-01-02" .date }}">{{ time.Format site.Params.dateFormat.published .date }}</time></span>
+                            <span class="evidence-meta">{{ .source }}{{ with .date }} · <time datetime="{{ time.Format "2006-01-02" . }}">{{ time.Format site.Params.dateFormat.published . }}</time>{{ end }}</span>
                         </span>
                     </a>
                     {{- end }}
