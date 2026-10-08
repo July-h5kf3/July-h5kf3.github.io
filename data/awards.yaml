@@ -7,16 +7,11 @@
 - year: 2026
   when: "2026 年 7 月"
   # not in the resume's 「竞赛获奖」 list; competition / track / prize as on the
-  # certificate, final rank from the official ranking page (resume 「榜单第 3」 = preliminary round)
+  # certificate; final rank 5 user-confirmed (cti.baidu.com/ranking.html; resume 「榜单第 3」 = preliminary round)
   name: "2026百度商业AI技术创新大赛 · 生成式推荐广告排序推理性能优化"
   level: "决赛第五名 · 三等奖"
   certs:
     - { file: cti-2026 }
-  evidence:
-    title: "排行榜 · 2026百度商业AI技术创新大赛"
-    source: "百度商业AI技术创新大赛官网"
-    url: "https://cti.baidu.com/ranking.html"
-    image: cti-2026-ranking
 - year: 2025
   when: "2025 年 12 月"
   name: "2025 腾讯游戏算法大赛 (TGAC)"
