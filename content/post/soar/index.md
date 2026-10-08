@@ -14,6 +14,11 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
+paper:
+    arxiv: "2605.12245"
+    affiliation: 上海交通大学
+    corrAffiliation: 上海交通大学
 ---
 对于NVFP4量化，我们可以将其量化行为用下述公式描述:
 

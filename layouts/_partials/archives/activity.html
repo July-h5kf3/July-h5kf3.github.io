@@ -58,7 +58,9 @@
                 {{- if .manual -}}
                     {{- if .link }}<a class="news-title" href="{{ .link }}">{{ .text | markdownify }}</a>{{ else }}<span class="news-title">{{ .text | markdownify }}</span>{{ end -}}
                 {{- else -}}
-                    <a class="news-title" href="{{ .url }}" title="{{ .full }}"><span>{{ .title }}</span></a>
+                    <a class="news-title" href="{{ .url }}" title="{{ .full }}">
+                        {{- if or .venue .dir }}{{ partial "paper/badges" (dict "P" (dict "show" true "venue" .venue "year" .year "field" .field "dir" .dir "dirLabel" .dirLabel "dirName" .dirName) "Link" false) }}{{ end -}}
+                        <span>{{ .title }}</span></a>
                     {{- with .tag }}<a class="news-tag" href="{{ $it.tagUrl }}">{{ . }}</a>{{ end -}}
                 {{- end -}}
             </span>

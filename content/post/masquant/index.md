@@ -1,5 +1,5 @@
 ---
-title: "MASQuant: Modality-Aware Smoothing Quantization for Multimodal Large Language Models"
+title: "[2026 CVPR] MASQuant: Modality-Aware Smoothing Quantization for Multimodal Large Language Models"
 description: 面向多模态大模型、模态感知的平滑量化。
 date: 2026-08-26T08:18:00+08:00
 slug: masquant
@@ -14,6 +14,14 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
+paper:
+    venue: CVPR
+    year: 2026
+    url: https://openaccess.thecvf.com/content/CVPR2026/html/Hu_MASQuant_Modality-Aware_Smoothing_Quantization_for_Multimodal_Large_Language_Models_CVPR_2026_paper.html
+    arxiv: "2603.04800"
+    affiliation: 阿里云
+    corrAffiliation: 阿里云
 ---
 <div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
     <b>个人评价</b>:很有价值的工作，从High-Level的角度来看，不同模态激活值的分布不同带来的量化挑战可以看作LLM Quant中激活值Outlier带来的挑战，因此从这个角度出发可以很好的理解文章的出发点。

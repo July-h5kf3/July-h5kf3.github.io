@@ -14,6 +14,10 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
+paper:
+    arxiv: "2508.03351v1"
+    affiliation: 中国电信人工智能研究院 (TeleAI)、香港科技大学
 ---
 <div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
     <b>个人评价</b>:文章引出给不同token分配重要性的方式特别好，值得学习！后面的方法就和MBQ，QIG大同小异了

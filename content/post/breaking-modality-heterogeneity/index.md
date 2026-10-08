@@ -1,5 +1,5 @@
 ---
-title: "Breaking Modality Heterogeneity in Low-Bit Quantization for Large Vision-Language Models"
+title: "[2026 NeurIPS] Breaking Modality Heterogeneity in Low-Bit Quantization for Large Vision-Language Models"
 description: 缓解低比特量化下视觉语言模型的模态异质性问题。
 date: 2026-08-26T08:51:00+08:00
 slug: breaking-modality-heterogeneity
@@ -14,6 +14,14 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
+paper:
+    venue: NeurIPS
+    year: 2026
+    url: https://neurips.cc/virtual/2026/poster/153382
+    arxiv: "2605.19929"
+    affiliation: 南开大学 VCIP
+    corrAffiliation: 南开大学 VCIP
 ---
 作者团队通过可视化文本和视觉Token在不同通道分布上的分布，观察到以下现象:
 

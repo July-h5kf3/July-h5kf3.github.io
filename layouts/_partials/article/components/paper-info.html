@@ -1,0 +1,61 @@
+{{/*
+    论文信息卡片 —— 论文解读文章正文最上方的「发表 / 机构」信息。
+
+    由文章 front matter 的 `paper` 字段驱动，没有该字段的文章不渲染：
+
+        paper:
+            venue: CVPR                 # 会议/期刊简称；预印本不写 venue
+            year: 2026                  # 与 venue 搭配，显示为「CVPR 2026」
+            url: https://openaccess...  # 正式论文集/会议页面（已核实）
+            arxiv: "2603.04800"         # arXiv 编号：已中稿时显示为次要链接，
+                                        # 未中稿时作为「arXiv 预印本」的链接
+            affiliation: 阿里云          # 第一作者机构（共同一作取并集）
+            corrAffiliation: 阿里云      # 通讯作者机构；论文未标注通讯作者时不写
+
+    显示规则：corrAffiliation 不写 → 只显示「第一作者机构」；
+    与 affiliation 相同 → 合并为一行「机构」；不同 → 两行都显示。
+    会议 pill 按领域着色（data/venues.yaml → helper/paper-title 的 field）；
+    文章设置了 `tracks`（algo / sys）时另起一行「方向」，链接到 /tracks/… 列表。
+*/}}
+{{- $pt := partial "helper/paper-title" . -}}
+{{- with .Params.paper -}}
+{{- $p := . -}}
+{{- $arxivURL := "" -}}
+{{- with $p.arxiv }}{{ $arxivURL = printf "https://arxiv.org/abs/%v" . }}{{ end -}}
+{{- $venue := "arXiv 预印本" -}}
+{{- $url := $arxivURL -}}
+{{- if $p.venue -}}
+    {{- $venue = trim (printf "%s %v" $p.venue ($p.year | default "")) " " -}}
+    {{- $url = $p.url | default "" -}}
+{{- end -}}
+{{- $aff := $p.affiliation | default "" -}}
+{{- $corr := $p.corrAffiliation | default "" -}}
+<aside class="paper-info{{ if not $p.venue }} paper-info--preprint{{ end }}" aria-label="论文信息">
+    <dl class="paper-info-list">
+        <div class="paper-info-row">
+            <dt>发表</dt>
+            <dd>
+                {{- if $url -}}
+                <a class="paper-pill paper-pill--venue venue--{{ $pt.field }}" href="{{ $url }}" target="_blank" rel="noopener">{{ $venue }}{{ partial "helper/icon" "link" }}</a>
+                {{- else -}}
+                <span class="paper-pill paper-pill--venue venue--{{ $pt.field }}">{{ $venue }}</span>
+                {{- end -}}
+                {{- if and $p.venue $arxivURL -}}
+                <a class="paper-pill paper-pill--arxiv" href="{{ $arxivURL }}" target="_blank" rel="noopener">arXiv</a>
+                {{- end -}}
+            </dd>
+        </div>
+        {{- with $pt.dir }}
+        <div class="paper-info-row"><dt>方向</dt><dd><a class="paper-dir paper-dir--{{ . }}" href="{{ $pt.dirURL }}" title="查看全部{{ $pt.dirName }}方向的论文解读">{{ $pt.dirLabel }}</a><span class="paper-dir-name">{{ $pt.dirName }}</span></dd></div>
+        {{- end }}
+        {{- if and $corr (ne $corr $aff) }}
+        <div class="paper-info-row"><dt>第一作者机构</dt><dd>{{ $aff }}</dd></div>
+        <div class="paper-info-row"><dt>通讯作者机构</dt><dd>{{ $corr }}</dd></div>
+        {{- else if $corr }}
+        <div class="paper-info-row"><dt>机构</dt><dd>{{ $aff }}</dd></div>
+        {{- else if $aff }}
+        <div class="paper-info-row"><dt>第一作者机构</dt><dd>{{ $aff }}</dd></div>
+        {{- end }}
+    </dl>
+</aside>
+{{- end -}}

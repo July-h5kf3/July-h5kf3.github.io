@@ -1,0 +1,84 @@
+/* =========================================================================
+   论文信息卡片 (layouts/_partials/article/components/paper-info.html)
+   发表（会议 pill + arXiv）· 第一作者机构 / 通讯作者机构（或合并为「机构」）
+   ========================================================================= */
+
+.main-article .article-content .paper-info {
+    margin: 0 0 1.6em;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--hairline);
+    border-left: 4px solid var(--accent-color);
+    border-radius: var(--radius-inner);
+    background: rgba(var(--accent-rgb), 0.05);
+    box-shadow: var(--shadow-sm);
+    font-size: 1.45rem;
+    line-height: 1.6;
+
+    &.paper-info--preprint { border-left-color: var(--tone-neutral); }
+
+    .paper-info-list {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        column-gap: var(--space-4);
+        row-gap: var(--space-2);
+        margin: 0;
+    }
+
+    /* each row is a <div> so the grid lines up dt / dd */
+    .paper-info-row { display: contents; }
+
+    dt {
+        margin: 0;
+        font-weight: 600;
+        color: var(--card-text-color-secondary);
+        white-space: nowrap;
+    }
+
+    dd {
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2);
+        color: var(--card-text-color-main);
+        min-width: 0;
+    }
+
+    a.paper-pill,
+    span.paper-pill {
+        @include ds-pill(md);
+        @include ds-tone(accent);
+        &[class*="venue--"] {
+            --pill-fg: var(--venue-fg);
+            --pill-bg: rgba(var(--venue-rgb), 0.12);
+        }
+        text-decoration: none;
+        background-image: none;
+        background-size: auto;
+        svg { width: 13px; height: 13px; }
+        &:hover { color: var(--pill-fg); background-size: auto; }
+    }
+
+    &.paper-info--preprint .paper-pill--venue,
+    .paper-pill--arxiv { @include ds-tone(neutral); }
+
+    /* 方向 row: the outline 方向 label (paper-badges.scss) at card size */
+    a.paper-dir {
+        font-size: 1.15rem;
+        padding: 2px 8px;
+        background-image: none;
+        &:hover { background-image: none; background-size: auto; }
+    }
+    .paper-dir-name { color: var(--card-text-color-secondary); font-size: 1.3rem; }
+
+    @media (max-width: 480px) {
+        padding: var(--space-3);
+        font-size: 1.4rem;
+
+        .paper-info-list {
+            grid-template-columns: 1fr;
+            row-gap: 2px;
+        }
+        dd + dt, .paper-info-row + .paper-info-row dt { margin-top: var(--space-2); }
+    }
+}

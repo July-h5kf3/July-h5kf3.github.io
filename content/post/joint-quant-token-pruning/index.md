@@ -14,6 +14,11 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
+paper:
+    arxiv: "2604.17320"
+    affiliation: 南开大学 VCIP
+    corrAffiliation: 南开大学 VCIP
 ---
 <div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
     <b>个人评价</b>:其实和QAPruner大同小异，就多了一个层预算分配的问题，以及打分的依据不同

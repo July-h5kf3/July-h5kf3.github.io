@@ -1,5 +1,5 @@
 ---
-title: "OWQ: Outlier-Aware Weight Quantization for Efficient Fine-Tuning and Inference of Large Language Models"
+title: "[2024 AAAI] OWQ: Outlier-Aware Weight Quantization for Efficient Fine-Tuning and Inference of Large Language Models"
 description: 感知激活离群值来保护敏感权重列的混合精度量化。
 date: 2026-08-26T08:09:00+08:00
 slug: owq
@@ -14,6 +14,13 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
+paper:
+    venue: AAAI
+    year: 2024
+    url: https://ojs.aaai.org/index.php/AAAI/article/view/29237
+    arxiv: "2306.02272"
+    affiliation: POSTECH
 ---
 **总结**：本文提出了一个异常感知的权重量化方法OWQ，利用LLMs中的异常激活值挑选出Weak Column，对其采用全精度的方式在牺牲很小的性能的情况下提升了巨大的精度。此外为进一步提升其性能做了一定的硬件适配并提出了一个基于OWQ的WTC方案，简单来说就是在OWQ量化模型上微调只更新Weak Column的参数。
 

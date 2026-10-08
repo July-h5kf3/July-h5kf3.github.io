@@ -1,5 +1,5 @@
 ---
-title: "MBQ: Modality-Balanced Quantization for Large Vision-Language Models"
+title: "[2025 CVPR] MBQ: Modality-Balanced Quantization for Large Vision-Language Models"
 description: 平衡视觉与文本模态敏感度的视觉语言模型量化。
 date: 2026-08-26T08:21:00+08:00
 slug: mbq
@@ -14,6 +14,14 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
+paper:
+    venue: CVPR
+    year: 2025
+    url: https://openaccess.thecvf.com/content/CVPR2025/html/Li_MBQ_Modality-Balanced_Quantization_for_Large_Vision-Language_Models_CVPR_2025_paper.html
+    arxiv: "2412.19509"
+    affiliation: 清华大学、无问芯穹、北京航空航天大学
+    corrAffiliation: 清华大学、北京航空航天大学
 ---
 <div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
     <b>个人评价</b>:文章的Insight很不错，不同模态Token的影响差异确实很显著，Method is Simple but benefit a lot

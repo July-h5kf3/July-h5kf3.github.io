@@ -1,7 +1,8 @@
 /*
  * Archive page activity heatmap (layouts/_partials/archives/activity.html).
  * Vanilla JS, no dependencies. Data: JSON array of events embedded by Hugo:
- *   { d: "YYYY-MM-DD", k: "pub"|"upd", title, full, url, track, trackKey, tag, tagUrl }
+ *   { d: "YYYY-MM-DD", k: "pub"|"upd", title, full, url, track, trackKey, tag, tagUrl,
+ *     venue, year, field, dir, dirLabel, dirName }   (paper posts: 会议徽章 + 方向标签, see paper/badges.html)
  */
 (function () {
     "use strict";
@@ -51,6 +52,23 @@
         if (c.pub) parts.push(c.pub + " 篇发布");
         if (c.upd) parts.push(c.upd + " 篇更新");
         return parts.length ? parts.join("，") : "没有动态";
+    }
+    /* Same markup as layouts/_partials/paper/badges.html (non-link variant). */
+    function paperBadges(ev) {
+        var box = el("span", "paper-badges");
+        if (ev.venue) {
+            var v = el("span", "venue-badge venue--" + (ev.field || "other"));
+            v.title = ev.venue + (ev.year ? " " + ev.year : "");
+            v.appendChild(el("b", null, ev.venue));
+            if (ev.year) v.appendChild(el("span", "venue-badge-year", ev.year));
+            box.appendChild(v);
+        }
+        if (ev.dir) {
+            var d = el("span", "paper-dir paper-dir--" + ev.dir, ev.dirLabel || ev.dir);
+            d.title = "方向：" + (ev.dirName || ev.dirLabel || ev.dir);
+            box.appendChild(d);
+        }
+        return box;
     }
     function el(tag, cls, text) {
         var x = document.createElement(tag);
@@ -258,6 +276,7 @@
                 a.href = ev.url;
                 a.title = ev.full;
                 if (ev.track) a.appendChild(el("span", "track-tag track-" + (ev.trackKey || "other"), ev.track));
+                if (ev.venue || ev.dir) a.appendChild(paperBadges(ev));
                 a.appendChild(el("span", null, ev.title));
                 li.appendChild(a);
                 if (ev.tag) {

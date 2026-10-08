@@ -1,7 +1,12 @@
-# Built-in taxonomies + two custom ones:
+# Built-in taxonomies + three custom ones:
 #   series : coarse "板块" grouping (论文解读 / 技术分享)
 #   column : ordered article series ("系列文章"), e.g. 面向 Hopper 架构 CUDA 编程
+#   tracks : paper direction of 论文解读 posts — algo | sys (front matter
+#            `tracks: algo`); lists at /tracks/algo/ and /tracks/sys/,
+#            label rendered next to the venue badge (helper/paper-title).
+#            Not in the sidebar menu.
 category = "categories"
 tag      = "tags"
 series   = "series"
 column   = "column"
+track    = "tracks"

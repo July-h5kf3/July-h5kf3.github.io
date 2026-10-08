@@ -1,0 +1,23 @@
+{{/*
+    会议徽章 + 方向标签, rendered in front of a paper post's title.
+    Input: dict
+        P     helper/paper-title result
+        Link  bool  make the 方向 label a link to its /tracks/ page
+                    (false inside cards that are already one big link)
+    Styles: assets/scss/paper-badges.scss.
+*/}}
+{{- $r := .P -}}
+{{- if $r.show -}}
+<span class="paper-badges">
+    {{- with $r.venue -}}
+    <span class="venue-badge venue--{{ $r.field }}" title="{{ . }}{{ with $r.year }} {{ . }}{{ end }}"><b>{{ . }}</b>{{ with $r.year }}<span class="venue-badge-year">{{ . }}</span>{{ end }}</span>
+    {{- end -}}
+    {{- with $r.dir -}}
+    {{- if and $.Link $r.dirURL -}}
+    <a class="paper-dir paper-dir--{{ . }}" href="{{ $r.dirURL }}" title="方向：{{ $r.dirName }}">{{ $r.dirLabel }}</a>
+    {{- else -}}
+    <span class="paper-dir paper-dir--{{ . }}" title="方向：{{ $r.dirName }}">{{ $r.dirLabel }}</span>
+    {{- end -}}
+    {{- end -}}
+</span>
+{{- end -}}

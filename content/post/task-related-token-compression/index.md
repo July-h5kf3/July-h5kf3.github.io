@@ -1,5 +1,5 @@
 ---
-title: "Task-related Token Compression in Multi-modal Large Language Models from an Explainability Perspective"
+title: "[2026 ICLR] Task-related Token Compression in Multi-modal Large Language Models from an Explainability Perspective"
 description: 从可解释性视角出发做任务相关的多模态 Token 压缩。
 date: 2026-08-26T08:36:00+08:00
 slug: task-related-token-compression
@@ -14,6 +14,14 @@ series:
     - 论文解读
 math: true
 comments: false
+tracks: algo
+paper:
+    venue: ICLR
+    year: 2026
+    url: https://proceedings.iclr.cc/paper_files/paper/2026/hash/b74c141c9f7bbac5f250f73b0c84a478-Abstract-Conference.html
+    arxiv: "2506.01097"
+    affiliation: 中国科学技术大学、上海创智学院
+    corrAffiliation: 中国科学技术大学、Rightly Robotics
 ---
 <div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
     <b>个人评价</b>:很有意思的一篇文章，出发点是发现了一种较好的可解释性的剪枝方法，但是剪枝决策需要在推理完成后得到，因此通过加入可学习模块的方式进行改良。
