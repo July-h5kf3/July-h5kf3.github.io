@@ -23,7 +23,7 @@
                         {{- if eq $dir "prev" }}{{ partial "helper/icon" "chevron-left" }}上一篇{{ else }}下一篇{{ partial "helper/icon" "chevron-right" }}{{ end -}}
                     </span>
                     <span class="column-pager-title">
-                        {{- if $ct.matched }}<span class="track-tag track-{{ $ct.trackKey }}">{{ $ct.track }}</span>{{ end -}}
+                        {{- if $ct.track }}<span class="track-tag track-{{ $ct.trackKey }}">{{ $ct.track }}</span>{{ end -}}
                         <span>{{ $ct.short }}</span>
                     </span>
                 </a>
