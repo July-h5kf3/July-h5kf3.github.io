@@ -39,14 +39,14 @@
                         {{- if $isCurrent }}
                         <span class="article-series-link" aria-current="page">
                             <span class="article-series-num">{{ add $i 1 }}</span>
-                            {{- if $ct.matched }}<span class="track-tag track-{{ $ct.trackKey }}">{{ $ct.track }}</span>{{ end -}}
+                            {{- if $ct.track }}<span class="track-tag track-{{ $ct.trackKey }}">{{ $ct.track }}</span>{{ end -}}
                             <span class="article-series-name">{{ $ct.short }}</span>
                             <span class="article-series-here">正在阅读</span>
                         </span>
                         {{- else }}
                         <a class="article-series-link" href="{{ $p.RelPermalink }}">
                             <span class="article-series-num">{{ add $i 1 }}</span>
-                            {{- if $ct.matched }}<span class="track-tag track-{{ $ct.trackKey }}">{{ $ct.track }}</span>{{ end -}}
+                            {{- if $ct.track }}<span class="track-tag track-{{ $ct.trackKey }}">{{ $ct.track }}</span>{{ end -}}
                             <span class="article-series-name">{{ $ct.short }}</span>
                         </a>
                         {{- end }}
