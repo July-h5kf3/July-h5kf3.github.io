@@ -1,6 +1,6 @@
 ---
 title: "CS336 · 从头搭建一个大语言模型"
-image: sylphiette-mt3-official.webp
+image: sylphie-mt2-ep14-cut.webp
 # Card on the archive page (归档 → 专栏, menu "columns"); not in the left sidebar.
 menu:
   columns:

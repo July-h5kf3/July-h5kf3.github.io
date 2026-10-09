@@ -1,6 +1,6 @@
 ---
 title: "[CS336] Assignment 1：Basics"
-date: 2026-01-29T02:44:11+08:00
+date: 2026-10-09T10:00:00+08:00
 slug: cs336-a1-basics
 categories:
     - CS336
@@ -460,8 +460,8 @@ from adapters import run_train_bpe
 from common import gpt2_bytes_to_unicode
 
 def main():
-    filepath = "/root/project/CS336/assignment1-basics/data/TinyStoriesV2-GPT4-train.txt"
-    # filepath = "/root/project/CS336/assignment1-basics/data/owt_train.txt"
+    filepath = "data/TinyStoriesV2-GPT4-train.txt"
+    # filepath = "data/owt_train.txt"
     vocab_size = 10000
     special_tokens = ["<|endoftext|>"]
     vocab, merges = run_train_bpe(filepath, vocab_size, special_tokens)

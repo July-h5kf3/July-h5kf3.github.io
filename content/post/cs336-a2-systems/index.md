@@ -1,6 +1,6 @@
 ---
 title: "[CS336] Assignment 2：Systems"
-date: 2026-02-11T15:30:39+08:00
+date: 2026-10-09T10:30:00+08:00
 slug: cs336-a2-systems
 categories:
     - CS336
@@ -1002,7 +1002,7 @@ if __name__ == "__main__":
 运行该脚本后我们得到如下输出：
 
 ```text
-(base) root@DESKTOP-6N21GHG:~/project/CS336# uv run python assignment2-systems/distribute_example.py
+$ uv run python assignment2-systems/distribute_example.py
 [Gloo] Rank 1 is connected to 3 peer ranks. Expected number of connected peer ranks is : 3
 [Gloo] Rank 3 is connected to 3 peer ranks. Expected number of connected peer ranks is : 3
 [Gloo] Rank 0 is connected to 3 peer ranks. Expected number of connected peer ranks is : 3
