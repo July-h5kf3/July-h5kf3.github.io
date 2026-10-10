@@ -1,5 +1,5 @@
 /*
- * Archive page activity heatmap (layouts/_partials/archives/activity.html).
+ * Homepage activity heatmap (layouts/_partials/archives/activity.html).
  * Vanilla JS, no dependencies. Data: JSON array of events embedded by Hugo:
  *   { d: "YYYY-MM-DD", k: "pub"|"upd", title, full, url, track, trackKey, tag, tagUrl,
  *     venue, year, field, dir, dirLabel, dirName }   (paper posts: 会议徽章 + 方向标签, see paper/badges.html)

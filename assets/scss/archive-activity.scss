@@ -396,7 +396,7 @@ a.news-title:hover { color: var(--accent-color); }
     .news-item:last-child::before { bottom: auto; height: 19px; }
 }
 
-/* ---- Artwork tiles: 专栏 cards on the archives page and 分类 cards on the
+/* ---- Artwork tiles: 专栏 cards on the homepage and 分类 cards on the
    论文解读 overview — keep artwork visible, title legible ---- */
 .template-archives .subsection-list .article-list--tile article,
 .paper-overview .subsection-list .article-list--tile article {
@@ -418,5 +418,62 @@ a.news-title:hover { color: var(--accent-color); }
     &:not(.has-image) {
         background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.10) 0%, var(--tone-theory-soft) 100%), var(--card-background);
         .article-title { color: var(--card-text-color-main); }
+    }
+}
+
+/* ---- 最新文章 on the homepage: 5 newest posts + link to /archives/ ---- */
+.recent-posts-more {
+    display: block;
+    width: fit-content;
+    margin: var(--space-3) 0 0 auto;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+        color: var(--accent-color-darker);
+        background: var(--tone-accent-soft);
+    }
+}
+
+/* ---- 专栏 cards on the homepage: a wrapping grid instead of the theme's
+   horizontally scrolling row, so every card is fully visible ---- */
+.template-archives .subsection-list {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+    animation: none;
+
+    .article-list--tile {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: var(--space-4);
+        width: auto;
+
+        article {
+            width: 100%;
+            min-width: 0;
+            height: auto;
+            aspect-ratio: 5 / 3;
+
+            .article-title {
+                font-size: 1.7rem;
+                overflow-wrap: anywhere;
+            }
+        }
+    }
+
+    @media (max-width: 480px) {
+        .article-list--tile {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: var(--space-3);
+
+            article .article-details { padding: var(--space-3); }
+            article .article-title { font-size: 1.5rem; }
+        }
     }
 }

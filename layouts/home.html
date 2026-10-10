@@ -1,0 +1,10 @@
+{{/*
+    Homepage: the former /archives/ page — activity heatmap, news timeline,
+    专栏 cards and the year-grouped post list (layouts/_partials/archives/overview.html).
+    Keeps the `template-archives` body class so its styles still apply.
+*/}}
+{{ define "body-class" }}template-archives{{ end }}
+{{ define "main" }}
+    {{ partial "archives/overview.html" . }}
+    {{ partialCached "footer/footer" . }}
+{{ end }}

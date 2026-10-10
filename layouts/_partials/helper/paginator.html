@@ -1,0 +1,23 @@
+{{/*
+    Override of the theme's helper/paginator (also used by data/title for the
+    "Page N - " prefix), adjusted for the swapped homepage / archives:
+
+    - Home: renders the archive overview (layouts/home.html), not a paginated
+      list, so it gets no paginator and no /page/N/ pages.
+    - /archives/ (section `archives`): paginates the main-section posts the
+      theme's home used to list (helper/pages.html on the home page).
+    - Other sections, taxonomies and terms: unchanged from the theme.
+*/}}
+{{- $result := slice -}}
+
+{{- if .IsHome -}}
+    {{- /* no pagination on the homepage */ -}}
+{{- else if and (eq .Kind "section") (eq .Section "archives") -}}
+    {{- $pages := partial "helper/pages.html" site.Home -}}
+    {{- $result = .Paginate $pages -}}
+{{- else if or (eq .Kind "section") (eq .Kind "taxonomy") (eq .Kind "term") -}}
+    {{- $pages := partial "helper/pages.html" . -}}
+    {{- $result = .Paginate $pages -}}
+{{- end -}}
+
+{{- return $result -}}

@@ -1,0 +1,46 @@
+{{/*
+    Overview block shown on the homepage (layouts/home.html): activity
+    heatmap + news timeline, 专栏 cards, then the 5 most recent posts and a
+    link to /archives/.
+    Context: the page being rendered.
+*/}}
+{{/* Blog activity heatmap + 动态 · News timeline (layouts/_partials/archives/activity.html). */}}
+{{ partial "archives/activity.html" . }}
+
+{{/*
+    专栏 cards: the pages in menu "columns" (front matter of
+    content/series/论文解读 and content/column/*), ordered by weight,
+    labelled with the menu name, artwork = the page's `image` bundle file.
+    Paper categories (LLM / VLM) live on the 论文解读 page instead.
+*/}}
+<header>
+    {{ with site.Menus.columns }}
+    <h2 class="section-title">专栏</h2>
+    <div class="subsection-list">
+        <div class="article-list--tile">
+            {{ range $m := . }}
+                {{ with $m.Page }}{{ partial "article-list/tile" (dict "Page" . "Title" $m.Name) }}{{ end }}
+            {{ end }}
+        </div>
+    </div>
+    {{ end }}
+</header>
+
+{{/*
+    最新文章: the 5 most recent main-section posts (by date, ignoring pins),
+    then a link to the full paginated list on /archives/.
+*/}}
+{{ $pages := partial "helper/pages.html" site.Home }}
+{{ with first 5 $pages.ByDate.Reverse }}
+<section class="recent-posts" aria-labelledby="recent-posts-title">
+    <h2 class="section-title" id="recent-posts-title">最新文章</h2>
+    <div class="article-list--compact">
+        {{ range . }}
+            {{ partial "article-list/compact" . }}
+        {{ end }}
+    </div>
+    {{ with site.GetPage "/archives" }}
+    <a class="recent-posts-more" href="{{ .RelPermalink }}">查看全部文章 →</a>
+    {{ end }}
+</section>
+{{ end }}
