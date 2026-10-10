@@ -420,3 +420,22 @@ a.news-title:hover { color: var(--accent-color); }
         .article-title { color: var(--card-text-color-main); }
     }
 }
+
+/* ---- 最新文章 on the homepage: 5 newest posts + link to /archives/ ---- */
+.recent-posts-more {
+    display: block;
+    width: fit-content;
+    margin: var(--space-3) 0 0 auto;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+        color: var(--accent-color-darker);
+        background: var(--tone-accent-soft);
+    }
+}
