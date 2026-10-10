@@ -1,0 +1,22 @@
+{{/*
+    /archives/ (content/archives/_index.md): the former homepage — the theme's
+    home layout, i.e. the main-section posts (params mainSections) as
+    paginated article cards (pagination.pagerSize), plus the homepage widgets.
+    The page set is chosen in layouts/_partials/helper/paginator.html.
+*/}}
+{{ define "main" }}
+    {{- $paginator := partial "helper/paginator.html" . -}}
+
+    <section class="article-list">
+        {{ range $paginator.Pages }}
+            {{ partial "article-list/default" . }}
+        {{ end }}
+    </section>
+
+    {{- partial "pagination.html" . -}}
+    {{- partial "footer/footer" . -}}
+{{ end }}
+
+{{ define "right-sidebar" }}
+    {{ partial "sidebar/right.html" (dict "Context" . "Scope" "homepage") }}
+{{ end }}
