@@ -1,6 +1,6 @@
 ---
 title: 多模态生成
-image: evastore14th-asuka-official.webp
+image: evastore14th-rei-asuka-official.webp
 imageCredit:
     text: EVANGELION STORE 14 周年描き下ろし「NEON GENESIS EVANGELION PLUG SUIT REI＆ASUKA」（惣流・アスカ・ラングレー）
     site: EVA-INFO
