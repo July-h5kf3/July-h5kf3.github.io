@@ -1,12 +1,11 @@
 ---
 title: "[2026 ICLR] SERQ: Saliency-Aware Low-Rank Error Reconstruction For LLM Quantization"
 description: 用显著性感知的低秩误差重建，把 LLM 的 PTQ 稳定地做到 W4A4。
-date: 2026-08-26T08:45:00+08:00
+date: 2026-05-27T23:32:11+08:00
 slug: serq
 categories:
     - LLM
 tags:
-    - 论文解读
     - SERQ
     - W4A4
     - 低秩重建
@@ -21,8 +20,11 @@ paper:
     url: https://proceedings.iclr.cc/paper_files/paper/2026/hash/3ca380c5fe9f174a71a230478741169f-Abstract-Conference.html
     arxiv: "2603.08185"
     affiliation: 庆熙大学
+    code: https://github.com/acalabys/SERQ
 ---
 这篇文章将LLM PTQ做到了W4A4，是通过低秩误差重建的方式做到的。
+
+## 动机
 
 传统的W4A4量化方法一般是通过Rotation-Based的方式进行的，这种方式虽然有效，但是一方面可能不存在鲁棒性，另一方面校准/训练成本高。
 
@@ -38,11 +40,13 @@ $$
 
 此外，传统的低秩误差重构方法通常对整个误差矩阵$E = W - Q(W)$做截断SVD，这带来的问题是固定 rank budget 会被分散到整个矩阵的所有行列上，而造成真正大影响的可能只是少数几个权重，这样会稀释低秩补偿能力。
 
+## 方法
+
 基于上述问题，论文提出了SERQ方法，一种显著性感知的误差重构算法，它在单个低秩矩阵中同时考虑权重显著性和激活显著性。
 
 具体而言该方法的步骤如下：
 
-- 静态激活平滑
+### 静态激活平滑
 
 激活值量化通常因为异常值的存在而十分脆弱，通常的方法是通过旋转变换或者辅助层对异常值进行在线处理，这些方法虽然有效，但是会引入额外的推理时延，因此这里选用的是SmoothQuant的方式，即采用静态的逐通道缩放来平滑激活分布。
 
@@ -52,7 +56,7 @@ Y = XW = (X\cdot \text{diag}(S^{-1}))(\text{diag}(S)\cdot W) = XW
 $$
 这些缩放因子在校准阶段获得，并在线下合并到相邻层中，因此不会带来运行时开销。
 
-- 显著性感知的误差重建
+### 显著性感知的误差重建
 
 逐通道静态平滑过程会把激活离群值的尺度转移到对应的权重中。假设原始权重符合正态分布，那么在折叠后的权重中，显著行可以直接通过它们的尺度来识别。
 
@@ -81,7 +85,7 @@ $$
 \mathbb{R}^{s\times r}\times \mathbb{R}^{r\times d}
 $$
 
-- 离线置换权重
+### 离线置换权重
 
 我们为了提取敏感行将激活值和权重通过置换矩阵P变换为了:
 $$

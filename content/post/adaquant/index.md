@@ -1,12 +1,11 @@
 ---
 title: "[2021 ICML] AdaQuant: Accurate Post Training Quantization With Small Calibration Sets"
 description: 用小校准集做逐层重构的训练后量化方法。
-date: 2026-08-26T08:00:00+08:00
+date: 2025-10-03T17:29:07+08:00
 slug: adaquant
 categories:
     - LLM
 tags:
-    - 论文解读
     - AdaQuant
     - PTQ
     - 逐层重构
@@ -22,6 +21,7 @@ paper:
     arxiv: "2006.10518"
     affiliation: Habana Labs (Intel)、以色列理工学院
     corrAffiliation: Habana Labs (Intel)、以色列理工学院
+    code: https://github.com/itayhubara/CalibTIP
 ---
 **总结**：本篇文章的主要贡献在于提出了一个基于小数据集（校验集）的训练后量化方法AdaQuant，AdaQuant通过提出一个block/layer-wise的损失函数，通过在校验集上的训练学习量化参数(重点包括了一个最优的权重扰动，类似于AdaRound来避免四舍五入的不足),实现了减少量化的精度损失；提出了基于PI(整数规划)的bit精度分配方案，但是并没有解释精确损失的累加合理性；提出量化对BN融合造成的统计量偏移问题，并提出了PN(Para-Normalization)来解决这个问题。并在Bert-base网络上实现了不到1%的损失(4-8bit)
 
@@ -30,6 +30,8 @@ paper:
 <div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
 <b>吐槽:</b> 这篇文章作者(符号和表达)有点混乱，得多读几遍才能理解作者想表达什么.中间bit分配假设成立存疑
 </div>
+
+## 动机
 
 在一般的Post-training 量化中，我们的优化目标可以用下式表示:
 $$
@@ -40,6 +42,8 @@ $$
 
 
 
+## AdaQuant
+
 基于此，作者提出了AdaQuant，其核心思想是采用一个block/layer-wise的优化误差函数:
 $$
 (\hat\Delta_{w}\hat\Delta_x,\hat V) = \arg\min_{\Delta_w,\Delta_x,V}||WX-Q_{\Delta_w}(W')Q_{\Delta_x}(X)||^2
@@ -48,13 +52,15 @@ $$
 
 
 
-这里其实有点类似于AdaRound的思想了，因为AdaRound主张的是在量化时直接采用四舍五入是一个不明智地选择，因此这里采用一个补偿张量V来做这个选择
+这里其实有点类似于AdaRound的思想了，因为AdaRound主张的是在量化时直接采用四舍五入是一个不明智的选择，因此这里采用一个补偿张量V来做这个选择
 
 
 
 由于量化参数的得到依赖的是上一层全精度的激活值输出作为输入，因此各个网络之间互不干扰，所以可以并行处理。
 
 
+
+### 串行 AdaQuant
 
 但是在实际的推理过程中，网络的输入是上一层量化后的激活值（见训练后静态量化），因此，作者提出了串行版本的AdaQuant，此时它的优化误差函数为
 $$
@@ -71,11 +77,13 @@ $$
 
 
 
+## 比特分配
+
 为了在性能和精度之间做权衡，在量化时我们往往会给不同层的网络分配不同的bit精度。AdaQuant在此思想上，提出了采用整数规划(PI)的方式。
 
 
 
-作者将网路的bit分配描述为这样一个问题：
+作者将网络的bit分配描述为这样一个问题：
 
 
 
@@ -100,6 +108,8 @@ Subject\ to\ \sum_{l}\Delta L_{l}\leq \Delta L\\
 $$
 
 
+
+## Para-Normalization
 
 BatchNormalization在部署时，通常会与前面的卷积/全连接层进行融合，这样可以减少推理时的计算量。(这是因为BN的线性变换乘$\gamma/\sqrt{\sigma^2+\epsilon}$，加$\beta-\gamma\mu/\sqrt{\sigma^2+\epsilon}$可以直接合并到权重和偏置中)
 

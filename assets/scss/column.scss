@@ -646,4 +646,107 @@
     .paper-overview-cats .subsection-list { margin-bottom: 0; }
 
     .paper-overview-track .article-list--compact { margin: 0; }
+
+    /* each compact card sits in a .paper-item wrapper (filter target), so the
+       theme's article:not(:last-of-type) separator would never apply */
+    .paper-item article { border-bottom: none !important; }
+    .paper-item + .paper-item article { border-top: 1.5px solid var(--card-separator-color); }
+
+    .paper-group-link {
+        margin-left: 12px;
+        font-size: 1.3rem;
+        color: var(--card-text-color-tertiary);
+        text-decoration: none;
+        white-space: nowrap;
+        &:hover { color: var(--accent-color); }
+    }
+
+    /* ---- 筛选 (研究对象 / 方向): radio inputs + labels, rules in overview.html ---- */
+    .pf-radio {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+    }
+    .paper-filter {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 0;
+        padding: 14px 18px;
+        border-radius: var(--card-border-radius);
+        background: var(--card-background);
+        box-shadow: var(--shadow-l1);
+    }
+    .paper-filter-row {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+    }
+    .paper-filter-label {
+        flex-shrink: 0;
+        width: 4.2em;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--card-text-color-tertiary);
+    }
+    .paper-filter-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .paper-filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 11px;
+        border: 1px solid var(--chip-border, var(--card-separator-color));
+        border-radius: 999px;
+        background: var(--chip-bg, transparent);
+        color: var(--chip-fg, var(--card-text-color-main));
+        font-size: 1.3rem;
+        line-height: 1.2;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+        b { font-weight: 800; letter-spacing: 0.03em; }
+        &:hover { border-color: var(--chip-border, var(--accent-color)); }
+    }
+    .paper-filter-n {
+        font-size: 1.15rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        color: var(--chip-fg, var(--card-text-color-tertiary));
+        opacity: 0.85;
+    }
+    @media (max-width: 480px) {
+        .paper-filter { padding: 12px 14px; }
+        .paper-filter-row { flex-direction: column; gap: 6px; }
+        .paper-filter-label { width: auto; }
+        .paper-group-link { display: none; }
+    }
 }
+
+/* 研究对象 small label (article info card, overview group headers) */
+.paper-obj {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.26em 0.5em;
+    border-radius: var(--radius-sm, 4px);
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--tone-accent, var(--accent-color));
+    font-size: 0.86em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    background-image: none;
+}
+a.paper-obj:hover { border-color: rgba(var(--accent-rgb), 0.6); }
+.paper-overview .column-track-header .paper-obj { font-size: 1.2rem; }

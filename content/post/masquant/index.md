@@ -1,14 +1,12 @@
 ---
 title: "[2026 CVPR] MASQuant: Modality-Aware Smoothing Quantization for Multimodal Large Language Models"
 description: 面向多模态大模型、模态感知的平滑量化。
-date: 2026-08-26T08:18:00+08:00
+date: 2026-04-02T22:44:39+08:00
 slug: masquant
 categories:
     - VLM
 tags:
-    - 论文解读
     - MASQuant
-    - VLM
     - 平滑量化
 series:
     - 论文解读
@@ -22,23 +20,27 @@ paper:
     arxiv: "2603.04800"
     affiliation: 阿里云
     corrAffiliation: 阿里云
+    code: https://github.com/alibaba/EfficientAI/tree/main/masquant
+    review: "很有价值的工作，从High-Level的角度来看，不同模态激活值的分布不同带来的量化挑战可以看作LLM Quant中激活值Outlier带来的挑战，因此从这个角度出发可以很好的理解文章的出发点。"
 ---
-<div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
-    <b>个人评价</b>:很有价值的工作，从High-Level的角度来看，不同模态激活值的分布不同带来的量化挑战可以看作LLM Quant中激活值Outlier带来的挑战，因此从这个角度出发可以很好的理解文章的出发点。
-</div>
-
 总结：本文旨在解决基于通道级平滑的PTQ方法应用于多模态大模型时面临的一个核心挑战：Smoothing Misalignment。论文通过MAS为每个模态确定一个平滑因子来解决这个问题，并通过CMC方法来解决与之伴随而来的Cross-Modal Computation Invariance问题。
+
+## 动机
 
 当将基于通道级（Per-channel）平滑的PTQ应用于多模态大模型（MLLMs）时会面临两个核心挑战：
 
 1. Smoothing Misalignment（平滑错位）：不同模态的激活值幅度存在数量级的差异，例如视觉Token的激活范围通常比文本和音频大10-100倍。传统的Per-channel量化为每个通道计算单一的缩放因子，导致主导模态的较大激活决定平滑因子，而使非主导模态的激活被过度平滑，信号被严重压制，最终导致量化后的模型性能不佳。
 2. Cross-Modal Computational Invariance（跨模态计算不变性）：直接为不同模态计算独立的平滑因子会破坏计算不变性（坐标系不同）。若严格保持模态特定的平滑，推理时需要为不同模态存储不同的量化权重矩阵，这违背了量化技术通过单一低精度权重表示来减少内存占用的根本目标。
 
+## 方法
+
 论文提出了MASQuant框架来解决上述两个问题，该框架包含两个核心组件：MAS（Modality-Aware Smoothing）以及CMC（Cross-Modal Compensation ）
+
+### MAS：模态感知平滑
 
 对于Smoothing Misalignment的问题，其核心还是在于不同模态的激活值幅度存在数量级的差异，因此MASQuant通过为每种模态维护模态特定的平滑因子来解决这个问题，从而从根本上解决了某一模态的主导效应。
 
-(n这里有一点与SmoothQuant不同，MAS的平滑因子是通过学习得到的：
+这里有一点与SmoothQuant不同，MAS的平滑因子是通过学习得到的：
 
 首先获得模态感知的平滑因子初始值如下
 $$
@@ -61,6 +63,8 @@ $$
 这说明，在任何情况下MAS的Optimal Smoothing都不会比Unified Smoothing更差（虽然这是显而易见的）
 
 
+
+### CMC：跨模态补偿
 
 在MAS中，我们为每个模态都存储了一个$S_m$，那么这意味着我们模型中每一层的权重W，对于每一个模态都要维护一个量化矩阵$S_mW$，这显然是我们无法接受的。MAS为了保证在PTQ过程中所有的模态之间共享一个量化权重，采用了如下方法（CMC）：
 
@@ -104,6 +108,9 @@ $$
 $$
 \Delta W = L_1L_2 \quad L_1 = T^{-1}U_r \quad L_2 = \Sigma_r V_r^\top
 $$
+
+#### 低秩修正的最优性
+
 可以证明上述近似在秩r补偿近似下最优：
 
 假设秩为r的矩阵$L = L_1L_2$,其中$L_1,L_2$由上式中定义的秩 r 截断 SVD 给出，它能够最小化重构损失。用形式化语言描述：
@@ -139,6 +146,8 @@ $$
 \end{align}
 $$
 
+
+### 推理流程
 
 那么至此我们可以写出最终推理阶段将基础量化输出与模态特定修正结合起来：
 $$

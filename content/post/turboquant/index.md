@@ -1,12 +1,11 @@
 ---
 title: "[2026 ICLR] TurboQuant: Online Vector Quantization with Near-optimal Distortion Rate"
 description: 接近最优失真率的在线向量量化方法。
-date: 2026-08-26T08:15:00+08:00
+date: 2026-03-27T20:08:38+08:00
 slug: turboquant
 categories:
     - LLM
 tags:
-    - 论文解读
     - TurboQuant
     - 向量量化
 series:
@@ -20,12 +19,11 @@ paper:
     url: https://proceedings.iclr.cc/paper_files/paper/2026/hash/5c802ef38ab6e366c2ea06eee554c088-Abstract-Conference.html
     arxiv: "2504.19874"
     affiliation: Google Research
+    review: "这篇文章主要是针对大模型的KV-Cache的压缩，虽然是同一作者不同方法的浓缩（PolarQuant+QJL），但是补充了在结合方法下的量化误差上下界。目前实验停留在纯语言模型阶段，也许可以拓广到多模态阶段。"
 ---
-<div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
-    <b>个人评价</b>:这篇文章主要是针对大模型的KV-Cache的压缩，虽然是同一作者不同方法的浓缩（PolarQuant+QJL），但是补充了在结合方法下的量化误差上下界。目前实验停留在纯语言模型阶段，也许可以拓广到多模态阶段。
-</div>
-
 总结：本文主要介绍了一种针对高维向量量化的创新方法，旨在通过大幅度压缩数据规模来优化AI模型推理，KV Cache管理以及向量数据库检索的效率。其核心在于结合了随机旋转技术和最优标量量化器，能在极低的比特位宽下实现接近理论极限的MSE。针对内积检索中的偏置问题，作者设计了一个两阶段架构，利用 1-比特 QJL 变换补偿余数，从而确保了内积估算的无偏性。实验数据表明，该算法在 Llama-3.1 等大语言模型的长文本测试中，仅需 2.5 至 3.5 比特即可保持与全精度近乎一致的性能。此外，相较于传统的乘积量化 (PQ) 技术，TurboQuant在保持高召回率的同时，将索引构建时间降低至接近于零，展现出卓越的加速器友好性。
+
+## 向量量化的两个目标
 
 简单来说，进行向量量化（VQ）的目的是最小化下列两个误差：
 $$
@@ -41,6 +39,8 @@ $$
 \mathbb{E}_Q[\langle y,Q^{-1}(Q(x))\rangle]=\langle y,x\rangle\tag{3}
 $$
 而这两个优化目标是难以兼顾的，因此在VQ中通常会设计两个Quantizer，分别是$Q_{MSE}$,$Q_{prod}$。对应到KV-Cache量化场景下就是对K向量用$Q_{prod}$，对V向量用$Q_{MSE}$。
+
+## MSE 最优量化器
 
 对于$Q_{MSE}$，我们的目标就是最小化公式(1)。在此之前，我们有如下假设:
 
@@ -79,6 +79,8 @@ $$
 论文中还给出了该量化器损失的上界，理解起来并不困难，这里不做过多赘述。
 
 
+
+## 内积无偏量化器
 
 之所以$Q_{MSE}$需要与$Q_{prod}$不能统一，是因为前者不满足内积无偏性的特性，即式(3)。（论文中给出了证明）
 

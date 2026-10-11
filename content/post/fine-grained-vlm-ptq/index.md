@@ -1,13 +1,11 @@
 ---
 title: "[2026 CVPR] Fine-Grained Post-Training Quantization for Large Vision Language Models with Quantization-Aware Integrated Gradients"
 description: 用量化感知的积分梯度做细粒度的视觉语言模型训练后量化。
-date: 2026-08-26T08:24:00+08:00
+date: 2026-04-12T18:20:48+08:00
 slug: fine-grained-vlm-ptq
 categories:
     - VLM
 tags:
-    - 论文解读
-    - VLM
     - PTQ
     - 积分梯度
 series:
@@ -22,10 +20,10 @@ paper:
     arxiv: "2603.17809"
     affiliation: 中科院自动化所、中国科学院大学、北京信息科学与技术国家研究中心
     corrAffiliation: 中科院自动化所、中国科学院大学
+    code: https://github.com/ucas-xiang/QIG
+    review: "比较有意思的研究思路，从MBQ的Modality-Specific出发，通过实验发现，相较于Modality-Specific，更加细粒度的Token-Wise进行区分效果会更好。基于此研究了多种Token敏感度估计方法，最终采用基于公理化归因的积分梯度方法进行规约，取得不错的效果。但是问题在于文章对理论的分析严重不足！"
 ---
-<div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
-    <b>个人评价</b>:比较有意思的研究思路，从MBQ的Modality-Specific出发，通过实验发现，相较于Modality-Specific，更加细粒度的Token-Wise进行区分效果会更好。基于此研究了多种Token敏感度估计方法，最终采用基于公理化归因的积分梯度方法进行规约，取得不错的效果。但是问题在于文章对理论的分析严重不足！
-</div>
+## 动机
 
 假设你阅读过MBQ，它是按照模态去对优化目标进行加权的，那么我们可以仔细想想，不同模态最终都会以Token的形式输入模型，既然不同模态之间存在对量化噪声敏感性差异，那么我们其实可以说本质上是Token内部就存在差异，这个差异不仅仅存在于不同模态之间，还可能存在同一个模态之中。那么也就是说，我们完全可以仿照MBQ的思路去做更加细粒度的加权。
 
@@ -39,7 +37,11 @@ paper:
 
 最后结果表明，Token-Level的扰动法的效果在不同敏感度估计下表现最优(0.36%的微弱优势)
 
+## 方法
+
 基于上述分析，我们知道，按Token的细粒度量化方法可能会有更好的效果。因此作者声称基于公理化归因的启发。下面简单介绍一下公理化归因，这个方法来源于可解释AI。
+
+### 积分梯度（IG）
 
 我们从经典的积分梯度（IG）出发。IG用来衡量从参考输入x'到真实输入x的真实路径上，每个Token的累积贡献，其中$f(\cdot,\cdot)$表示该Block的输出：
 $$
@@ -91,10 +93,15 @@ $$
 $$
 写作向量形式就是式子QIG(1)中的形式。
 
+### 量化场景下的积分梯度
+
 对应到量化场景，我们取原始输入$x'$为量化后的输入$x'=x^q$,那么可以写出量化感知积分梯度:
 $$
 \text{QIG} = (x-x_q)\int_{0}^1 \frac{\partial f(x^\alpha)}{\partial x^\alpha}d\alpha
 $$
+
+### 重尾分布的处理
+
 不过我们不能直接将QIG作为优化的权，因为它呈现了重尾分布，这会导致极少部分token主导优化过程。为了抑制这种现象，作者选择按照四分位距(IQR)进行裁剪，从而得到裁剪后的分数:
 $$
 C(QIG_i) = clip(QIG_i,Q_1-1.5\cdot IQR,Q_3+1.5\cdot IQR)
