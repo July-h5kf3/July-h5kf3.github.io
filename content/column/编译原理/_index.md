@@ -30,9 +30,6 @@ syllabus:
       title: 实验文档
       subtitle: 实验参考 PKU 编译：SysY → Koopa IR → RISC-V
       badge: EXP
-  upcoming:
-    - track: 实验
-      title: "Exp Chapter 3：一元 / 二元表达式"
   references:
     - name: PKU 编译
       url: https://pku-minic.github.io/online-doc/#/
