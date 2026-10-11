@@ -1,0 +1,24 @@
+{{ define "main" }}
+    {{/*
+        Category term pages. A category listed in data/venues.yaml `objects`
+        (研究对象 of 论文解读: LLM / VLM / 多模态生成) gets the paper list
+        with the algo / sys filter (_partials/paper/category.html), also
+        when it has no posts yet (content/categories/<name>/_index.md keeps
+        the page alive). Every other category keeps the theme's list.
+    */}}
+    {{- $obj := "" -}}
+    {{- range (hugo.Data.venues.objects | default slice) -}}
+        {{- if eq (lower $.Path) (printf "/categories/%s" (lower .category)) }}{{ $obj = . }}{{ end -}}
+    {{- end -}}
+    {{- if $obj -}}
+        {{ partial "paper/category" (dict "Page" . "Obj" $obj) }}
+    {{- else -}}
+        {{ partial "list-default" . }}
+    {{- end -}}
+
+    {{ partialCached "footer/footer" . }}
+{{ end }}
+
+{{ define "right-sidebar" }}
+    {{ partial "sidebar/right.html" (dict "Context" . "Scope" "homepage") }}
+{{ end }}

@@ -21,8 +21,9 @@ tracks:
 # objects：研究对象（论文解读的第二个维度，与 tracks 方向正交）。
 #   每篇论文解读用 front matter `categories` 里的一个分类表示研究对象，
 #   category 写分类名（与 content/categories/<name>/ 对应，旧的分类页和
-#   头图因此保持不变）。列表顺序即总述页的分组和筛选按钮顺序；
-#   没有文章的研究对象不显示。label 是小标签文字，name 是中文名。
+#   头图因此保持不变）。列表顺序即总述页分类卡片的顺序；卡片和分类页
+#   在 0 篇时也显示（分类页需要 content/categories/<name>/_index.md）。
+#   label 是小标签文字，name 是中文名，hint 是分类页副标题（可选）。
 objects:
     - { key: llm, category: LLM,        label: LLM, name: 大语言模型 }
     - { key: vlm, category: VLM,        label: VLM, name: 多模态理解 }

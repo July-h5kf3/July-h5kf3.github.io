@@ -643,7 +643,38 @@
         font-weight: 700;
         font-variant-numeric: tabular-nums;
     }
-    .paper-overview-cats .subsection-list { margin-bottom: 0; }
+    /* 研究对象 cards: a wrapping grid (like the homepage 专栏 cards) instead
+       of the theme's horizontally scrolling row */
+    .paper-overview-cats .subsection-list {
+        margin-bottom: 0;
+        overflow: visible;
+        -webkit-mask-image: none;
+        mask-image: none;
+        animation: none;
+
+        .article-list--tile {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: var(--space-4);
+            width: auto;
+
+            article {
+                width: 100%;
+                min-width: 0;
+                height: auto;
+                aspect-ratio: 5 / 3;
+                .article-title { font-size: 1.7rem; overflow-wrap: anywhere; }
+            }
+        }
+        @media (max-width: 640px) {
+            .article-list--tile {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: var(--space-3);
+                article .article-details { padding: var(--space-3); }
+                article .article-title { font-size: 1.45rem; }
+            }
+        }
+    }
 
     .paper-overview-track .article-list--compact { margin: 0; }
 
@@ -661,7 +692,7 @@
         &:hover { color: var(--accent-color); }
     }
 
-    /* ---- 筛选 (研究对象 / 方向): radio inputs + labels, rules in overview.html ---- */
+    /* ---- 方向筛选 on 研究对象 category pages: radio inputs + labels, rules in paper/category.html ---- */
     .pf-radio {
         position: absolute;
         width: 1px;
@@ -730,6 +761,56 @@
         .paper-filter-row { flex-direction: column; gap: 6px; }
         .paper-filter-label { width: auto; }
         .paper-group-link { display: none; }
+    }
+
+    /* ---- 研究对象 category page (paper/category.html) ---- */
+    .paper-category-hero.has-image {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+    }
+    .paper-category-text { flex: 1; min-width: 0; }
+    .paper-category-back {
+        display: inline-block;
+        margin-bottom: 6px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--card-text-color-tertiary);
+        text-decoration: none;
+        &::before { content: "← "; }
+        &:hover { color: var(--accent-color); }
+    }
+    .paper-category-hero .column-hero-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        .paper-obj { font-size: 0.55em; }
+    }
+    .paper-category-art {
+        flex: 0 0 auto;
+        width: 200px;
+        aspect-ratio: 5 / 3;
+        overflow: hidden;
+        border-radius: var(--radius-inner, 10px);
+        box-shadow: var(--shadow-l1);
+        img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    }
+    @media (max-width: 560px) {
+        .paper-category-hero.has-image { flex-direction: column-reverse; align-items: stretch; }
+        .paper-category-art { width: 100%; }
+    }
+    .paper-list .article-list--compact { margin: 0; }
+    .paper-empty {
+        display: none;
+        margin: 0;
+        padding: 28px 20px;
+        border-radius: var(--card-border-radius);
+        background: var(--card-background);
+        box-shadow: var(--shadow-l1);
+        text-align: center;
+        font-size: 1.5rem;
+        color: var(--card-text-color-secondary);
+        a { color: var(--accent-color); }
     }
 }
 

@@ -8,31 +8,22 @@
         last update (= the newest post date);
       - 会议: one venue badge per venue (colour = field) with its count, plus
         the number of preprints (no venue);
-      - 筛选: two rows of filter buttons — 研究对象 (data/venues.yaml
-        `objects`, via the post's category) and 方向 (`tracks`). Pure CSS:
-        hidden radio inputs + sibling selectors (rules generated below), so
-        without JS everything works and "全部" is the default; without CSS
-        or :has() support the page simply shows every post. Values with no
-        posts get no button;
-      - lists: one group per 研究对象 (data order; empty ones are skipped,
-        posts whose category is not an 研究对象 go to 其他), each sorted from
-        classic to new by arXiv id (≈ first public version; falls back to
-        the post date), rendered with the compact list card.
-    The category pages (/categories/llm/ …) and their artwork stay as they
-    were; each group header links to its category page.
+      - 研究对象 cards: one artwork card per entry of data/venues.yaml
+        `objects` (data order), always shown — also with 0 posts — linking
+        to its category page (layouts/categories/term.html lists every post
+        of that category with the algo / sys filter). Artwork = the
+        category's `image` (content/categories/<name>/);
+      - 最近更新: the 5 newest posts by date (compact list cards).
 */}}
 {{- $term := . -}}
 {{- $pages := .Pages -}}
-{{- $dirCfg := hugo.Data.venues.tracks | default dict -}}
 {{- $objCfg := hugo.Data.venues.objects | default slice -}}
+{{- $recentN := 5 -}}
 
 {{- $accepted := 0 -}}
 {{- $preprints := 0 -}}
 {{- $venues := dict -}}
-{{- $latest := "" -}}
-{{- $items := slice -}}
 {{- $objN := dict -}}
-{{- $dirN := dict -}}
 {{- range $pages -}}
     {{- $pt := partial "helper/paper-title" . -}}
     {{- with $pt.venue -}}
@@ -42,69 +33,15 @@
     {{- else -}}
         {{- $preprints = add $preprints 1 -}}
     {{- end -}}
-    {{- if or (not $latest) (.Date.After $latest.Date) }}{{ $latest = . }}{{ end -}}
-    {{- $obj := $pt.obj | default "other" -}}
-    {{- $dir := $pt.dir | default "other" -}}
-    {{- $objN = merge $objN (dict $obj (add (index $objN $obj | default 0) 1)) -}}
-    {{- $dirN = merge $dirN (dict $dir (add (index $dirN $dir | default 0) 1)) -}}
-    {{- $key := .Date.Format "2006-01-02T15:04" -}}
-    {{- with .Params.paper }}{{ with .arxiv }}{{ $key = replaceRE `v\d+$` "" (string .) }}{{ end }}{{ end -}}
-    {{- $items = $items | append (dict "page" . "obj" $obj "dir" $dir "key" $key) -}}
+    {{- with $pt.obj }}{{ $objN = merge $objN (dict . (add (index $objN . | default 0) 1)) }}{{ end -}}
 {{- end -}}
-{{- $items = sort $items "key" "asc" -}}
+{{- $recent := first $recentN ($pages.ByDate.Reverse) -}}
+{{- $latest := index $recent 0 -}}
 {{- $venueList := slice -}}
 {{- range $venues }}{{ $venueList = $venueList | append . }}{{ end -}}
 {{- $venueList = sort (sort $venueList "name" "asc") "n" "desc" -}}
 
-{{- /* 研究对象 groups in data order (+ 其他), 方向 in data order (+ 其他); only non-empty ones */ -}}
-{{- $objs := slice -}}
-{{- $objs = slice -}}
-{{- range $o := $objCfg -}}
-    {{- with index $objN $o.key -}}
-        {{- $url := "" -}}
-        {{- with site.GetPage (printf "/categories/%s" (urlize (lower $o.category))) }}{{ $url = .RelPermalink }}{{ end -}}
-        {{- $objs = $objs | append (dict "key" $o.key "label" $o.label "name" $o.name "hint" ($o.hint | default "") "url" $url "n" .) -}}
-    {{- end -}}
-{{- end -}}
-{{- with index $objN "other" }}{{ $objs = $objs | append (dict "key" "other" "label" "" "name" "其他" "hint" "" "url" "" "n" .) }}{{ end -}}
-{{- $dirs := slice -}}
-{{- range $key, $cfg := $dirCfg -}}
-    {{- with index $dirN $key }}{{ $dirs = $dirs | append (dict "key" $key "label" $cfg.label "name" $cfg.name "n" .) }}{{ end -}}
-{{- end -}}
-{{- with index $dirN "other" }}{{ $dirs = $dirs | append (dict "key" "other" "label" "其他" "name" "其他" "n" .) }}{{ end -}}
-
-{{- /* Filter rules, built as a string (keys come from data/posts) */ -}}
-{{- $css := slice -}}
-{{- $on := slice "#pf-obj-all" "#pf-dir-all" -}}
-{{- range $objs -}}
-    {{- $css = $css | append (printf `.paper-overview #pf-obj-%s:checked ~ .paper-group:not([data-obj="%s"]) { display: none; }` .key .key) -}}
-    {{- $on = $on | append (printf "#pf-obj-%s" .key) -}}
-{{- end -}}
-{{- range $dirs -}}
-    {{- $css = $css | append (printf `.paper-overview #pf-dir-%s:checked ~ .paper-group .paper-item:not([data-dir="%s"]) { display: none; }` .key .key) -}}
-    {{- $css = $css | append (printf `.paper-overview #pf-dir-%s:checked ~ .paper-group:not(:has(.paper-item[data-dir="%s"])) { display: none; }` .key .key) -}}
-    {{- $on = $on | append (printf "#pf-dir-%s" .key) -}}
-{{- end -}}
-{{- $sel := slice -}}{{- $focus := slice -}}
-{{- range $on -}}
-    {{- $sel = $sel | append (printf `.paper-overview %s:checked ~ .paper-filter label[for="%s"]` . (strings.TrimPrefix "#" .)) -}}
-    {{- $focus = $focus | append (printf `.paper-overview %s:focus-visible ~ .paper-filter label[for="%s"]` . (strings.TrimPrefix "#" .)) -}}
-{{- end -}}
-{{- $css = $css | append (printf "%s { --chip-bg: var(--accent-color); --chip-fg: var(--accent-color-text); --chip-border: var(--accent-color); }" (delimit $sel ", ")) -}}
-{{- $css = $css | append (printf "%s { outline: 2px solid var(--accent-color); outline-offset: 2px; }" (delimit $focus ", ")) -}}
-<style>{{ delimit $css "\n" | safeCSS }}</style>
-
 <div class="column-syllabus paper-overview">
-{{- /* filter state: must come before (as siblings of) the filter bar and the groups */}}
-<input class="pf-radio" type="radio" name="pf-obj" id="pf-obj-all" checked aria-label="研究对象：全部">
-{{- range $objs }}
-<input class="pf-radio" type="radio" name="pf-obj" id="pf-obj-{{ .key }}" aria-label="研究对象：{{ .name }}">
-{{- end }}
-<input class="pf-radio" type="radio" name="pf-dir" id="pf-dir-all" checked aria-label="方向：全部">
-{{- range $dirs }}
-<input class="pf-radio" type="radio" name="pf-dir" id="pf-dir-{{ .key }}" aria-label="方向：{{ .name }}">
-{{- end }}
-
 <header class="column-hero">
     <h1 class="column-hero-title">{{ .Title }}</h1>
     {{ with .Params.description }}<p class="column-hero-desc">{{ . }}</p>{{ end }}
@@ -132,26 +69,20 @@
     {{- end }}
 </header>
 
-<div class="paper-filter" role="group" aria-label="筛选论文">
-    <div class="paper-filter-row">
-        <span class="paper-filter-label">研究对象</span>
-        <span class="paper-filter-chips">
-            <label class="paper-filter-chip" for="pf-obj-all">全部<span class="paper-filter-n">{{ len $pages }}</span></label>
-            {{- range $objs }}
-            <label class="paper-filter-chip" for="pf-obj-{{ .key }}">{{ with .label }}<b>{{ . }}</b>{{ end }}{{ .name }}<span class="paper-filter-n">{{ .n }}</span></label>
+{{- with $objCfg }}
+<section class="column-track paper-overview-cats" id="categories" aria-label="研究对象">
+    <div class="subsection-list">
+        <div class="article-list--tile">
+            {{- range $o := . }}
+            {{- $n := index $objN $o.key | default 0 }}
+            {{- with site.GetPage (printf "/categories/%s" (lower $o.category)) }}
+            {{ partial "article-list/tile" (dict "Page" . "Title" (printf "%s · %d 篇" $o.name $n)) }}
             {{- end }}
-        </span>
-    </div>
-    <div class="paper-filter-row">
-        <span class="paper-filter-label">方向</span>
-        <span class="paper-filter-chips">
-            <label class="paper-filter-chip" for="pf-dir-all">全部<span class="paper-filter-n">{{ len $pages }}</span></label>
-            {{- range $dirs }}
-            <label class="paper-filter-chip" for="pf-dir-{{ .key }}"><b>{{ .label }}</b>{{ .name }}<span class="paper-filter-n">{{ .n }}</span></label>
             {{- end }}
-        </span>
+        </div>
     </div>
-</div>
+</section>
+{{- end }}
 
 {{- /* Intro card only when the page has real body content */ -}}
 {{- with .Content }}{{- if strings.TrimSpace . }}
@@ -160,19 +91,15 @@
 </section>
 {{- end }}{{- end }}
 
-{{- range $g := $objs }}
-<section class="column-track paper-overview-track paper-group" id="obj-{{ $g.key }}" data-obj="{{ $g.key }}">
+{{- with $recent }}
+<section class="column-track paper-overview-track" id="recent">
     <header class="column-track-header">
-        {{ with $g.label }}<span class="paper-obj paper-obj--{{ $g.key }}">{{ . }}</span>{{ end }}
-        <h2 class="column-track-title">{{ $g.name }}</h2>
-        <span class="column-track-count">{{ $g.n }} 篇</span>
-        {{ with $g.url }}<a class="paper-group-link" href="{{ . }}">分类页 →</a>{{ end }}
+        <h2 class="column-track-title">最近更新</h2>
+        <span class="column-track-count">{{ len . }} / {{ len $pages }} 篇</span>
     </header>
     <div class="article-list--compact">
-        {{- range where $items "obj" $g.key }}
-        <div class="paper-item" data-dir="{{ .dir }}">
-            {{ partial "article-list/compact" .page }}
-        </div>
+        {{- range . }}
+            {{ partial "article-list/compact" . }}
         {{- end }}
     </div>
 </section>
