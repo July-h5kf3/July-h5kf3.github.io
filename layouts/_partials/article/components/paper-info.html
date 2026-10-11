@@ -11,11 +11,16 @@
                                         # 未中稿时作为「arXiv 预印本」的链接
             affiliation: 阿里云          # 第一作者机构（共同一作取并集）
             corrAffiliation: 阿里云      # 通讯作者机构；论文未标注通讯作者时不写
+            code: https://github.com/…   # 官方代码仓库（论文 / arXiv 摘要 / 官方
+                                        # 项目页给出的）；没有就不写，第三方复现不写
+            review: "……"                # 个人评价，显示在信息卡下方的评价框；
+                                        # 没写过评价的文章不写
 
     显示规则：corrAffiliation 不写 → 只显示「第一作者机构」；
     与 affiliation 相同 → 合并为一行「机构」；不同 → 两行都显示。
     会议 pill 按领域着色（data/venues.yaml → helper/paper-title 的 field）；
-    文章设置了 `tracks`（algo / sys）时另起一行「方向」，链接到 /tracks/… 列表。
+    文章设置了 `tracks`（algo / sys）时另起一行「方向」，链接到 /tracks/… 列表；
+    分类属于 data/venues.yaml `objects` 时另起一行「研究对象」，链接到分类页。
 */}}
 {{- $pt := partial "helper/paper-title" . -}}
 {{- with .Params.paper -}}
@@ -45,8 +50,15 @@
                 {{- end -}}
             </dd>
         </div>
+        {{- with $pt.obj }}
+        <div class="paper-info-row"><dt>研究对象</dt><dd><a class="paper-obj paper-obj--{{ . }}" href="{{ $pt.objURL }}" title="查看全部「{{ $pt.objName }}」论文解读">{{ $pt.objLabel }}</a><span class="paper-dir-name">{{ $pt.objName }}</span></dd></div>
+        {{- end }}
         {{- with $pt.dir }}
         <div class="paper-info-row"><dt>方向</dt><dd><a class="paper-dir paper-dir--{{ . }}" href="{{ $pt.dirURL }}" title="查看全部{{ $pt.dirName }}方向的论文解读">{{ $pt.dirLabel }}</a><span class="paper-dir-name">{{ $pt.dirName }}</span></dd></div>
+        {{- end }}
+        {{- with $p.code }}
+        {{- $repo := replaceRE `^https?://(www\.)?github\.com/` "" . | replaceRE `/tree/[^/]+/` "/" | strings.TrimSuffix "/" }}
+        <div class="paper-info-row"><dt>代码</dt><dd><a class="paper-pill paper-pill--code" href="{{ . }}" target="_blank" rel="noopener">{{ partial "helper/icon" "brand-github" }}{{ $repo }}</a></dd></div>
         {{- end }}
         {{- if and $corr (ne $corr $aff) }}
         <div class="paper-info-row"><dt>第一作者机构</dt><dd>{{ $aff }}</dd></div>
@@ -58,4 +70,10 @@
         {{- end }}
     </dl>
 </aside>
+{{- with $p.review }}
+<aside class="paper-review" aria-label="个人评价">
+    <span class="paper-review-label">个人评价</span>
+    <p>{{ . }}</p>
+</aside>
+{{- end }}
 {{- end -}}

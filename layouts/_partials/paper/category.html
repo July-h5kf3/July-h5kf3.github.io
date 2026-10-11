@@ -1,0 +1,132 @@
+{{/*
+    研究对象 category page (layouts/categories/term.html), e.g. /categories/vlm/.
+    Input: dict "Page" (the term page) "Obj" (its entry in data/venues.yaml `objects`).
+
+      - hero: 研究对象 label + name, description, post / accepted counts,
+        the category artwork, link back to the 论文解读 overview;
+      - 方向 filter: 全部 + one button per data/venues.yaml `tracks` entry
+        (algo, sys …; always shown, with its count, 0 included) + 其他 when
+        some post has no direction. Pure CSS: hidden radio inputs + sibling
+        selectors (rules generated below); without JS everything works and
+        全部 is the default, without CSS every post is listed;
+      - list: every post of the category, classic → new by arXiv id
+        (≈ first public version; falls back to the post date), compact cards;
+      - empty states: 「暂无文章」 when the category (or the selected direction)
+        has no posts.
+*/}}
+{{- $page := .Page -}}
+{{- $o := .Obj -}}
+{{- $dirCfg := hugo.Data.venues.tracks | default dict -}}
+{{- $pages := $page.Pages -}}
+
+{{- $items := slice -}}
+{{- $dirN := dict -}}
+{{- $accepted := 0 -}}
+{{- range $pages -}}
+    {{- $pt := partial "helper/paper-title" . -}}
+    {{- if $pt.venue }}{{ $accepted = add $accepted 1 }}{{ end -}}
+    {{- $dir := $pt.dir | default "other" -}}
+    {{- $dirN = merge $dirN (dict $dir (add (index $dirN $dir | default 0) 1)) -}}
+    {{- $key := .Date.Format "2006-01-02T15:04" -}}
+    {{- with .Params.paper }}{{ with .arxiv }}{{ $key = replaceRE `v\d+$` "" (string .) }}{{ end }}{{ end -}}
+    {{- $items = $items | append (dict "page" . "dir" $dir "key" $key) -}}
+{{- end -}}
+{{- $items = sort $items "key" "asc" -}}
+
+{{- $dirs := slice -}}
+{{- range $key, $cfg := $dirCfg -}}
+    {{- $dirs = $dirs | append (dict "key" $key "label" $cfg.label "name" $cfg.name "n" (index $dirN $key | default 0)) -}}
+{{- end -}}
+{{- with index $dirN "other" }}{{ $dirs = $dirs | append (dict "key" "other" "label" "" "name" "其他" "n" .) }}{{ end -}}
+
+{{- /* Filter rules, built as a string (keys come from data) */ -}}
+{{- $css := slice -}}
+{{- $sel := slice (printf `.paper-category #pf-dir-all:checked ~ .paper-filter label[for="pf-dir-all"]`) -}}
+{{- $focus := slice (printf `.paper-category #pf-dir-all:focus-visible ~ .paper-filter label[for="pf-dir-all"]`) -}}
+{{- range $dirs -}}
+    {{- $css = $css | append (printf `.paper-category #pf-dir-%s:checked ~ .paper-list .paper-item:not([data-dir="%s"]) { display: none; }` .key .key) -}}
+    {{- if eq .n 0 }}{{ $css = $css | append (printf `.paper-category #pf-dir-%s:checked ~ .paper-list { display: none; }` .key) }}{{ end -}}
+    {{- $css = $css | append (printf `.paper-category #pf-dir-%s:checked ~ .paper-empty[data-for="%s"] { display: block; }` .key .key) -}}
+    {{- $sel = $sel | append (printf `.paper-category #pf-dir-%s:checked ~ .paper-filter label[for="pf-dir-%s"]` .key .key) -}}
+    {{- $focus = $focus | append (printf `.paper-category #pf-dir-%s:focus-visible ~ .paper-filter label[for="pf-dir-%s"]` .key .key) -}}
+{{- end -}}
+{{- $css = $css | append `.paper-category #pf-dir-all:checked ~ .paper-empty[data-for="all"] { display: block; }` -}}
+{{- $css = $css | append (printf "%s { --chip-bg: var(--accent-color); --chip-fg: var(--accent-color-text); --chip-border: var(--accent-color); }" (delimit $sel ", ")) -}}
+{{- $css = $css | append (printf "%s { outline: 2px solid var(--accent-color); outline-offset: 2px; }" (delimit $focus ", ")) -}}
+<style>{{ delimit $css "\n" | safeCSS }}</style>
+
+{{- $image := partial "helper/image" (dict "Image" $page.Params.image "Resources" $page.Resources "Context" $page) -}}
+{{- $series := site.GetPage "/series/论文解读" -}}
+
+<div class="column-syllabus paper-overview paper-category">
+<input class="pf-radio" type="radio" name="pf-dir" id="pf-dir-all" checked aria-label="方向：全部">
+{{- range $dirs }}
+<input class="pf-radio" type="radio" name="pf-dir" id="pf-dir-{{ .key }}" aria-label="方向：{{ .name }}">
+{{- end }}
+
+<header class="column-hero paper-category-hero{{ if $image }} has-image{{ end }}">
+    <div class="paper-category-text">
+        {{- with $series }}
+        <a class="paper-category-back" href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{- end }}
+        <h1 class="column-hero-title"><span class="paper-obj paper-obj--{{ $o.key }}">{{ $o.label }}</span>{{ $o.name }}</h1>
+        {{ with ($o.hint | default $page.Params.description) }}<p class="column-hero-desc">{{ . }}</p>{{ end }}
+        <ul class="column-hero-facts">
+            <li>{{ partial "helper/icon" "stack-2" }}<span>{{ len $pages }} 篇</span></li>
+            {{- if $pages }}
+            <li>{{ partial "helper/icon" "file-text" }}<span>其中 {{ $accepted }} 篇已被会议接收</span></li>
+            {{- end }}
+        </ul>
+    </div>
+    {{- with $image }}
+    <div class="paper-category-art">
+        {{ partial "helper/thumbnail-image" (dict
+            "Resource" .Resource
+            "Width" 250
+            "Height" 150
+            "Resize" site.Params.ImageProcessing.Thumbnail.Enabled
+            "Attributes" (dict "src" .Permalink "alt" $o.name "loading" "lazy" "width" .Width "height" .Height)
+        ) }}
+    </div>
+    {{- end }}
+</header>
+
+<div class="paper-filter" role="group" aria-label="按方向筛选">
+    <div class="paper-filter-row">
+        <span class="paper-filter-label">方向</span>
+        <span class="paper-filter-chips">
+            <label class="paper-filter-chip" for="pf-dir-all">全部<span class="paper-filter-n">{{ len $pages }}</span></label>
+            {{- range $dirs }}
+            <label class="paper-filter-chip" for="pf-dir-{{ .key }}">{{ with .label }}<b>{{ . }}</b>{{ end }}{{ .name }}<span class="paper-filter-n">{{ .n }}</span></label>
+            {{- end }}
+        </span>
+    </div>
+</div>
+
+{{- /* Category intro (body of content/categories/<name>/_index.md), if any */ -}}
+{{- with $page.Content }}{{- if strings.TrimSpace . }}
+<section class="article-content column-intro">
+    {{ . }}
+</section>
+{{- end }}{{- end }}
+
+{{- with $items }}
+<section class="column-track paper-overview-track paper-list">
+    <div class="article-list--compact">
+        {{- range . }}
+        <div class="paper-item" data-dir="{{ .dir }}">
+            {{ partial "article-list/compact" .page }}
+        </div>
+        {{- end }}
+    </div>
+</section>
+{{- end }}
+
+{{- /* Empty states: the whole category (全部) or one direction with 0 posts */ -}}
+{{- if not $pages }}
+<p class="paper-empty" data-for="all">暂无文章{{ with $series }}，可以先看看<a href="{{ .RelPermalink }}">{{ .Title }}</a>里的其他分类{{ end }}。</p>
+{{- end }}
+{{- range $dirs }}{{ if eq .n 0 }}
+<p class="paper-empty" data-for="{{ .key }}">暂无{{ .name }}方向的文章。</p>
+{{- end }}{{ end }}
+</div>

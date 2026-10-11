@@ -2,7 +2,10 @@
     Archive page header: GitHub-style activity heatmap + 「动态 · News」.
 
     - Heatmap: data embedded as JSON (archives/events), grid drawn by
-      assets/js/activity-heatmap.js (vanilla, no dependencies).
+      assets/js/activity-heatmap.js (vanilla, no dependencies). One calendar
+      year at a time, chosen with the year buttons on the right; the first
+      selectable year is params.activity.firstYear (default 2025), the last
+      is the current year, so new years appear by themselves.
     - News: newest 10 items from post activity merged with optional manual
       entries in data/news.yaml (date, text, optional link / tag); rendered
       here, works without JavaScript.
@@ -11,10 +14,10 @@
 
 <section class="activity-section" aria-labelledby="activity-title">
     <h2 class="section-title" id="activity-title">写作日历</h2>
-    <div class="activity-card" data-activity>
+    <div class="activity-card" data-activity data-first-year="{{ site.Params.activity.firstYear | default 2025 }}">
         <div class="activity-head">
             <p class="activity-summary" data-summary>&nbsp;</p>
-            <div class="activity-years" data-years role="group" aria-label="选择时间范围" hidden></div>
+            <div class="activity-years" data-years role="group" aria-label="选择年份" hidden></div>
         </div>
         <div class="heatmap-scroll" data-scroll>
             <div class="heatmap" data-grid role="group" aria-label="每日文章发布与更新热力图"></div>
@@ -59,7 +62,7 @@
                     {{- if .link }}<a class="news-title" href="{{ .link }}">{{ .text | markdownify }}</a>{{ else }}<span class="news-title">{{ .text | markdownify }}</span>{{ end -}}
                 {{- else -}}
                     <a class="news-title" href="{{ .url }}" title="{{ .full }}">
-                        {{- if or .venue .dir }}{{ partial "paper/badges" (dict "P" (dict "show" true "venue" .venue "year" .year "field" .field "dir" .dir "dirLabel" .dirLabel "dirName" .dirName) "Link" false) }}{{ end -}}
+                        {{- if or .venue .dir }}{{ partial "paper/badges" (dict "P" (dict "show" true "venue" .venue "year" .year "field" .field "dir" .dir "listDir" .dir "dirLabel" .dirLabel "dirName" .dirName) "Link" false) }}{{ end -}}
                         <span>{{ .title }}</span></a>
                     {{- with .tag }}<a class="news-tag" href="{{ $it.tagUrl }}">{{ . }}</a>{{ end -}}
                 {{- end -}}

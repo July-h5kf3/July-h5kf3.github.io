@@ -1,12 +1,11 @@
 ---
 title: "[2024 AAAI] OWQ: Outlier-Aware Weight Quantization for Efficient Fine-Tuning and Inference of Large Language Models"
 description: 感知激活离群值来保护敏感权重列的混合精度量化。
-date: 2026-08-26T08:09:00+08:00
+date: 2025-10-21T07:46:49+08:00
 slug: owq
 categories:
     - LLM
 tags:
-    - 论文解读
     - OWQ
     - 离群值
     - 混合精度
@@ -21,16 +20,18 @@ paper:
     url: https://ojs.aaai.org/index.php/AAAI/article/view/29237
     arxiv: "2306.02272"
     affiliation: POSTECH
+    code: https://github.com/xvyaward/owq
+    review: "这篇文章思路很新颖，从大模型中间激活值的异常出发，结合Hessian矩阵分析，提出了一个简单但高效的方法，似乎可以进一步提升？"
 ---
 **总结**：本文提出了一个异常感知的权重量化方法OWQ，利用LLMs中的异常激活值挑选出Weak Column，对其采用全精度的方式在牺牲很小的性能的情况下提升了巨大的精度。此外为进一步提升其性能做了一定的硬件适配并提出了一个基于OWQ的WTC方案，简单来说就是在OWQ量化模型上微调只更新Weak Column的参数。
 
-<div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
-<b>评价:</b> 这篇文章思路很新颖，从大模型中间激活值的异常出发，结合Hessian矩阵分析，提出了一个简单但高校的方法，似乎可以进一步提升？
-</div>
+## 动机
 
 本文基于这样一个发现，LLMs在中间激活中表现出一些异常值，其值显著大于其他值，并且这些异常值集中在特定的特征维度上。保留这些异常值的值已知对于在激活量化之后保持准确性至关重要。此外，作者团队还发现激活异常值仍然会影响权重量化的敏感性。基于此，作者提出了一种称为异常值感知权重量化的概念(OWQ).
 
 ![OWQ 方法示意](owq_figure.png)
+
+## 权重敏感性与激活异常值
 
 我们知道逐层权重量化的过程，实际上进行如下优化过程:
 
@@ -56,7 +57,11 @@ H(w^{(l)}) = \mathbb{E}[x^{(l-1)} x^{(l-1)\top}⊗ \nabla^2_{z^{(l)}}L]
 $$
 由此我们可以从全局的视角看到，异常激活值(激活值的激增)使Hessian矩阵H的某些元素具有异常大的值。Hessian矩阵的这种异常激增增加了相应权重通道对量化的敏感性。具体来说，即使在相同的权重扰动下，由于一些H的一些大元素，输出的变化也会相当大。我们可以将这些易受量化影响的权重称为Weak Column，特别是那些与特定输入通道中的激活值异常值相关联的权重。
 
+## 方法
+
 OWQ为了解决这个问题，实现了如下技术：首先，识别Weak Column并将他们从量化中排除。随后使用精心调整的量化参数将剩余的权重量化为极低的bit。
+
+### Weak Column 的选取
 
 对于Weak Column的检索，OWQ遵循如下方法:
 
@@ -98,6 +103,8 @@ $$
 
 
 
+### 其余权重的量化
+
 我们根据权重列的敏感性挑选出top-k个作为weak column。然后其余权重被量化为低精度。（这里可以采用任何的量化方法）论文中采用了OPTQ的方法。
 
 作者团队对OPTQ进行了重要修改，使用二维网格搜索来搜索量化配置，包括步长以及零点。通过四舍五入到最接近的截断来搜索使量化前后差异最小的参数的最优值。
@@ -105,6 +112,8 @@ $$
 文章指出了一个利用Weak Column进一步减轻误差的方法:将高精度的Weak Column重新排列到权重的末尾，OPTQ过程中其他列的量化误差可以主要由Weak Column得到补偿
 
 在此之后，我们将Weak Column存储为fp16，并为每一列使用一个额外的整数，该整数用于索引Weak Column。此外存储一个低精度矩阵，其中Weak Column的位置采用0填充。
+
+### 加速与微调
 
 此外，作者还对OWQ格式在真实GPU上提供了专门的加速以及WTC微调方案。
 

@@ -1,15 +1,13 @@
 ---
 title: "[2026 ICLR] Task-related Token Compression in Multi-modal Large Language Models from an Explainability Perspective"
 description: 从可解释性视角出发做任务相关的多模态 Token 压缩。
-date: 2026-08-26T08:36:00+08:00
+date: 2026-05-06T16:21:30+08:00
 slug: task-related-token-compression
 categories:
     - VLM
 tags:
-    - 论文解读
     - Token压缩
     - 可解释性
-    - 多模态
 series:
     - 论文解读
 math: true
@@ -22,12 +20,13 @@ paper:
     arxiv: "2506.01097"
     affiliation: 中国科学技术大学、上海创智学院
     corrAffiliation: 中国科学技术大学、Rightly Robotics
+    review: "很有意思的一篇文章，出发点是发现了一种较好的可解释性的剪枝方法，但是剪枝决策需要在推理完成后得到，因此通过加入可学习模块的方式进行改良。"
 ---
-<div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
-    <b>个人评价</b>:很有意思的一篇文章，出发点是发现了一种较好的可解释性的剪枝方法，但是剪枝决策需要在推理完成后得到，因此通过加入可学习模块的方式进行改良。
-</div>
+## 动机
 
 现有的MLLMs通常将视觉token和文本token一起输入到LLM中进行跨模态对齐和整合。然而，这种方法由于视觉token数量庞大（尤其是处理高分辨率图像或高帧率视频时），导致了巨大的内存和计算开销。因此，迫切需要有效的token压缩技术来提高模型的效率。
+
+## 可解释性 Token 剪枝
 
 基于此，论文作者提出了一种可解释性Token剪枝方法:
 
@@ -52,6 +51,8 @@ $$
 R_v\in \mathbb{R}^{1\times N_v}
 $$
 接下来可以根据
+
+### 理论解释
 
 下面对式(1)进行简单的理论解释:
 
@@ -85,6 +86,8 @@ $$
 这就是式子(1)中采用Hadamard积的原因。
 
 实验表明，使用这种方法作为剪枝依据，可以在仅保留50%视觉Token的情况下，保留99%的性能
+
+## 局限与改进
 
 然而在实际应用中却存在一个局限，$R_v$是输出已经生成后得到的，这与我们进行剪枝的初衷相违背。为了解决这一限制，作者提出了一个独立于MLLM训练的单独模块来近似$R_v$。
 

@@ -50,6 +50,8 @@
 
 .activity-years {
     display: inline-flex;
+    flex-wrap: wrap;
+    margin-left: auto; /* stays on the right, also when it wraps under the summary */
     gap: var(--space-1);
     padding: 3px;
     border-radius: var(--radius-inner);

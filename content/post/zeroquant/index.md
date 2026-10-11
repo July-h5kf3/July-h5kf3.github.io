@@ -1,12 +1,11 @@
 ---
 title: "[2022 NeurIPS] ZeroQuant: Efficient and Affordable Post-Training Quantization for Large-Scale Transformers"
 description: 面向大规模 Transformer 的高效低成本训练后量化方案。
-date: 2026-08-26T08:06:00+08:00
+date: 2025-10-09T02:20:58+08:00
 slug: zeroquant
 categories:
     - LLM
 tags:
-    - 论文解读
     - ZeroQuant
     - PTQ
     - Transformer
@@ -21,16 +20,15 @@ paper:
     url: https://proceedings.neurips.cc/paper_files/paper/2022/hash/adf7fa39d65e2983d724ff7da57f00ac-Abstract-Conference.html
     arxiv: "2206.01861"
     affiliation: 微软
+    review: "这篇文章比较Solid，考虑了硬件适配的问题，这是模型量化中一个老大难的问题尤其是混合精度。但是实验的模型都是参数规模较小的模型，在大模型上的效果有待考究。"
 ---
-<div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
-<b>评价:</b> 这篇文章比较Solid，考虑了硬件适配的问题，这是模型量化中一个老大难的问题尤其是混合精度。但是实验的模型都是参数规模较小的模型，在大模型上的效果有待考究。
-</div>
-
 
 
 **总结**：这篇文章指出，低比特量化在大型 Transformer 架构模型中精度受限的主要原因是激活值和权重矩阵的值分布方差较大。针对这一问题，提出了 ZeroQuant 方案。该方案主要包括：对权重采用 Group-wise 量化、对激活值采用 Token-wise 量化，这种方法既能适配硬件架构，又能保持较高的精度；同时，通过 Layer-wise 知识蒸馏方法来减少量化带来的精度损失。
 
 
+
+## 动机
 
 文章指出，在大模型的量化中，采用PTQ会面临以下挑战。
 
@@ -48,6 +46,10 @@ paper:
 
 
 
+## 方法
+
+### 权重：Group-wise 量化
+
 对于权重矩阵而言，Group-wise量化就是将$W\in R^{n\times m}$划分为g个组，每个组单独量化。但是在最先提出这个量化方法的Q-BERT中仅将其用于QAT且没有考虑硬件效率约束，以及系统后端支持。基于此作者团队考虑了GPU的架构（Ampere架构）的硬件约束，特别是将Group-size与Tensor Core中的计算单元对齐。
 
 
@@ -58,9 +60,13 @@ paper:
 
 
 
+### 激活：Token-wise 量化
+
 对于激活值而言，在挑战中我们已经阐明了在不同的Token上下文语义下，激活值的范围存在巨大方差，因此解决这个问题的一个自然而然的想法是采用Token-wise的量化策略。但是直接采用DL框架中的Token级量化会导致显著的量化和反量化成本，因为引入了额外的操作。基于此作者采用了算子融合的方法等一系列优化。
 
 
+
+### 逐层知识蒸馏（LKD）
 
 知识蒸馏是缓解模型压缩后精度下降的最强大的办法之一。因此，论文提出了一种逐层的知识蒸馏技术来避免低比特量化带来的精度损失。
 
@@ -75,6 +81,8 @@ $$
 因为使用相同的前k-1层，所以无需单独保留一个单独的教师模型，因此额外的模型成本仅仅是$L_k$。而每次只对一层进行蒸馏，所以内存和计算开销非常小，并且无需原始训练数据。
 
 
+
+### Kernel 优化
 
 在前面Token-wise的量化处我们提到，作者对Kernel做了对应的优化，下面我们详细展开。
 

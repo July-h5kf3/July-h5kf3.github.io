@@ -3,16 +3,20 @@
     Input: dict
         P     helper/paper-title result
         Link  bool  make the 方向 label a link to its /tracks/ page
-                    (false inside cards that are already one big link)
+                    (false inside cards that are already one big link).
+                    Only the article header passes true; everywhere else
+                    (lists, tiles, News, heatmap) the 方向 label comes from
+                    P.listDir, i.e. it is hidden while all posts share one
+                    direction.
     Styles: assets/scss/paper-badges.scss.
 */}}
 {{- $r := .P -}}
-{{- if $r.show -}}
+{{- if or $r.venue (and $.Link $r.dir) $r.listDir -}}
 <span class="paper-badges">
     {{- with $r.venue -}}
     <span class="venue-badge venue--{{ $r.field }}" title="{{ . }}{{ with $r.year }} {{ . }}{{ end }}"><b>{{ . }}</b>{{ with $r.year }}<span class="venue-badge-year">{{ . }}</span>{{ end }}</span>
     {{- end -}}
-    {{- with $r.dir -}}
+    {{- with (cond $.Link $r.dir ($r.listDir | default "")) -}}
     {{- if and $.Link $r.dirURL -}}
     <a class="paper-dir paper-dir--{{ . }}" href="{{ $r.dirURL }}" title="方向：{{ $r.dirName }}">{{ $r.dirLabel }}</a>
     {{- else -}}

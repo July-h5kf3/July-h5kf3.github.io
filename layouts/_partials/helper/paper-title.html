@@ -24,6 +24,14 @@
         dirLabel string  e.g. "Algo"
         dirName  string  e.g. "算法"
         dirURL   string  /tracks/algo/
+        listDir  string  = dir when more than one direction has posts, else
+                         "" (lists hide a 方向 label that every post shares;
+                         it shows up again once there are Sys posts)
+        obj      string  研究对象 key from data/venues.yaml `objects`
+                         (llm | vlm | gen | "") via the post's category
+        objLabel string  e.g. "VLM"
+        objName  string  e.g. "多模态理解"
+        objURL   string  the category page, e.g. /categories/vlm/
         show     bool    anything to render (venue or dir)
 */}}
 {{- $title := .Title -}}
@@ -62,6 +70,21 @@
     {{- $dirName = (and $cfg $cfg.name) | default $dirLabel -}}
 {{- end -}}
 
+{{- $nDirs := 0 -}}
+{{- range site.Taxonomies.tracks }}{{ if .Pages }}{{ $nDirs = add $nDirs 1 }}{{ end }}{{ end -}}
+{{- $listDir := cond (gt $nDirs 1) $dir "" -}}
+
+{{- $obj := "" -}}{{- $objLabel := "" -}}{{- $objName := "" -}}{{- $objURL := "" -}}
+{{- range $c := .GetTerms "categories" -}}
+    {{- if not $obj -}}
+    {{- range (hugo.Data.venues.objects | default slice) -}}
+        {{- if eq (lower .category) (lower $c.LinkTitle) -}}
+            {{- $obj = .key }}{{ $objLabel = .label }}{{ $objName = .name }}{{ $objURL = $c.RelPermalink -}}
+        {{- end -}}
+    {{- end -}}
+    {{- end -}}
+{{- end -}}
+
 {{- return merge $r (dict
     "venue" $venue
     "year" $year
@@ -70,5 +93,10 @@
     "dirLabel" $dirLabel
     "dirName" $dirName
     "dirURL" $dirURL
+    "listDir" $listDir
+    "obj" $obj
+    "objLabel" $objLabel
+    "objName" $objName
+    "objURL" $objURL
     "show" (or (ne $venue "") (ne $dir ""))
 ) -}}

@@ -1,15 +1,13 @@
 ---
 title: "[2026 ICML] VEQ: Modality-Adaptive Quantization for MoE Vision-Language Models"
 description: 面向 MoE 视觉语言模型的模态自适应量化。
-date: 2026-08-26T08:54:00+08:00
+date: 2026-06-01T15:05:00+08:00
 slug: veq
 categories:
     - VLM
 tags:
-    - 论文解读
     - VEQ
     - MoE
-    - VLM
 series:
     - 论文解读
 math: true
@@ -22,8 +20,11 @@ paper:
     arxiv: "2602.01037"
     affiliation: 上海交通大学
     corrAffiliation: 上海交通大学
+    code: https://github.com/guangshuoqin/VEQ
 ---
 本篇文章主要针对MoE架构的VLMs的PTQ。
+
+## 动机
 
 目前主流的MoE VLMs PTQ方法往往忽略了两种异质性：
 
@@ -41,7 +42,11 @@ paper:
 
    c.  路由偏差，路由器对少数专家赋予极高置信度，这些专家对最终输出起决定性作用。
 
+## 方法
+
 基于此论文提出了VEQ-ME,VEQ-MA.
+
+### VEQ-ME：模态-专家感知量化
 
 首先介绍VEQ-ME，即模态-专家感知量化。其核心在于将专家重要性引入误差最小化目标中。
 
@@ -63,6 +68,9 @@ $$
 $$
 \mathcal{L}_{\text{weighted}} = \sum_{i=1}^M S_i \cdot ||W_iX_i-\hat W_i X_i||_2^2
 $$
+
+### VEQ-MA：模态-亲和性感知量化
+
 接下来介绍VEQ-MA，即模态-亲和性感知量化。其核心在于构建增强的Hessian矩阵$\hat H = XCX^\top$
 
 目前具有代表性的PTQ框架通常使用二阶信息(Hessian矩阵)来确定最优量化参数，而出于计算效率的考虑，往往采用如下近似:

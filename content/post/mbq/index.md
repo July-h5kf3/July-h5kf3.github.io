@@ -1,14 +1,12 @@
 ---
 title: "[2025 CVPR] MBQ: Modality-Balanced Quantization for Large Vision-Language Models"
 description: 平衡视觉与文本模态敏感度的视觉语言模型量化。
-date: 2026-08-26T08:21:00+08:00
+date: 2026-04-10T16:40:00+08:00
 slug: mbq
 categories:
     - VLM
 tags:
-    - 论文解读
     - MBQ
-    - VLM
     - 模态均衡
 series:
     - 论文解读
@@ -22,10 +20,10 @@ paper:
     arxiv: "2412.19509"
     affiliation: 清华大学、无问芯穹、北京航空航天大学
     corrAffiliation: 清华大学、北京航空航天大学
+    code: https://github.com/thu-nics/MBQ
+    review: "文章的Insight很不错，不同模态Token的影响差异确实很显著，Method is Simple but benefit a lot"
 ---
-<div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
-    <b>个人评价</b>:文章的Insight很不错，不同模态Token的影响差异确实很显著，Method is Simple but benefit a lot
-</div>
+## 动机
 
 当我们直接使用大语言模型的量化的方法对多模态大模型进行量化时(如AWQ，GPTQ等)，往往会忽略不同模态激活值带来的差异，在论文中这种差异被描述为模态之间敏感度的差异。MBQ的思路是在量化过程中平衡这些差异，从而提高VLMs的准确性。
 
@@ -46,6 +44,8 @@ E^* = \arg \min_{E}[||Q(W\cdot E)(E^{-1}X_l)-W\cdot X_l||^2 + 0.1 *||Q(W\cdot E)
 $$
 实验结果表明:	即使仅使用一个启发式选择的模态平衡因子，balanced CWE 也能够显著超过原始 CWE 的性能。
 
+## 方法
+
 为了进一步探索这个最优的平滑因子，论文提出了MBQ方法。
 
 具体而言，该方法通过最小化SFT损失函数的变化，为每一层分配最优的模态平衡因子。具体而言，我们用下式描述每个线性层的输出激活Y收到一个小扰动$\Delta $时，SFT损失L的变化:
@@ -62,6 +62,9 @@ $$
 =\overline{|g_v|}\cdot ||\hat Y_v - Y_v|| + \overline{|g_l|} \cdot ||\hat Y_l - Y_l||
 \end{align}
 $$
+
+### Prefill 与 Decode 阶段的量化
+
 在一般的大语言模型的量化中，通常会分为两个阶段采用不同粒度的量化:
 
 - Prefill阶段：这个阶段主要是将整个Prompt并行地计算每一层的hidden state（即计算KV，并得到KV-Cache），这个阶段整个Prompt一次性并行计算，矩阵乘法很大，算力利用率很高。这时候如果把 权重和激活都量化，就能直接减少 GEMM 的计算/带宽开销，所以 W8A8 / FP8 W8A8 往往比较合适。

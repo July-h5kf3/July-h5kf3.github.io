@@ -1,12 +1,11 @@
 ---
 title: "[2026 ICLR] SliderQuant: Accurate Post-Training Quantization for LLMs"
 description: 层间/层内滑动量化的大模型训练后量化方法。
-date: 2026-08-26T08:39:00+08:00
+date: 2026-05-12T20:35:41+08:00
 slug: sliderquant
 categories:
     - LLM
 tags:
-    - 论文解读
     - SliderQuant
     - PTQ
     - 滑动量化
@@ -22,7 +21,11 @@ paper:
     arxiv: "2603.25284"
     affiliation: 英特尔中国研究院、北京邮电大学
     corrAffiliation: 英特尔中国研究院
+    code: https://github.com/deep-optimization/SliderQuant
 ---
+
+## 动机
+
 现有的PTQ通常采用顺序量化框架，将预训练模型分割为相同大小的部分并依次量化，且对所有层一视同仁。在低比特情况下，这种平等处理方式存在如下缺陷：
 
 1. 层间敏感度差异被忽略:实证研究表明，浅层和深层通常比中间层对量化更敏感，且第一层和最后一层的量化误差显著大于其他层
@@ -36,12 +39,14 @@ paper:
 
 可以看到无论模型大小，对量化最敏感的永远是第一层和最后一层，且随着量化层数的增加，量化误差的积累也越来越明显。
 
+## 方法
+
 为了解决上述问题，论文提出了SliderQuant框架，其核心包括:
 
 1. Inter-layer sliding quantization: 针对浅层，中间层和深层分别设计自适应滑动窗口，建立跨层的智能化接力机制
 2. Intra-layer sliding quantization: 在每个量化窗口内采用增量式量化策略，实现局部到全局的参数协同。
 
-**Inter-layer sliding quantization**
+### Inter-layer Sliding Quantization
 
 一般的PTQ量化普遍选择Layer-Wise的量化，因此误差会随着层数加深而逐渐累积。作者选择使用滑动窗口的方式进行量化，每次在整个窗口中的layer会被当作一个block进行量化。为了减少跨层量化误差，总会保证两个连续的窗口之间存在重叠即$s-i\geq 1$。（size，stride）
 
@@ -61,7 +66,7 @@ paper:
 
 ![](sliderquant_gif2.gif)
 
-**Intra-Layer Sliding Quantization**
+### Intra-layer Sliding Quantization
 
 为了进一步利用之前发现两个性质，论文提出了一个与Inter-layer sliding 互补的组件。
 

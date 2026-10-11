@@ -4,31 +4,28 @@
     Everything except the description and the intro text (the term's
     _index.md) is computed from the posts, so it stays correct as papers
     are added:
-      - hero facts: post count, 已中稿 count, one Algo / Sys pill per
-        direction in data/venues.yaml `tracks` (→ /tracks/…), last update;
+      - hero facts: post count, how many of them were accepted at a venue,
+        last update (= the newest post date);
       - 会议: one venue badge per venue (colour = field) with its count, plus
         the number of preprints (no venue);
-      - 分类: one artwork card per category the posts use, with its count,
-        right under the header (same tiles as the archive's 专栏 cards;
-        artwork = the category's `image`, content/categories/<name>/);
-      - lists: all posts grouped by 方向, each list in the default order
-        (weight, then newest first), rendered with the compact list card
-        (venue badge + 方向 label). Posts without a direction go to 其他.
+      - 研究对象 cards: one artwork card per entry of data/venues.yaml
+        `objects` (data order), always shown — also with 0 posts — linking
+        to its category page (layouts/categories/term.html lists every post
+        of that category with the algo / sys filter). Artwork = the
+        category's `image` (content/categories/<name>/);
+      - 最近更新: the 5 newest posts by date (compact list cards).
 */}}
 {{- $term := . -}}
 {{- $pages := .Pages -}}
-{{- $dirCfg := hugo.Data.venues.tracks | default dict -}}
+{{- $objCfg := hugo.Data.venues.objects | default slice -}}
+{{- $recentN := 5 -}}
 
-{{- $byDir := dict -}}
 {{- $accepted := 0 -}}
 {{- $preprints := 0 -}}
 {{- $venues := dict -}}
-{{- $cats := dict -}}
-{{- $latest := "" -}}
+{{- $objN := dict -}}
 {{- range $pages -}}
     {{- $pt := partial "helper/paper-title" . -}}
-    {{- $dir := $pt.dir | default "other" -}}
-    {{- $byDir = merge $byDir (dict $dir ((index $byDir $dir | default slice) | append .)) -}}
     {{- with $pt.venue -}}
         {{- $accepted = add $accepted 1 -}}
         {{- $v := index $venues . | default (dict "name" . "field" $pt.field "n" 0) -}}
@@ -36,18 +33,13 @@
     {{- else -}}
         {{- $preprints = add $preprints 1 -}}
     {{- end -}}
-    {{- range .GetTerms "categories" -}}
-        {{- $c := index $cats .LinkTitle | default (dict "name" .LinkTitle "page" . "n" 0) -}}
-        {{- $cats = merge $cats (dict .LinkTitle (merge $c (dict "n" (add $c.n 1)))) -}}
-    {{- end -}}
-    {{- if or (not $latest) (.Lastmod.After $latest.Lastmod) }}{{ $latest = . }}{{ end -}}
+    {{- with $pt.obj }}{{ $objN = merge $objN (dict . (add (index $objN . | default 0) 1)) }}{{ end -}}
 {{- end -}}
+{{- $recent := first $recentN ($pages.ByDate.Reverse) -}}
+{{- $latest := index $recent 0 -}}
 {{- $venueList := slice -}}
 {{- range $venues }}{{ $venueList = $venueList | append . }}{{ end -}}
 {{- $venueList = sort (sort $venueList "name" "asc") "n" "desc" -}}
-{{- $catList := slice -}}
-{{- range $cats }}{{ $catList = $catList | append . }}{{ end -}}
-{{- $catList = sort (sort $catList "name" "asc") "n" "desc" -}}
 
 <div class="column-syllabus paper-overview">
 <header class="column-hero">
@@ -56,17 +48,9 @@
 
     <ul class="column-hero-facts">
         <li>{{ partial "helper/icon" "stack-2" }}<span>{{ len $pages }} 篇</span></li>
-        <li>{{ partial "helper/icon" "file-text" }}<span>已中稿 {{ $accepted }} 篇</span></li>
-        {{- range $key, $cfg := $dirCfg }}
-        {{- $n := len (index $byDir $key | default slice) }}
-        {{- with site.GetPage (printf "/tracks/%s" $key) }}
-        <li><a class="paper-dir paper-dir--{{ $key }}" href="{{ .RelPermalink }}" title="查看全部{{ $cfg.name }}方向的论文解读">{{ $cfg.label }}</a><span>{{ $n }} 篇</span></li>
-        {{- else }}
-        <li><span class="paper-dir paper-dir--{{ $key }}">{{ $cfg.label }}</span><span>{{ $n }} 篇</span></li>
-        {{- end }}
-        {{- end }}
+        <li>{{ partial "helper/icon" "file-text" }}<span>其中 {{ $accepted }} 篇已被会议接收</span></li>
         {{- with $latest }}
-        <li>{{ partial "helper/icon" "clock" }}<span>更新于 <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod | time.Format site.Params.dateFormat.lastUpdated }}</time></span></li>
+        <li>{{ partial "helper/icon" "clock" }}<span>更新于 <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format site.Params.dateFormat.lastUpdated }}</time></span></li>
         {{- end }}
     </ul>
 
@@ -85,42 +69,33 @@
     {{- end }}
 </header>
 
-{{- with $catList }}
-<section class="column-track paper-overview-cats" id="categories">
-    <header class="column-track-header">
-        <h2 class="column-track-title">分类</h2>
-        <span class="column-track-count">{{ len . }} 个</span>
-    </header>
+{{- with $objCfg }}
+<section class="column-track paper-overview-cats" id="categories" aria-label="研究对象">
     <div class="subsection-list">
         <div class="article-list--tile">
-            {{- range . }}
-            {{ partial "article-list/tile" (dict "Page" .page "Title" (printf "%s · %d 篇" .name .n)) }}
+            {{- range $o := . }}
+            {{- $n := index $objN $o.key | default 0 }}
+            {{- with site.GetPage (printf "/categories/%s" (lower $o.category)) }}
+            {{ partial "article-list/tile" (dict "Page" . "Title" (printf "%s · %d 篇" $o.name $n)) }}
+            {{- end }}
             {{- end }}
         </div>
     </div>
 </section>
 {{- end }}
 
-{{- /* Intro card only when the page has real body content (e.g. the
-       {{< column-refs >}} reference chips); otherwise the header
-       description is the whole introduction — no empty extra module. */ -}}
+{{- /* Intro card only when the page has real body content */ -}}
 {{- with .Content }}{{- if strings.TrimSpace . }}
 <section class="article-content column-intro">
     {{ . }}
 </section>
 {{- end }}{{- end }}
 
-{{- $groups := slice -}}
-{{- range $key, $cfg := $dirCfg }}{{ $groups = $groups | append (dict "key" $key "label" $cfg.label "title" (printf "%s方向" $cfg.name)) }}{{ end -}}
-{{- $groups = $groups | append (dict "key" "other" "label" "" "title" "其他") -}}
-{{- range $g := $groups }}
-    {{- $items := index $byDir $g.key | default slice -}}
-    {{- with $items }}
-<section class="column-track paper-overview-track" id="dir-{{ $g.key }}">
+{{- with $recent }}
+<section class="column-track paper-overview-track" id="recent">
     <header class="column-track-header">
-        {{ with $g.label }}<span class="paper-dir paper-dir--{{ $g.key }}">{{ . }}</span>{{ end }}
-        <h2 class="column-track-title">{{ $g.title }}</h2>
-        <span class="column-track-count">{{ len . }} 篇</span>
+        <h2 class="column-track-title">最近更新</h2>
+        <span class="column-track-count">{{ len . }} / {{ len $pages }} 篇</span>
     </header>
     <div class="article-list--compact">
         {{- range . }}
@@ -128,6 +103,5 @@
         {{- end }}
     </div>
 </section>
-    {{- end }}
 {{- end }}
 </div>

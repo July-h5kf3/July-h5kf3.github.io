@@ -1,12 +1,11 @@
 ---
 title: "[2026 ICML] ReSpinQuant: Efficient Layer-Wise LLM Quantization via Subspace Residual Rotation Approximation"
 description: 通过子空间残差旋转近似的逐层大模型量化。
-date: 2026-08-26T08:48:00+08:00
+date: 2026-05-27T23:32:11+08:00
 slug: respinquant
 categories:
     - LLM
 tags:
-    - 论文解读
     - ReSpinQuant
     - 旋转量化
     - 子空间
@@ -23,17 +22,24 @@ paper:
     affiliation: 首尔大学
     corrAffiliation: 首尔大学
 ---
+
+## 动机
+
 在LLM的权重-激活值量化中，目前的主流是基于旋转的方法，总体而言可以分为两类，一种是以SpinQuant，QuaRot为代表的全局旋转方法，另一种是以FlatQuant，OSTQuant为代表的layer-wise 变换方法。
 
 二者的区别在于前者全局共享旋转矩阵，可以实现激活旋转与权重的离线融合，这种方式推理时无额外开销，效率高，但是表达能力有限；而Layer-Wise变换方法为每层分配独特的旋转矩阵，可以通过局部适应实现更优的异常值抑制，但是会产生额外的推理开销，因为这个旋转矩阵在激活侧无法融合进前一层的权重层。
 
 ReSpinQuant克服了这一限制。实现了可融合的Layer-Wise Rotation base PTQ。
 
+## 方法
+
 具体方法如下:
 
 ![](respinquant_fig1.png)
 
 上图是respinquant应用于标准Transformer层时的完整架构。
+
+### 逐层旋转矩阵
 
 我们设L表示总层数，对于第i层:
 
@@ -46,7 +52,9 @@ ReSpinQuant克服了这一限制。实现了可融合的Layer-Wise Rotation base
 
 上述吸收可以离线进行，因此基本上在保证计算不变性的同时，几乎没有带来额外的推理开销。
 
-但是上述公式仅在Transfomer Block内部成立，当使用逐层旋转时，残差连接会带来挑战。
+### 残差连接中的基不匹配
+
+但是上述公式仅在Transformer Block内部成立，当使用逐层旋转时，残差连接会带来挑战。
 
 我们设$R_{in}$和$R_{out}$分别表示每个MHSA或FFN block的输入和输出所对应的最优逐层旋转矩阵。原始残差连接为:
 $$
@@ -61,6 +69,8 @@ $$
 T = R_{out}R_{in}^\top  = I
 $$
 因此可以消除残差连接中的额外计算开销（也就是我们不需要显式计算）。然而，这会限制模型的表达能力，因为它强制所有层共享同一个旋转基。
+
+### 子空间旋转近似
 
 为了解决这个问题，我们采用完整大小的逐层旋转矩阵，以最大化表达能力；同时，通过对子空间旋转近似来逼近残差旋转矩阵 T。
 

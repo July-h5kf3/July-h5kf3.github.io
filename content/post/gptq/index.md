@@ -1,12 +1,11 @@
 ---
 title: "[2023 ICLR] GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers"
 description: 基于 Hessian 的逐层误差补偿，把大模型权重量化到低比特。
-date: 2026-08-26T08:12:00+08:00
+date: 2025-10-27T00:07:39+08:00
 slug: gptq
 categories:
     - LLM
 tags:
-    - 论文解读
     - GPTQ
     - PTQ
     - Hessian
@@ -23,12 +22,15 @@ paper:
     arxiv: "2210.17323"
     affiliation: IST Austria
     corrAffiliation: IST Austria
+    code: https://github.com/IST-DASLab/gptq
 ---
 这个文章是OWQ的前身，借着对这篇文章的分析，我们梳理一下这一系列的文章的intuition。
 大概的分析顺序为:
 $$
 \text{OBD} \to \text{OBS} \to \text{OBC} \to \text{GPTQ}
 $$
+
+## OBD
 
 首先是OBD，这是由Yann LeCun在1990年提出的神经网络剪枝算法。该算法基于二阶导数信息，旨在通过去除目标函数影响较小的参数来降低模型复杂度，提高泛化能力。
 
@@ -48,6 +50,8 @@ $$
 \Delta E = \frac{1}{2}\sum_{i}h_{i,i}\Delta w_i^2
 $$
 因此，对神经网络进行剪枝，删除参数时，参数对目标函数的影响可以通过海森矩阵的对角项进行衡量。我们只需要在剪枝时求出海森矩阵，按对角项从小到大排序，即可确定参数剪枝的次序。
+
+## OBS
 
 可以注意到，OBD的这个认为参数对目标函数的影响是独立的假设是很强的。OBS认为参数之间的独立性不成立，如果考虑交叉项，可以写作矩阵形式
 $$
@@ -84,7 +88,7 @@ w_q = \lambda e_q^\top H^{-1} e_q\\
 $$
 其中用到了等式$e_q^\top H^{-1}e_q = [H^{-1}]_{qq}$
 
-将$\lambda = \frac{w_q}{[H^{-1}]_{qq}}$带入等式$\Delta w^\top H + \lambda e_q^\top = 0$,得到
+将$\lambda = \frac{w_q}{[H^{-1}]_{qq}}$代入等式$\Delta w^\top H + \lambda e_q^\top = 0$,得到
 $$
 \Delta w^{\top} = -\frac{w_q}{[H^{-1}]_{qq}}e_{q}^\top H^{-1}\\
 \Delta w = -\frac{w_q}{[H^{-1}]_{qq}}(H^{-1})^\top e_q \\
@@ -92,7 +96,7 @@ $$
 $$
 其中$H_{:,q}^{-1}$表示$H^{-1}$的第q列,且Hessian矩阵是一个对称矩阵.
 
-将$\Delta w$带入$\Delta \mathcal{L}$我们有:
+将$\Delta w$代入$\Delta \mathcal{L}$我们有:
 $$
 \Delta\mathcal{L} = \frac{1}{2}\Delta w^\top H \Delta w = \frac{1}{2}(-\frac{w_q}{[H^{-1}]_{qq}}e_q^\top H^{-1})H(-\frac{w_q}{[H^{-1}]_{qq}}H^{-1}e_q)\\
 =\frac{1}{2}(\frac{w_q}{[H^{-1}]_{qq}})^2e_q^\top H^{-1}e_q\\
@@ -106,7 +110,11 @@ $$
 
 我们不难发现，要进行k次剪枝，每一次剪枝都要求一次Hessian矩阵的逆(时间复杂度为$O(d^3)$),这样的时间复杂度明显是不能实际应用的，因此OBC对其进行了进一步的优化。
 
+## OBC
+
 OBC主要做了两点优化，一个是对原始问题进行了拆分，另一个是对Hessian矩阵的计算进行了简化。
+
+### 按行拆分
 
 首先是对原始问题的拆分，对于Layer-wise的量化/剪枝而言，通常将对整个网络进行的量化/剪枝拆分为每一层独立的子问题。在先前对AdaQuant的分析中我们有提到，这种Layer-wise的拆分是高度可并行的。
 
@@ -140,11 +148,15 @@ $$
 
 有了这个证明，我们可以对每行进行单独处理进行量化剪枝。这种方式为我们提供了一个更加简单的Hessian矩阵形式$2X^\top X$但是每次更新参数仍然需要对其求逆，因此OBC提供了一个高效的求逆方法:
 
+### 删除行列后的 Hessian 逆
+
   给定一个可逆矩阵H以及其逆矩阵$H^{-1}$,我们希望高效地计算删除H第q行第q列(删除权重$w_q$)后的逆矩阵$H^{-1}_{-q}$:
 $$
   H_{-q}^{-1} = (H^{-1} - \frac{1}{[H^{-1}]_{qq}}H^{-1}_{:,q}H^{-1}_{q,:})_{-q}
 $$
   这个定理证明较为复杂，将在博客上更新详细证明与intuition。
+
+### OBC 剪枝流程
 
   接下来我们来描述OBC剪枝的完整流程:
 
@@ -156,11 +168,13 @@ $$
 
     首先选择当前最优的剪枝目标q:$q \leftarrow \arg\min_{q\in M}\frac{w_q^2}{[H^{-1}]_{qq}}$,接着弥补剪掉$w_p$带来的误差$\Delta w \leftarrow \Delta w - \frac{w_q}{[H^{-1}]_{qq}}(H^{-1}_{:,q})^\top$,然后更新$H^{-1}\leftarrow H^{-1}_{-q}$,从候选集中移除该索引$M\leftarrow M - \{q\}$
 
+## OBQ
+
   而对于量化而言(OBQ)，相对剪枝我们需要做一些调整。首先是之前的最优化问题的限制条件需要改为:
 $$
   \Delta w \cdot e_q + w_q - \text{quant}(w_q) = 0
 $$
-  同样使用Lanrange乘子法进行求解:
+  同样使用Lagrange乘子法进行求解:
 $$
   \mathcal{L} = \frac{1}{2}\Delta w^\top H \Delta w + \lambda(\Delta w \cdot e_q + w_q - \text{quant}(w_q))
 $$
@@ -182,6 +196,8 @@ $$
   q = \arg \min_{q} \frac{(w_q-\text{quant}(w_q))^2}{[H^{-1}]_{qq}}
 $$
   用上式替换OBC剪枝的流程，便可以得到量化流程。
+
+## GPTQ
 
   GPTQ则是对OBQ进行了改进，GPTQ发现，在对权重的每一行量化时，按照贪心策略选择量化的q和按照任意固定顺序来量化每一行的权重最终的误差是相差不大的，那么可以直接让所有行都按照列序(0 $\rightarrow$ col),这样可以提高计算效率与存储效率。
 
@@ -214,6 +230,8 @@ I_{k} & 0 & 0\\
   \right]
 $$
 
+
+### Cholesky 分解
 
   若我们不断更新Hessian的逆总会产生非正定的Hessian逆矩阵,其原因可能是由于数值误差的累积。为了解决这个问题，作者注意到每次从$H^{(-1)}$中删除一行一列，本质上和对称正定矩阵的Cholesky分解的逐步过程类似，因此作者对初始的$H^{-1}$进行了Cholesky分解，得到了一个上三角矩阵$T$。
 
@@ -260,6 +278,8 @@ $$
 \Delta w = -\frac{w_{:,q} - \text{quant}(w_{:,q})}{T_{qq}}T_{q,q:}
 $$
 因此我们在进行量化时不用每次都更新Hessian矩阵的逆，而是直接对$H^{-1}$进行Cholesky分解，得到它的每一行便可以进行参数的量化。
+
+### Lazy Batch-Update
 
 此外，如果每行的量化并行计算，那么每次更新都要读写一次参数矩阵。若参数矩阵的维度为$d_{row}\times d_{col}$，那么量化这个参数矩阵就要读写$d_{col}$次参数，总共的读写量高达$d_{row}\times d_{col}^2$.(因为我们量化第i列的时候，后面的列相应地也要补偿更新)
 

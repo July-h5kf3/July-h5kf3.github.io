@@ -1,14 +1,12 @@
 ---
 title: "VLMQ: Efficient Post-Training Quantization for Large Vision-Language Models via Hessian Augmentation"
 description: 通过 Hessian 增广高效量化视觉语言模型。
-date: 2026-08-26T08:27:00+08:00
+date: 2026-04-21T20:45:40+08:00
 slug: vlmq
 categories:
     - VLM
 tags:
-    - 论文解读
     - VLMQ
-    - VLM
     - Hessian
 series:
     - 论文解读
@@ -16,12 +14,11 @@ math: true
 comments: false
 tracks: algo
 paper:
-    arxiv: "2508.03351v1"
+    arxiv: "2508.03351"
     affiliation: 中国电信人工智能研究院 (TeleAI)、香港科技大学
+    review: "文章引出给不同token分配重要性的方式特别好，值得学习！后面的方法就和MBQ，QIG大同小异了"
 ---
-<div style="background-color:#f9f9f9; padding:8px; border-radius:6px;">
-    <b>个人评价</b>:文章引出给不同token分配重要性的方式特别好，值得学习！后面的方法就和MBQ，QIG大同小异了
-</div>
+## 动机
 
 文章提出在VLM中，视觉被过度表征是一个被广泛接受的观点，然而目前基于Hessian的PTQ方法没有利用这种冗余性，而我们知道在GPTQ中近似Hessian是通过激活值的内积近似得到的，这就会导致GPTQ等基于Hessian的量化方法直接应用于VLM上时，构建的Hessian矩阵大部分贡献来自于视觉冗余Token，从而表现不佳。因此，给各个Token分配不同的重要性是至关重要的。
 
@@ -38,10 +35,14 @@ paper:
 
 ![](VLMQ_fig1.png)可以看到，当仅有文本输入时，Hessian矩阵的主成分空间中的分布较为紧凑，而加入了视觉Token后，校准分布变得更加多样化，这有助于缓解量化与推理之间的差距。然而，由于视觉过度表征问题，过量引入视觉 token 会带来 Hessian 向冗余视觉特征偏置的风险（即周围稀疏的点)。
 
+## 方法
+
 为了解决这个问题，作者提出了一种面向VLM的精确PTQ方法，该方法主要由两方面组成:
 
 1. 重要性感知的量化目标
 2. 建立了分块损失扰动与逐层输出误差之间的理论联系，从而能够仅通过一次分块反向传播，高效计算由梯度驱动的重要性分数。
+
+### 重要性感知的量化目标
 
 重要性感知的量化目标实际上就是我们先前阅读过的MBQ，QIG等方法使用的量化目标，即Token-Wise的加权。VLMQ的Token重要性通过矩阵形式给出:
 
@@ -62,6 +63,8 @@ $$
 其中$\hat H = XGX^\top ,\quad \hat r = r\sqrt{G} ,\quad \hat X = X\sqrt{G}$
 
 该形式与原始的GPTAQ方式对齐，因此可以复用其中的效率技巧如Cholesky等。
+
+### Token 重要性的计算
 
 那么重要性是如何得到的呢？
 

@@ -1,6 +1,9 @@
 /*
  * Homepage activity heatmap (layouts/_partials/archives/activity.html).
- * Vanilla JS, no dependencies. Data: JSON array of events embedded by Hugo:
+ * Vanilla JS, no dependencies. One calendar year at a time (Jan–Dec), picked
+ * with the year buttons on the right: data-first-year … this year (or the
+ * newest year in the data), default = this year.
+ * Data: JSON array of events embedded by Hugo:
  *   { d: "YYYY-MM-DD", k: "pub"|"upd", title, full, url, track, trackKey, tag, tagUrl,
  *     venue, year, field, dir, dirLabel, dirName }   (paper posts: 会议徽章 + 方向标签, see paper/badges.html)
  */
@@ -81,20 +84,23 @@
     today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     var todayKey = key(today);
 
-    var mode = "recent";
+    /* ---- selectable years: data-first-year (2025) … max(this year, newest data year) ----
+       No hard-coded list: a new year appears once the calendar (or the data)
+       reaches it. Default = the current year. */
+    var firstYear = parseInt(root.getAttribute("data-first-year"), 10) || today.getFullYear();
+    var lastYear = today.getFullYear();
+    Object.keys(years).forEach(function (y) { if (+y > lastYear) lastYear = +y; });
+    var yearList = [];
+    for (var yy = firstYear; yy <= lastYear; yy++) yearList.push(String(yy)); // oldest → newest, left → right
+    var mode = String(today.getFullYear());
+    if (yearList.indexOf(mode) < 0) mode = yearList[yearList.length - 1] || mode;
     var selected = null;
 
-    /* ---- range for the current mode: [start (Monday), end] + visible window ---- */
+    /* ---- range for the selected year: Jan 1 – Dec 31, grid from the Monday before ---- */
     function range() {
-        var from, to;
-        if (mode === "recent") {
-            to = today;
-            from = addDays(today, -364);
-        } else {
-            var y = +mode;
-            from = new Date(y, 0, 1);
-            to = new Date(y, 11, 31);
-        }
+        var y = +mode;
+        var from = new Date(y, 0, 1);
+        var to = new Date(y, 11, 31);
         var start = addDays(from, -mondayIndex(from));
         var weeks = Math.ceil((Math.round((to - start) / 864e5) + 1) / 7);
         return { from: from, to: to, start: start, weeks: weeks };
@@ -183,7 +189,7 @@
             }
         }
 
-        var scope = mode === "recent" ? "近一年" : mode + " 年";
+        var scope = mode + " 年";
         var parts = [total.pub + " 篇发布"];
         if (total.upd) parts.push(total.upd + " 次更新");
         parts.push(activeDays + " 个活跃日");
@@ -191,16 +197,21 @@
         summary.appendChild(el("strong", null, scope));
         summary.appendChild(document.createTextNode(" · " + parts.join(" · ")));
 
-        if (mode === "recent") scroller.scrollLeft = scroller.scrollWidth;
-        else scroller.scrollLeft = 0;
+        /* narrow screens scroll the grid: show today's week for the current year, else January */
+        scroller.scrollLeft = 0;
+        if (mode === todayKey.slice(0, 4)) {
+            var t = grid.querySelector('.hm-cell[data-date="' + todayKey + '"]');
+            if (t && t.offsetLeft + t.offsetWidth > scroller.clientWidth) {
+                scroller.scrollLeft = t.offsetLeft + t.offsetWidth - scroller.clientWidth + 24;
+            }
+        }
     }
 
-    /* ---- year switcher (only when content spans more than one year) ---- */
-    var yearList = Object.keys(years).sort().reverse();
-    if (yearList.length > 1) {
+    /* ---- year switcher (right side of the card head) ---- */
+    if (yearList.length) {
         yearsBox.hidden = false;
-        ["recent"].concat(yearList).forEach(function (y) {
-            var b = el("button", "activity-year" + (y === mode ? " is-active" : ""), y === "recent" ? "近一年" : y);
+        yearList.forEach(function (y) {
+            var b = el("button", "activity-year" + (y === mode ? " is-active" : ""), y);
             b.type = "button";
             b.setAttribute("aria-pressed", y === mode ? "true" : "false");
             b.addEventListener("click", function () {
