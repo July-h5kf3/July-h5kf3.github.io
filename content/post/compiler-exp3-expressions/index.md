@@ -1,5 +1,5 @@
 ---
-title: "[从零开始的编译原理][实验] Exp Chapter 3：一元 / 二元表达式"
+title: "[从零开始的编译原理][实验] Exp Chapter 3：一元、算术、比较与逻辑表达式"
 date: 2026-10-11T16:00:00+08:00
 slug: compiler-exp3-expressions
 categories:
@@ -178,7 +178,7 @@ fun @main(): i32 {
 
 这里还需要注意临时结果的命名。`%0`、`%1`、`%2` 都是临时结果的名称，我们在实现中从 `0` 开始分配编号。Koopa IR 采用静态单赋值形式，同一个值名称只能定义一次，因此函数内的局部值和基本块需要使用互不冲突的名称。
 
-**扩展 IR 数据结构**
+#### 扩展 IR 数据结构
 
 观察上面的 IR，可以发现现有的 `ValueKind` 需要增加两种类型：表示临时结果引用的 `Temporary`，以及表示二元运算指令的 `Binary`。
 
@@ -223,7 +223,7 @@ public:
 
 这里的 `Temporary` 和 `IRTemp` 是我们自定义 IR 结构中的设计，用来连接指令结果与后续使用。
 
-**扩展 IR 打印**
+#### 扩展 IR 打印
 
 数据结构确定后，先调整 `Printer`。本小节主要修改两个函数：`PrintInstruction` 和 `PrintOperand`。
 
@@ -269,7 +269,7 @@ case ValueKind::Temporary:
 }
 ```
 
-**从 AST 生成 IR**
+#### 从 AST 生成 IR
 
 接下来处理 AST 到 IR 的转换。
 
@@ -365,7 +365,7 @@ std::unique_ptr<IRValue> IRGenerator::GenerateUnaryExp(
     }
 
     const auto& op = static_cast<const UnaryOpAST&>(*ast.op);
-    const auto& operand = static_cast<const UnaryExpAST&>(*ast.operand);
+    const auto& operand = static_cast<const UnaryExpAST&>(*ast.unaryExp);
     auto rhs = GenerateUnaryExp(operand, bb, next_id);
 
     switch (op.kind)
@@ -497,7 +497,7 @@ main:
 
 这里，`%0`、`%1` 和 `%2` 分别对应寄存器 `t0`、`t1` 和 `t2`。只要维护好这层映射，后续指令就能找到前面计算得到的结果。
 
-**临时结果与寄存器的对应关系**
+#### 临时结果与寄存器的对应关系
 
 在文本形式的 IR 中，`%1 = sub 0, %0` 通过 `%0` 引用前一条 `eq` 指令的结果。
 
@@ -589,7 +589,7 @@ private:
 
 你也许会注意到，如果按照一条指令的结果占用一个临时寄存器的目标代码生成思路，在表达式足够复杂的情况下，所有的临时寄存器很快就会被用完。但在本节中，我们先不要考虑这个问题。在 Exp Chapter 4 中，我们会实现一种一劳永逸的思路来解决这个问题。
 
-**生成二元运算与返回指令**
+#### 生成二元运算与返回指令
 
 此前的代码生成只需要处理 `Return` 指令和整数常量。现在需要补上两部分：一是根据 `IRTemp` 找到它对应的寄存器，二是为 `Binary` 指令生成汇编。
 
@@ -679,7 +679,7 @@ void CodeGen::Visit(
 
 结果寄存器则需要保留，供后续指令通过 `temp_regs` 查找。
 
-**加载操作数**
+#### 加载操作数
 
 最后实现 `LoadOperand`。
 
@@ -795,9 +795,9 @@ inline void DumpOp(UnaryOpKind op)
 class AddExpAST : public BaseAST
 {
 public:
-    std::unique_ptr<BaseAST> MulExp;
-    BinaryOpKind BinaryOp;
-    std::unique_ptr<BaseAST> AddExp;
+    std::unique_ptr<BaseAST> mulExp;
+    BinaryOpKind op;
+    std::unique_ptr<BaseAST> addExp;
 
     enum class Kind { MulExp, AddExp };
     Kind kind;
@@ -809,14 +809,14 @@ public:
         {
             case Kind::MulExp:
             {
-                MulExp->Dump();
+                mulExp->Dump();
                 break;
             }
             case Kind::AddExp:
             {
-                AddExp->Dump();
-                DumpOp(BinaryOp);
-                MulExp->Dump();
+                addExp->Dump();
+                DumpOp(op);
+                mulExp->Dump();
                 break;
             }
         }
@@ -887,7 +887,7 @@ MulOp
 
 得到 AST 后，就可以开始生成 IR 了。我们依旧沿用之前的实现顺序：先扩展用于表示 Koopa IR 的数据结构，再补充对应的转换和打印逻辑。
 
-对于上一节中的示例 `return 1 + 2 * 3;`，我们希望生成如下 Koopa IR：
+对于本节开头的示例 `return 1 + 2 * 3;`，我们希望生成如下 Koopa IR：
 
 ```text
 fun @main(): i32 {
@@ -929,18 +929,18 @@ std::unique_ptr<IRValue> IRGenerator::GenerateAddExp(
     int& next_id
 ) const
 {
-    const auto& mulExp = static_cast<MulExpAST&>(*ast.MulExp);
+    const auto& mulExp = static_cast<const MulExpAST&>(*ast.mulExp);
 
     if (ast.kind == AddExpAST::Kind::MulExp)
     {
         return GenerateMulExp(mulExp, bb, next_id);
     }
 
-    const auto& addExp = static_cast<AddExpAST&>(*ast.AddExp);
+    const auto& addExp = static_cast<const AddExpAST&>(*ast.addExp);
     auto lhs = GenerateAddExp(addExp, bb, next_id);
     auto rhs = GenerateMulExp(mulExp, bb, next_id);
 
-    switch (ast.BinaryOp)
+    switch (ast.op)
     {
         case BinaryOpKind::Plus:
         {
@@ -974,7 +974,7 @@ std::unique_ptr<IRValue> IRGenerator::GenerateAddExp(
 
 ### 代码生成
 
-最后，我们来看代码生成部分。对于上一节中的表达式 `1 + 2 * 3`，其计算过程可以用下面这段 RISC-V 汇编表示：
+最后，我们来看代码生成部分。对于本节示例中的表达式 `1 + 2 * 3`，其计算过程可以用下面这段 RISC-V 汇编表示：
 
 ```asm
   li   t0, 2
@@ -1137,17 +1137,17 @@ std::unique_ptr<IRValue> IRGenerator::GenerateLAndExp(
     int& next_id
 ) const
 {
-    const auto& EqExp = static_cast<EqExpAST&>(*ast.EqExp);
+    const auto& eqExp = static_cast<const EqExpAST&>(*ast.eqExp);
 
     if (ast.kind == LAndExpAST::Kind::EqExp)
     {
-        return GenerateEqExp(EqExp, bb, next_id);
+        return GenerateEqExp(eqExp, bb, next_id);
     }
 
-    const auto& LAndExp = static_cast<LAndExpAST&>(*ast.LAndExp);
+    const auto& lAndExp = static_cast<const LAndExpAST&>(*ast.lAndExp);
 
-    auto lhs = GenerateLAndExp(LAndExp, bb, next_id);
-    auto rhs = GenerateEqExp(EqExp, bb, next_id);
+    auto lhs = GenerateLAndExp(lAndExp, bb, next_id);
+    auto rhs = GenerateEqExp(eqExp, bb, next_id);
 
     auto lhs_bool = GenerateBinary(
         BinaryOp::Ne,
@@ -1194,7 +1194,7 @@ std::unique_ptr<IRValue> IRGenerator::GenerateLAndExp(
 
 这里还需要区分基础指令和伪指令。上面使用的 `sgt` 是一条伪指令，汇编器会将它转换为交换两个源操作数后的 `slt`；`seqz` 和 `snez` 也都是伪指令，分别用于判断操作数是否为零、是否非零。
 
-在实现这类转换时，我们可以借助 Compiler Explorer（Godbolt），观察 Clang 如何将相应的表达式编译为 RISC-V 汇编。原稿使用的是 `RISC-V rv32gc clang (trunk)`，编译选项为 `-O3 -g0`；实际操作时，选择网站当前提供的对应编译器即可。这里观察的是 Clang 的汇编输出，Koopa IR 则仍由我们自己的编译器生成。
+在实现这类转换时，我们可以借助 Compiler Explorer（Godbolt），观察 Clang 如何将相应的表达式编译为 RISC-V 汇编。本文使用的是 `RISC-V rv32gc clang (trunk)`，编译选项为 `-O3 -g0`；实际操作时，选择网站当前提供的对应编译器即可。这里观察的是 Clang 的汇编输出，Koopa IR 则仍由我们自己的编译器生成。
 
 当然，也可以借助 AI 查找相关指令和转换思路，再对照规范确认其含义，而不是直接照搬生成的代码。
 
