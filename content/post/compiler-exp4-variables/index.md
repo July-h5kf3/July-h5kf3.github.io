@@ -13,7 +13,7 @@ tags:
     - 变量
     - Koopa IR
     - RISC-V
-seriesOrder: 7
+seriesOrder: 8
 math: true
 comments: false
 ---
