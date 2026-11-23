@@ -4,7 +4,7 @@ description: 介绍从零开始搜索的大规模 GPU Kernel Agent，以及其�
 date: 2026-11-23
 slug: compounding-kernel
 categories:
-    - 算子开发
+    - LLM
 tags:
     - CompoundingKernel
     - Kernel Agent
